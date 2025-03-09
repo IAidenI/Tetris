@@ -55,14 +55,14 @@ typedef struct {
 
 size_t Block_Size(const wchar_t *shape);
 size_t Block_Max_Lenth(const int i);
-void Refresh_Frame(APIGame *game);
+int Put_Block(APIGame *game);
 void Borders(const wchar_t *c1, const wchar_t *c2);
 void Create_Frame();
 
 // Dimensions du jeu
 #define GAME_HEIGHT 20
 #define GAME_WEIGHT 2 * 10 // Car une case c'est [] donc 2 caractères
-#define BLOCK_WAIT 2000
+#define BLOCK_WAIT 100
 
 void Spawn(APIGame *game);
 int Game();

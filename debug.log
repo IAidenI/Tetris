@@ -1,0 +1,549 @@
+[DEBUG] pos y = 1
+[DEBUG] ----------------------
+[DEBUG] │             []     │
+[DEBUG] │         [][][]     │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] ----------------------
+[DEBUG] On spawn (ligne 1)
+    []
+[][][]
+[DEBUG] pos 1 - height 19
+[DEBUG] offset = 2
+[DEBUG] Suppression de la ligne (1) - │             []     │
+[DEBUG] Suppression de la ligne (2) - │         [][][]     │
+[DEBUG] Ajout de     [] à la ligne (2) - │                    │
+[DEBUG] Ajout de [][][] à la ligne (3) - │                    │
+[DEBUG] pos y = 2
+[DEBUG] ----------------------
+[DEBUG] │                    │
+[DEBUG] │             []     │
+[DEBUG] │         [][][]     │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] ----------------------
+[DEBUG] pos 2 - height 19
+[DEBUG] offset = 2
+[DEBUG] Suppression de la ligne (2) - │             []     │
+[DEBUG] Suppression de la ligne (3) - │         [][][]     │
+[DEBUG] Ajout de     [] à la ligne (3) - │                    │
+[DEBUG] Ajout de [][][] à la ligne (4) - │                    │
+[DEBUG] pos y = 3
+[DEBUG] ----------------------
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │             []     │
+[DEBUG] │         [][][]     │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] ----------------------
+[DEBUG] pos 3 - height 19
+[DEBUG] offset = 2
+[DEBUG] Suppression de la ligne (3) - │             []     │
+[DEBUG] Suppression de la ligne (4) - │         [][][]     │
+[DEBUG] Ajout de     [] à la ligne (4) - │                    │
+[DEBUG] Ajout de [][][] à la ligne (5) - │                    │
+[DEBUG] pos y = 4
+[DEBUG] ----------------------
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │             []     │
+[DEBUG] │         [][][]     │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] ----------------------
+[DEBUG] pos 4 - height 19
+[DEBUG] offset = 2
+[DEBUG] Suppression de la ligne (4) - │             []     │
+[DEBUG] Suppression de la ligne (5) - │         [][][]     │
+[DEBUG] Ajout de     [] à la ligne (5) - │                    │
+[DEBUG] Ajout de [][][] à la ligne (6) - │                    │
+[DEBUG] pos y = 5
+[DEBUG] ----------------------
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │             []     │
+[DEBUG] │         [][][]     │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] ----------------------
+[DEBUG] pos 5 - height 19
+[DEBUG] offset = 2
+[DEBUG] Suppression de la ligne (5) - │             []     │
+[DEBUG] Suppression de la ligne (6) - │         [][][]     │
+[DEBUG] Ajout de     [] à la ligne (6) - │                    │
+[DEBUG] Ajout de [][][] à la ligne (7) - │                    │
+[DEBUG] pos y = 6
+[DEBUG] ----------------------
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │             []     │
+[DEBUG] │         [][][]     │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] ----------------------
+[DEBUG] pos 6 - height 19
+[DEBUG] offset = 2
+[DEBUG] Suppression de la ligne (6) - │             []     │
+[DEBUG] Suppression de la ligne (7) - │         [][][]     │
+[DEBUG] Ajout de     [] à la ligne (7) - │                    │
+[DEBUG] Ajout de [][][] à la ligne (8) - │                    │
+[DEBUG] pos y = 7
+[DEBUG] ----------------------
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │             []     │
+[DEBUG] │         [][][]     │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] ----------------------
+[DEBUG] pos 7 - height 19
+[DEBUG] offset = 2
+[DEBUG] Suppression de la ligne (7) - │             []     │
+[DEBUG] Suppression de la ligne (8) - │         [][][]     │
+[DEBUG] Ajout de     [] à la ligne (8) - │                    │
+[DEBUG] Ajout de [][][] à la ligne (9) - │                    │
+[DEBUG] pos y = 8
+[DEBUG] ----------------------
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │             []     │
+[DEBUG] │         [][][]     │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] ----------------------
+[DEBUG] pos 8 - height 19
+[DEBUG] offset = 2
+[DEBUG] Suppression de la ligne (8) - │             []     │
+[DEBUG] Suppression de la ligne (9) - │         [][][]     │
+[DEBUG] Ajout de     [] à la ligne (9) - │                    │
+[DEBUG] Ajout de [][][] à la ligne (10) - │                    │
+[DEBUG] pos y = 9
+[DEBUG] ----------------------
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │             []     │
+[DEBUG] │         [][][]     │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] ----------------------
+[DEBUG] pos 9 - height 19
+[DEBUG] offset = 2
+[DEBUG] Suppression de la ligne (9) - │             []     │
+[DEBUG] Suppression de la ligne (10) - │         [][][]     │
+[DEBUG] Ajout de     [] à la ligne (10) - │                    │
+[DEBUG] Ajout de [][][] à la ligne (11) - │                    │
+[DEBUG] pos y = 10
+[DEBUG] ----------------------
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │             []     │
+[DEBUG] │         [][][]     │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] ----------------------
+[DEBUG] pos 10 - height 19
+[DEBUG] offset = 2
+[DEBUG] Suppression de la ligne (10) - │             []     │
+[DEBUG] Suppression de la ligne (11) - │         [][][]     │
+[DEBUG] Ajout de     [] à la ligne (11) - │                    │
+[DEBUG] Ajout de [][][] à la ligne (12) - │                    │
+[DEBUG] pos y = 11
+[DEBUG] ----------------------
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │             []     │
+[DEBUG] │         [][][]     │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] ----------------------
+[DEBUG] pos 11 - height 19
+[DEBUG] offset = 2
+[DEBUG] Suppression de la ligne (11) - │             []     │
+[DEBUG] Suppression de la ligne (12) - │         [][][]     │
+[DEBUG] Ajout de     [] à la ligne (12) - │                    │
+[DEBUG] Ajout de [][][] à la ligne (13) - │                    │
+[DEBUG] pos y = 12
+[DEBUG] ----------------------
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │             []     │
+[DEBUG] │         [][][]     │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] ----------------------
+[DEBUG] pos 12 - height 19
+[DEBUG] offset = 2
+[DEBUG] Suppression de la ligne (12) - │             []     │
+[DEBUG] Suppression de la ligne (13) - │         [][][]     │
+[DEBUG] Ajout de     [] à la ligne (13) - │                    │
+[DEBUG] Ajout de [][][] à la ligne (14) - │                    │
+[DEBUG] pos y = 13
+[DEBUG] ----------------------
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │             []     │
+[DEBUG] │         [][][]     │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] ----------------------
+[DEBUG] pos 13 - height 19
+[DEBUG] offset = 2
+[DEBUG] Suppression de la ligne (13) - │             []     │
+[DEBUG] Suppression de la ligne (14) - │         [][][]     │
+[DEBUG] Ajout de     [] à la ligne (14) - │                    │
+[DEBUG] Ajout de [][][] à la ligne (15) - │                    │
+[DEBUG] pos y = 14
+[DEBUG] ----------------------
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │             []     │
+[DEBUG] │         [][][]     │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] ----------------------
+[DEBUG] pos 14 - height 19
+[DEBUG] offset = 2
+[DEBUG] Suppression de la ligne (14) - │             []     │
+[DEBUG] Suppression de la ligne (15) - │         [][][]     │
+[DEBUG] Ajout de     [] à la ligne (15) - │                    │
+[DEBUG] Ajout de [][][] à la ligne (16) - │                    │
+[DEBUG] pos y = 15
+[DEBUG] ----------------------
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │             []     │
+[DEBUG] │         [][][]     │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] ----------------------
+[DEBUG] pos 15 - height 19
+[DEBUG] offset = 2
+[DEBUG] Suppression de la ligne (15) - │             []     │
+[DEBUG] Suppression de la ligne (16) - │         [][][]     │
+[DEBUG] Ajout de     [] à la ligne (16) - │                    │
+[DEBUG] Ajout de [][][] à la ligne (17) - │                    │
+[DEBUG] pos y = 16
+[DEBUG] ----------------------
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │             []     │
+[DEBUG] │         [][][]     │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] ----------------------
+[DEBUG] pos 16 - height 19
+[DEBUG] offset = 2
+[DEBUG] Suppression de la ligne (16) - │             []     │
+[DEBUG] Suppression de la ligne (17) - │         [][][]     │
+[DEBUG] Ajout de     [] à la ligne (17) - │                    │
+[DEBUG] Ajout de [][][] à la ligne (18) - │                    │
+[DEBUG] pos y = 17
+[DEBUG] ----------------------
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │             []     │
+[DEBUG] │         [][][]     │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] ----------------------
+[DEBUG] pos 17 - height 19
+[DEBUG] offset = 2
+[DEBUG] Suppression de la ligne (17) - │             []     │
+[DEBUG] Suppression de la ligne (18) - │         [][][]     │
+[DEBUG] Ajout de     [] à la ligne (18) - │                    │
+[DEBUG] Ajout de [][][] à la ligne (19) - │                    │
+[DEBUG] pos y = 18
+[DEBUG] ----------------------
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │             []     │
+[DEBUG] │         [][][]     │
+[DEBUG] │                    │
+[DEBUG] ----------------------
+[DEBUG] pos 18 - height 19
+[DEBUG] offset = 2
+[DEBUG] Suppression de la ligne (18) - │             []     │
+[DEBUG] Suppression de la ligne (19) - │         [][][]     │
+[DEBUG] Ajout de     [] à la ligne (19) - │                    │
+[DEBUG] Ajout de [][][] à la ligne (20) - │                    │
+[DEBUG] pos y = 19
+[DEBUG] ----------------------
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │                    │
+[DEBUG] │             []     │
+[DEBUG] │         [][][]     │
+[DEBUG] ----------------------
+[DEBUG] pos 19 - height 19
