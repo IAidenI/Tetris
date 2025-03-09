@@ -27,7 +27,9 @@ typedef struct {
 typedef struct {
     Position pos;
     Block block;
+    int id_block;
     Block next_block;
+    int id_next_block;
     wchar_t **lines;
 } APIGame;
 
@@ -38,6 +40,11 @@ typedef struct {
 #define CORNER_BOT_LEFT  L"\u2570"
 #define CORNER_BOT_RIGHT L"\u256f"
 #define WALL             L"\u2502"
+#define CROSS            L"\u253C"
+#define CROSS_TOP        L"\u252C"
+#define CROSS_BOT        L"\u2534"
+#define CROSS_LEFT       L"\u251C"
+#define CROSS_RIGHT      L"\u2524"
 
 // Blocs pour la game
 #define BLOCK_I L"[][][][]"
@@ -55,6 +62,7 @@ typedef struct {
 
 size_t Block_Size(const wchar_t *shape);
 size_t Block_Max_Lenth(const int i);
+void Put_Next_Block(APIGame *game);
 int Put_Block(APIGame *game);
 void Borders(const wchar_t *c1, const wchar_t *c2);
 void Create_Frame();
@@ -62,9 +70,12 @@ void Create_Frame();
 // Dimensions du jeu
 #define GAME_HEIGHT 20
 #define GAME_WEIGHT 2 * 10 // Car une case c'est [] donc 2 caractères
+#define NEXT_BLOC_HEIGHT 6
+#define NEXT_BLOC_WEIGHT 14
 #define BLOCK_WAIT 100
+#define NEXT_BLOCK_IHM_LEN 12
 
-void Spawn(APIGame *game);
-int Game();
+void Spawn(APIGame *game, const int id_block);
+int Game(const char *block_choose);
 
 #endif
