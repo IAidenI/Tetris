@@ -63,15 +63,18 @@ typedef struct {
 size_t Block_Size(const wchar_t *shape);
 size_t Block_Max_Lenth(const int i);
 void Put_Next_Block(APIGame *game);
-int Put_Block(APIGame *game);
+void Put_Block(APIGame *game);
+void Del_Block(APIGame *game);
+int Place_Block(APIGame *game);
 void Borders(const wchar_t *c1, const wchar_t *c2);
 void Create_Frame();
 
 // Dimensions du jeu
+// Pour les dimensions on ne prends pas en compte les bordures
 #define GAME_HEIGHT 20
 #define GAME_WEIGHT 2 * 10 // Car une case c'est [] donc 2 caractères
-#define NEXT_BLOC_HEIGHT 6
-#define NEXT_BLOC_WEIGHT 14
+#define NEXT_BLOCK_HEIGHT 4
+#define NEXT_BLOCK_WEIGHT 12
 #define BLOCK_WAIT 100
 #define NEXT_BLOCK_IHM_LEN 12
 
