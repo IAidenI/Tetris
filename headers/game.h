@@ -10,6 +10,7 @@
 
 #include "colors.h"
 #include "print.h"
+#include "function_ret.h"
 
 // Structure pour associer un bloc à une couleur
 typedef struct {
@@ -47,19 +48,22 @@ typedef struct {
 #define CROSS_RIGHT      L"\u2524"
 
 // Blocs pour la game
-#define BLOCK_I L"[][][][]"
-#define BLOCK_J L"[]\n[][][]"
-#define BLOCK_L L"    []\n[][][]"
-#define BLOCK_O L"[][]\n[][]"
-#define BLOCK_S L"  [][]\n[][]"
-#define BLOCK_T L"  []\n[][][]"
-#define BLOCK_Z L"[][]\n  [][]"
-#define MAX_COPY 32
+#define BLOCK_I L"        \n[][][][]\n        \n        "
+#define BLOCK_J L"[]    \n[][][]\n      "
+#define BLOCK_L L"    []\n[][][]\n      "
+#define BLOCK_O L"  [][]\n  [][]\n      "
+#define BLOCK_S L"  [][]\n[][]  \n      "
+#define BLOCK_T L"  []  \n[][][]\n      "
+#define BLOCK_Z L"[][]  \n  [][]\n      "
+#define MAX_COPY 40
+#define BLOCK_CHAR L"[]"
 
 // Cadre de la game
 #define Top_Border() Borders(CORNER_TOP_LEFT, CORNER_TOP_RIGHT)
 #define Bottom_Border() Borders(CORNER_BOT_LEFT, CORNER_BOT_RIGHT)
 
+void IsLoose(APIGame *game);
+int Get_True_Pos(APIGame *game);
 size_t Block_Size(const wchar_t *shape);
 size_t Block_Max_Lenth(const int i);
 void Put_Next_Block(APIGame *game);

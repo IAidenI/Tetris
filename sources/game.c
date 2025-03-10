@@ -11,59 +11,120 @@ Block block[] = {
     {BLOCK_Z, RED},
 };
 
+void Loose(APIGame *game) {
+    // On fait clignoter le bloc qui pose problème
+    Debug("pos (x : %d - y : %d)\n", game->pos.x, game->pos.y);
+    Debug("shape :\n%ls\n", game->block.shape);
+    for (int i = 0; i < 3; i++) {
+        Debug("Deleting...\n");
+        Del_Block(game);
+            // Pour le debug
+    for (int i = 0; i <= GAME_HEIGHT + 1; i++) {
+        Debug("%ls", game->lines[i]);
+    }
+        Debug("Waiting...\n\n");
+        napms(1000);
+        Debug("Adding...\n");
+        Put_Block(game);
+            // Pour le debug
+    for (int i = 0; i <= GAME_HEIGHT + 1; i++) {
+        Debug("%ls", game->lines[i]);
+    }
+        Debug("Done.\n\n");
+    }
+}
+
+int Get_True_Pos(APIGame *game) {
+    wchar_t buffer[MAX_COPY];
+    wmemset(buffer, L'\0', MAX_COPY);
+    wcsncpy(buffer, game->block.shape, MAX_COPY - 1);
+    buffer[MAX_COPY - 1] = L'\0';
+
+    int line = 0;
+    wchar_t *saved;
+    wchar_t *token = wcstok(buffer, L"\n", &saved);
+    while (token != NULL) {
+        if (wcsstr(token, BLOCK_CHAR) != NULL) {
+            return game->pos.y + line;
+        }
+        token = wcstok(NULL, L"\n", &saved);
+        line++;
+    }
+    return 0;
+}
+
 size_t Block_Size(const wchar_t *shape) {
-    // strtok veux pas de const donc on fait une copie de la forme
     wchar_t buffer[MAX_COPY];
     wmemset(buffer, L'\0', MAX_COPY);
     wcsncpy(buffer, shape, MAX_COPY - 1);
     buffer[MAX_COPY - 1] = L'\0';
 
-    // On compte combien il y a de lignes dans la forme
-    size_t lenth = 0;
+    size_t count = 0;
     wchar_t *saved;
     wchar_t *token = wcstok(buffer, L"\n", &saved);
+
     while (token != NULL) {
-	    token = wcstok(NULL, L"\n", &saved);
-	    lenth++;
+        if (wcsstr(token, BLOCK_CHAR) != NULL) { // On ne compte que les lignes contenant []
+            count++;
+        }
+        token = wcstok(NULL, L"\n", &saved);
     }
 
-    return lenth;
+    return count;
 }
 
 size_t Block_Max_Lenth(const int i) {
-    // strtok veux pas de const donc on fait une copie de la forme
     wchar_t buffer[MAX_COPY];
     wmemset(buffer, L'\0', MAX_COPY);
     wcsncpy(buffer, block[i].shape, MAX_COPY - 1);
     buffer[MAX_COPY - 1] = L'\0';
 
-    size_t lenth = 0;
+    size_t max_length = 0;
     wchar_t *saved;
     wchar_t *token = wcstok(buffer, L"\n", &saved);
-    while (token) {
-        lenth = wcslen(token) > lenth ? wcslen(token) : lenth;
+
+    while (token != NULL) {
+        if (wcsstr(token, BLOCK_CHAR) != NULL) { // On ne prend en compte que les lignes avec []
+            size_t length = wcslen(token);
+            if (length > max_length) {
+                max_length = length;
+            }
+        }
         token = wcstok(NULL, L"\n", &saved);
     }
-    return lenth;
+    return max_length;
 }
 
 int Block_Physics(APIGame *game) {
-    int offset = Block_Size(game->block.shape);
-    Debug("offset = %d\n", offset);
-
-    // Si le bloc touche la bordure basse
-    if (game->pos.y + offset == GAME_HEIGHT) { // Si on est un bloc avant la bordure
-        return 0;
-    } else if (game->pos.y + offset >= GAME_HEIGHT) { // Si on est juste avant la bordure
-        return 1;
+    int block_size = (int)Block_Size(game->block.shape);
+    int true_y = Get_True_Pos(game);
+    // Si on est un bloc avant la bordure
+    if (true_y >= GAME_HEIGHT) {
+        return ERROR;
     }
 
-    // Si la case en dessous c'est un bloc
-    if (wcsstr(game->lines[game->pos.y + offset], L"[]") != NULL) {
-        Debug("Bloc détecté dans (%d)\n%ls", game->pos.y + 1, game->lines[game->pos.y + 1]);
-        return 1;
+    // On ajoute la taille du bloc en hauteur pour pouvoir "voir" en dessous
+    int true_y_back = true_y;
+    true_y += block_size - 1;
+
+    for (int i = 0; game->lines[true_y][i] != L'\0' && game->lines[true_y + 1][i] != L'\0'; i++) {
+        if (game->lines[true_y][i] == L'[' && game->lines[true_y][i + 1] == L']' && game->lines[true_y + 1][i] == L'[' && game->lines[true_y + 1][i + 1] == L']') {
+            Debug("DETECTE1 : '%lc'\n", game->lines[true_y][i]);
+            Debug("DETECTE2 : '%lc'\n", game->lines[true_y + 1][i]);
+            Debug("y : %d - i : %d\n", true_y, i);
+                    Debug("On vérifie la ligne (%d) :\n%ls", true_y, game->lines[true_y] + i);
+        Debug("Avec la ligne (%d) :\n%ls", true_y + 1, game->lines[true_y + 1] + i);
+            // On vérifie si c'est loose
+            if (true_y_back == 1) {
+                Debug("Loose détecté.\n");
+                Loose(game);
+                return LOOSE;
+            } else {
+                return ERROR;
+            }
+        }
     }
-    return 0;
+    return SUCCESS;
 }
 
 void Put_Next_Block(APIGame *game) {
@@ -93,13 +154,19 @@ void Put_Next_Block(APIGame *game) {
         wchar_t *saved;
         wchar_t *token = wcstok(buffer, L"\n", &saved);
         while (token != NULL) {
-            //Debug("token %ls\n", token);
-            attron(COLOR_PAIR(game->next_block.color));
-            mvaddwstr(y + i, x, token); // Pour le mettre au milieu
-            attroff(COLOR_PAIR(game->next_block.color));
-            refresh();
-            token = wcstok(NULL, L"\n", &saved);
-            i++;
+            // On affiche juste les caratères []
+            if (wcsstr(token, BLOCK_CHAR) != NULL) {
+                //Debug("token %ls\n", token);
+                attron(COLOR_PAIR(game->next_block.color));
+                mvaddwstr(y + i, x, token); // Pour le mettre au milieu
+                attroff(COLOR_PAIR(game->next_block.color));
+                refresh();
+                token = wcstok(NULL, L"\n", &saved);
+                i++;
+            } else {
+                token = wcstok(NULL, L"\n", &saved);
+                i++;
+            }
         }
 
         //Debug("next pos (x : %d - y : %d)\n", x, y);
@@ -112,23 +179,39 @@ void Put_Block(APIGame *game) {
     wcsncpy(buffer, game->block.shape, MAX_COPY - 1);
     buffer[MAX_COPY - 1] = L'\0';
 
-    int i = 0;
+    int lineIndex = 0;         // Compteur de ligne
     wchar_t *saved;
     wchar_t *token = wcstok(buffer, L"\n", &saved);
-    while (token != NULL) {
-        Debug("Ajout de %ls à la ligne (%d) - %ls", token, game->pos.y + i, game->lines[game->pos.y + i]);
-        wmemcpy(game->lines[game->pos.y + i] + game->pos.x, token, wcslen(token));
 
-        // On ajoute le bout de block sur l"écran
-        attron(COLOR_PAIR(game->block.color));
-        mvaddwstr(game->pos.y + i, game->pos.x, token);
-        refresh();
-        attroff(COLOR_PAIR(game->block.color));
+    while (token != NULL) {
+        // Longueur de la ligne
+        int len = wcslen(token);
+
+        // Parcours de la ligne
+        for (int j = 0; j < len - 1; j++) {
+            // On cherche un '[' suivi de ']'
+            if (token[j] == L'[' && token[j + 1] == L']') {
+                // Écrire "[]" dans la mémoire (si nécessaire pour ton plateau)
+                Debug("On mets [] à la position x : %d - y : %d\n", game->pos.x + j, game->pos.y + lineIndex);
+                wmemcpy(game->lines[game->pos.y + lineIndex] 
+                        + (game->pos.x + j), BLOCK_CHAR, 2);
+
+                // Affichage du bloc en couleurs
+                attron(COLOR_PAIR(game->block.color));
+                mvaddwstr(game->pos.y + lineIndex, 
+                          game->pos.x + j, 
+                          BLOCK_CHAR);
+                attroff(COLOR_PAIR(game->block.color));
+                refresh();
+
+                // On saute le caractère ']' pour éviter de le reprendre
+                j++;
+            }
+        }
 
         token = wcstok(NULL, L"\n", &saved);
-        i++;
+        lineIndex++;
     }
-
 }
 
 void Del_Block(APIGame *game) {
@@ -137,25 +220,37 @@ void Del_Block(APIGame *game) {
     wcsncpy(buffer, game->block.shape, MAX_COPY - 1);
     buffer[MAX_COPY - 1] = L'\0';
 
-    int i = 0;
+    int lineIndex = 0;
     wchar_t *saved;
     wchar_t *token = wcstok(buffer, L"\n", &saved);
-    while (token != NULL) {
-        Debug("Suppression de la ligne (%d) - %ls", game->pos.y + i, game->lines[game->pos.y + i]);
-        wmemset(game->lines[game->pos.y + i] + game->pos.x, L' ', wcslen(token));
 
-        wchar_t clear_token[wcslen(token) + 1];
-        wmemset(clear_token, L' ', wcslen(token));
-        clear_token[wcslen(token)] = L'\0';
-        Debug("    On veux supprimer  : %ls\n", token);
-        Debug("    On le remplace par : '%ls'\n", clear_token);
-        Debug("    A la position x : %d - y : %d\n", game->pos.x, game->pos.y + i);
-        mvaddwstr(game->pos.y + i, game->pos.x, clear_token);
-        refresh();
+    while (token != NULL) {
+        int len = wcslen(token);
+
+        // On parcourt la ligne du bloc pour supprimer uniquement les "[]"
+        for (int j = 0; j < len - 1; j++) {
+            if (token[j] == L'[' && token[j + 1] == L']') {
+                Debug("Suppression de [] à la position x : %d - y : %d\n", 
+                      game->pos.x + j, game->pos.y + lineIndex);
+
+                // Remplace uniquement les "[]" par des espaces dans la mémoire
+                wmemcpy(game->lines[game->pos.y + lineIndex] + (game->pos.x + j), L"  ", 2);
+
+                // Met à jour l'affichage
+                wchar_t clear_token[3] = {L' ', L' ', L'\0'};
+                mvaddwstr(game->pos.y + lineIndex, game->pos.x + j, clear_token);
+                refresh();
+
+                // On saute le caractère ']' pour ne pas l'analyser à nouveau
+                j++;
+            }
+        }
 
         token = wcstok(NULL, L"\n", &saved);
-        i++;
+        lineIndex++;
     }
+
+    Debug("Contenu de game->lines[%d] après suppression : %ls\n", game->pos.y + lineIndex - 1, game->lines[game->pos.y + lineIndex - 1]);
 }
 
 int Place_Block(APIGame *game) {
@@ -166,9 +261,10 @@ int Place_Block(APIGame *game) {
     Debug("    - shape\n%ls\n", game->block.shape);
 
     // On vérifie si il y a un block en dessous
-    /*if (Block_Physics(game)) {
-        return 1;
-    }*/
+    int ret = Block_Physics(game);
+    if (ret) {
+        return ret;
+    }
 
     // On supprimer l'ancienne position du bloc
     Del_Block(game);
@@ -187,7 +283,7 @@ int Place_Block(APIGame *game) {
         Debug("%ls", game->lines[i]);
     }
     fprintf(stderr, "\n");
-    return 0;
+    return SUCCESS;
 }
 
 void Borders(const wchar_t *c1, const wchar_t *c2) {
@@ -284,27 +380,7 @@ void Spawn(APIGame *game, const int id_block) {
         game->id_next_block = random_bloc;
     }
 
-    // On fait une copie parce que strtok est chiant
-    wchar_t buffer[MAX_COPY];
-    wmemset(buffer, L'\0', MAX_COPY);
-    wcsncpy(buffer, game->block.shape, MAX_COPY - 1);
-    buffer[MAX_COPY - 1] = '\0';
-
-    int i = 0;
-    wchar_t *saved;
-    wchar_t *token = wcstok(buffer, L"\n", &saved);
-    while (token != NULL) {
-        // On stock le bloc à la bonne position
-        wmemcpy(game->lines[game->pos.y + i] + game->pos.x, token, wcslen(token));
-        
-        // On ajoute le bout de block sur l"écran
-        attron(COLOR_PAIR(game->block.color));
-        mvaddwstr(game->pos.y + i, game->pos.x, token); // On fait + 1 car game->lines le premier indice c'est 0, or dans l'affichage 0 c'est la bordure donc on a un décalage de 1
-        attroff(COLOR_PAIR(game->block.color));
-        
-        token = wcstok(NULL, L"\n", &saved);
-        i++;
-    }
+    Put_Block(game);
 
     // Pour le debug
     for (int i = 0; i <= GAME_HEIGHT + 1; i++) {
@@ -319,7 +395,7 @@ int Game(const char *block_choose) {
     if (!has_colors()) {
         endwin();
         Error("Votre terminal ne supporte pas les couleurs.\n");
-        return -1;
+        return ERROR;
     }
     noecho();              // Déactive l'affiche de la saisie utilisateur (si on presse sur 'k' il ne va pas s'afficher à l'écran
     curs_set(0);           // Cache le curseur
@@ -343,7 +419,7 @@ int Game(const char *block_choose) {
     game.lines = malloc((GAME_HEIGHT + 2) * sizeof(wchar_t *));
     if (!game.lines) {
         Error("N'as pas réussis à allouer de la mémoire.");
-        return -1;
+        return ERROR;
     }
 
     // On initialise toutes les lignes avec des ' '
@@ -351,7 +427,7 @@ int Game(const char *block_choose) {
         game.lines[i] = malloc((GAME_WEIGHT + 4) * sizeof(wchar_t));
         if (!game.lines[i]) {
             Error("N'as pas réussis à allouer de la mémoire.");
-            return -1;
+            return ERROR;
         }
 
         // On ajoute les bordures
@@ -398,9 +474,16 @@ int Game(const char *block_choose) {
             Debug("    - shape\n%ls\n", game.block.shape);
             Debug("    - next shape\n%ls\n", game.next_block.shape);
             has_spawned = 1;
-        } else if (Place_Block(&game)) {
-            game.pos.y = 0;
-            has_spawned = 0;
+        } else {
+            int ret = Place_Block(&game);
+
+            if (ret) {
+                if (ret == LOOSE) {
+                    return ret;
+                }
+                game.pos.y = 0;
+                has_spawned = 0;
+            }
         }
 	    refresh();
 
@@ -429,5 +512,5 @@ int Game(const char *block_choose) {
         free(game.lines[i]);
     }
     free(game.lines);
-    return 0;
+    return SUCCESS;
 }

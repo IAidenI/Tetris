@@ -8,9 +8,10 @@
 
 #include "game.h"
 #include "colors.h"
+#include "function_ret.h"
 
 #define MENU_ITEMS 2
 
-int Menu();
+int Menu(const int is_loose);
 
 #endif

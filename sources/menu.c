@@ -1,13 +1,13 @@
 #include "../headers/menu.h"
 #include "../headers/print.h"
 
-int Menu() {
+int Menu(const int is_loose) {
     initscr();   // Initialise ncurses
     // Vérifie que le terminal supporte les couleurs
     if (!has_colors()) {
         endwin();
         Error("Votre terminal ne supporte pas les couleurs.\n");
-        return -1;
+        return ERROR;
     }
     noecho();              // Déactive l'affiche de la saisie utilisateur (si on presse sur 'k' il ne va pas s'afficher à l'écran
     curs_set(0);           // Cache le curseur
@@ -18,7 +18,8 @@ int Menu() {
 
     int choice = 0;
     int key;
-    char *menu[MENU_ITEMS] = { "New Game", "Exit" };
+    const char *menu[MENU_ITEMS] = { "New Game", "Exit" };
+    const char *loose_info = "Perdu !";
 
     // Calcul position "TETRIS"
     int col_tetris = (GAME_WEIGHT - 6) / 2; // Car TETRIS fait 6 caractères
@@ -34,6 +35,9 @@ int Menu() {
     }
     int col_menu = (GAME_WEIGHT - max_lenth) / 2;
     int row_menu = (GAME_HEIGHT / 2) - (MENU_ITEMS / 2);
+    
+    int col_loose = (GAME_WEIGHT - strlen(loose_info)) / 2;
+    int row_loose = row_menu + MENU_ITEMS + 2;
 
     while (1) {
         clear();
@@ -58,6 +62,12 @@ int Menu() {
             attroff(A_REVERSE);
         }
 
+        if (is_loose) {
+            attron(COLOR_PAIR(RED));
+            mvprintw(row_loose, col_loose, loose_info);
+            attroff(COLOR_PAIR(RED));
+        }
+
         key = getch(); // On récuper l'entré utilisateur
         
         if (key == KEY_UP) {
@@ -74,12 +84,14 @@ int Menu() {
 
     endwin();
 
+    Debug("menu choice %s\n", menu[choice]);
     if (strcmp(menu[choice], "New Game") == 0) {
         return 1;
     } else if (strcmp(menu[choice], "Exit") == 0) {
-        return 2;
+        Debug("Donc on se casse.\n");
+        return EXIT;
     } else {
         Error("Ce choix n'existe pas.\n");
-        return -1;
+        return ERROR;
     }
 }
