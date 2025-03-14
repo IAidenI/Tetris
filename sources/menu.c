@@ -84,11 +84,10 @@ int Menu(const int is_loose) {
 
     endwin();
 
-    Debug("menu choice %s\n", menu[choice]);
+    Debug("Choix utilisateur : %s\n", menu[choice]);
     if (strcmp(menu[choice], "New Game") == 0) {
         return 1;
     } else if (strcmp(menu[choice], "Exit") == 0) {
-        Debug("Donc on se casse.\n");
         return EXIT;
     } else {
         Error("Ce choix n'existe pas.\n");

@@ -1,5 +1,19 @@
 #include "../headers/colors.h"
 
+ColorList Get_Color_List() {
+    return (ColorList){
+        .colors = {
+            LIGHT_BLUE, // BLOCK_I
+            DARK_BLUE,  // BLOCK_J
+            ORANGE,     // BLOCK_L
+            YELLOW,     // BLOCK_O
+            GREEN,      // BLOCK_S
+            PURPLE,     // BLOCK_T
+            RED         // BLOCK_Z
+        }
+    };
+}
+
 void Init_Colors() {
     if (can_change_color()) {
         // Activer les couleurs

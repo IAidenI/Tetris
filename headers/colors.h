@@ -12,6 +12,12 @@
 #define PURPLE 6
 #define DARK_BLUE 7
 
+#define BLOCK_COUNT 7
+typedef struct {
+    int colors[BLOCK_COUNT];
+} ColorList;
+
+ColorList Get_Color_List();
 void Init_Colors();
 
 #endif
