@@ -3,6 +3,7 @@
 ColorList Get_Color_List() {
     return (ColorList){
         .colors = {
+            NONE,
             LIGHT_BLUE, // BLOCK_I
             DARK_BLUE,  // BLOCK_J
             ORANGE,     // BLOCK_L

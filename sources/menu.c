@@ -79,12 +79,15 @@ int Menu(const int is_loose) {
         } else if (key == '\n') {
             // Si entré on valide
             break;
+        } else if (key == 'q') {
+            choice = 1;
+            break;
         }
     }
 
     endwin();
 
-    Debug("Choix utilisateur : %s\n", menu[choice]);
+    Debug("Choix utilisateur : menu[%d] = %s\n", choice, menu[choice]);
     if (strcmp(menu[choice], "New Game") == 0) {
         return 1;
     } else if (strcmp(menu[choice], "Exit") == 0) {

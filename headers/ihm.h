@@ -21,16 +21,6 @@
 #define CROSS_LEFT       L"\u251C"
 #define CROSS_RIGHT      L"\u2524"
 
-/*#define BLOCK_I L"        \n[][][][]\n        \n        "
-#define BLOCK_J L"[]    \n[][][]\n      "
-#define BLOCK_L L"    []\n[][][]\n      "
-#define BLOCK_O L"  [][]\n  [][]\n      "
-#define BLOCK_S L"  [][]\n[][]  \n      "
-#define BLOCK_T L"  []  \n[][][]\n      "
-#define BLOCK_Z L"[][]  \n  [][]\n      "*/
-#define BLOCK    L"[]"
-#define NO_BLOCK L"  "
-
 // Gestion affichage d'un bloc
 #define Put_Block(game, x, y) Update_Block(game, x, y, BLOCK)
 #define Del_Block(game, x, y) Update_Block(game, x, y, NO_BLOCK)
@@ -40,6 +30,7 @@
 #define Bottom_Border() Borders(CORNER_BOT_LEFT, CORNER_BOT_RIGHT)
 
 void Print_Shape(int shape[BLOCK_SIZE][BLOCK_SIZE]);
+void Del_Next_Block(APIGame *game, const int posX, const int posY);
 void Put_Next_Block(APIGame *game);
 void Update_Block(APIGame *game, int posX, int posY, const wchar_t *state);
 int Place_Block(APIGame *game, const int direction);

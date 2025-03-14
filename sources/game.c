@@ -17,23 +17,23 @@ int Get_X_Of_Block(APIGame *game, const int first) {
 }
 
 int Get_Block_Width(APIGame *game) {
-    int max_width = 0;
+    int min_col = BLOCK_SIZE, max_col = 0;
+    int found = 0;
 
-    // On parcours toute la forme et si on détecte un bloc alors on agement la taille sinon
     for (int i = 0; i < BLOCK_SIZE; i++) {
-        int current_width = 0;
         for (int j = 0; j < BLOCK_SIZE; j++) {
             if (game->block[i][j]) {
-                current_width++;
+                if (!found) {
+                    min_col = j;
+                    found = 1;
+                }
+                if (j < min_col) min_col = j;
+                if (j > max_col) max_col = j;
             }
         }
-
-        // On met à jour la largeur trouvé
-        if (current_width > max_width) {
-            max_width = current_width;
-        }
     }
-    return max_width;
+
+    return (found ? max_col - min_col + 1 : 0);
 }
 
 int Is_Block_Under(APIGame *game) {
@@ -47,7 +47,9 @@ int Is_Block_Under(APIGame *game) {
                 Debug("On a game->block[%d][%d] = %d\n", y, x, game->block[y][x]);
                 // On se remet dans l'environement de la grille et on regarde si il y a un bloc en dessous
                 Debug("Et game->grid[%d][%d] = %d\n", api_y + y, api_x + x, game->grid[api_y + y][api_x + x]);
-                if (game->grid[api_y + y][api_x + x] && !game->block[y + 1][x]) { // Ici il va y avoir un problème avec les rotation à cause du y + 1
+                if (game->grid[api_y + y][api_x + x + 1] && !game->block[y + 1][x]) { // Ici il va y avoir un problème avec les rotation à cause du y + 1
+                    Debug("Moi j'ai détecter avec game->grid[%d][%d] = %d\n", api_y + y, api_x + x, game->grid[api_y + y][api_x + x]);
+                    fprintf(stderr, "\n");
                     return ERROR;
                 }
             }
@@ -69,6 +71,7 @@ int Block_Physics(APIGame *game) {
             Debug("Perdu!\n");
             return LOOSE;
         }
+        Debug("Colision détecté.\n");
         return ERROR;
     }
     return SUCCESS;
@@ -77,7 +80,7 @@ int Block_Physics(APIGame *game) {
 void Spawn(APIGame *game) {
     srand(time(NULL));
     // On génere un bloc random à une position random
-    int random_bloc = rand() % BLOCK_COUNT;
+    int random_bloc = (rand() % (BLOCK_COUNT - 1)) + 1;
     
     game->pos.x = 7; // Dans un tetris le bloc spawn à la 3ème colonne (1 pour la bordure 3 * 2 car une case c'est 2 caractères
     game->pos.y = 1;
@@ -91,7 +94,7 @@ void Spawn(APIGame *game) {
         game->id_block = random_bloc;
 
         // Et on fait un autre random pour le next
-        random_bloc = rand() % BLOCK_COUNT;
+        random_bloc = (rand() % (BLOCK_COUNT - 1)) + 1;
         game->next_block = shapes[random_bloc];
         game->id_next_block = random_bloc;
     } else {
@@ -100,7 +103,7 @@ void Spawn(APIGame *game) {
         game->next_block = shapes[0];
 
         // Sinon on mets la valeur suivante dans la valeur courante
-        game->block = game->next_block;
+        game->block = shapes[game->id_next_block];
         game->id_block = game->id_next_block;
 
         // Et on mets le random dans le suivant
@@ -114,23 +117,23 @@ int Start_Game(APIGame *game) {
     game->pos.y = 0;
     game->block = NULL;
     game->next_block = NULL;
-    game->grid = malloc((GAME_API_HEIGHT + 2) * sizeof(int *));
+    game->grid = malloc((GAME_API_HEIGHT) * sizeof(int *));
     if (!game->grid) {
         Error("N'as pas réussis à allouer de la mémoire.");
         return ERROR;
     }
 
     // On initialise toutes les lignes avec des ' '
-    for (int i = 0; i < GAME_API_HEIGHT + 2; i++) {
-        game->grid[i] = malloc((GAME_API_WEIGHT + 1) * sizeof(int));
+    for (int i = 0; i < GAME_API_HEIGHT; i++) {
+        game->grid[i] = malloc((GAME_API_WEIGHT) * sizeof(int));
         if (!game->grid[i]) {
             Error("N'as pas réussis à allouer de la mémoire.");
             return ERROR;
         }
         // On ajoute le contenu
-        for (int j = 0; j <= GAME_API_WEIGHT; j++) {
+        for (int j = 0; j < GAME_API_WEIGHT; j++) {
             // Mise en place du contour
-            if (i == 0 || j == 0 || i == GAME_API_HEIGHT + 1 || j == GAME_API_WEIGHT) {
+            if (i == 0 || j == 0 || i == GAME_API_HEIGHT - 1 || j == GAME_API_WEIGHT - 1) {
                 game->grid[i][j] = APIGAME_WALL;
             } else {
                 game->grid[i][j] = 0;
@@ -142,7 +145,7 @@ int Start_Game(APIGame *game) {
 
 void Stop_Game(APIGame *game) {
     // On libère la mémoire alloué
-    for (int i = 0; i < GAME_API_HEIGHT + 2; i++) {
+    for (int i = 0; i < GAME_API_HEIGHT; i++) {
         free(game->grid[i]);
     }
     free(game->grid);

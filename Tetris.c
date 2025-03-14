@@ -15,7 +15,7 @@ int main() {
             } else if (ret == LOOSE) {
                 ret = Menu(1);
             }
-         }
+        }
     }
     printf("Au revoir.\n");
     return 0;

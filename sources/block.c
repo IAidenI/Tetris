@@ -58,6 +58,7 @@ int BLOCK_Z[BLOCK_SIZE][BLOCK_SIZE] = {
 };
 
 int (*shapes[BLOCK_COUNT])[BLOCK_SIZE] = {
+    BLOCK_RESET,
     BLOCK_I,
     BLOCK_J,
     BLOCK_L,

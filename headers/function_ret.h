@@ -5,6 +5,6 @@
 #define SUCCESS 0
 #define TEMP    1
 #define EXIT    2
-#define LOOSE   2
+#define LOOSE   3
 
 #endif

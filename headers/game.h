@@ -28,16 +28,16 @@ typedef struct {
 #define APIGAME_WALL 9
 
 // Dimensions du jeu
-// Pour les dimensions on ne prends pas en compte les bordures
+// Pour les dimensions on prend en compte les bordures
 #define GAME_WEIGHT_MUL 2
-#define GAME_HEIGHT 20
-#define GAME_WEIGHT GAME_WEIGHT_MUL * 10 // Car une case c'est [] donc 2 caractères
+#define GAME_HEIGHT (20 + 2) // Les 2 bordures
+#define GAME_WEIGHT (GAME_WEIGHT_MUL * 10 + 2) // Car une case c'est [] donc 2 caractères donc 2 * et les 2
 
-#define GAME_API_WEIGHT GAME_WEIGHT / GAME_WEIGHT_MUL
+#define GAME_API_WEIGHT ((GAME_WEIGHT - 2) / GAME_WEIGHT_MUL + 2)
 #define GAME_API_HEIGHT GAME_HEIGHT
 
-#define NEXT_BLOCK_HEIGHT 4
-#define NEXT_BLOCK_WEIGHT 12
+#define NEXT_BLOCK_HEIGHT 6
+#define NEXT_BLOCK_WEIGHT 14
 #define BLOCK_WAIT 800 // 800 pour le classique
 #define NEXT_BLOCK_IHM_LEN 12
 

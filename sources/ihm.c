@@ -1,22 +1,54 @@
 #include "../headers/ihm.h"
 
 void Put_Next_Block(APIGame *game) {
-    // On calcul la positon pour le bloc
-    int x = (int)(GAME_WEIGHT + 2 + ((NEXT_BLOCK_WEIGHT + 2) / 2 - Get_Block_Width(game)));
-    int y = NEXT_BLOCK_HEIGHT - 1;
-
     // On veux mettre le next_block pas le bloc, donc on save et on met le next_block à la place du bloc
     int id_block = game->id_block;
     game->block = game->next_block;
     game->id_block = game->id_next_block;
-    Debug("On place la prochaime pièce.\n");
-    Del_Block(game, x, y);
+
+    // On calcul la positon pour le bloc
+    int x = GAME_WEIGHT + NEXT_BLOCK_WEIGHT / 2 - Get_Block_Width(game);
+    int y = NEXT_BLOCK_HEIGHT - 3;
+
+    Debug("On place la prochaie pièce (%d) à x : %d - y : %d\n", id_block, x, y);
+    Debug("Détails : %d + %d / 2 - %d\n", GAME_WEIGHT, NEXT_BLOCK_WEIGHT, Get_Block_Width(game));
+    for (int i = 0; i < BLOCK_SIZE; i++) {
+        Debug();
+        for (int j = 0; j < BLOCK_SIZE; j++) {
+            fprintf(stderr, "%d ", game->block[i][j]);
+        }
+        fprintf(stderr, "\n");
+    }
+    Del_Next_Block(game, GAME_HEIGHT + 1, 3);
     Put_Block(game, x, y);
     // On ne veux pas vraiment passer au bloc suivant, on veux juste l'affiché donc en remet l'ancien bloc
     int (**shapes)[BLOCK_SIZE] = Get_Shapes();
     game->block = shapes[0];
     game->block = shapes[id_block];
     game->id_block = id_block;
+    Debug("On a après (%d) :\n", game->id_block);
+    for (int i = 0; i < BLOCK_SIZE; i++) {
+        Debug();
+        for (int j = 0; j < BLOCK_SIZE; j++) {
+            fprintf(stderr, "%d ", game->block[i][j]);
+        }
+        fprintf(stderr, "\n");
+    }
+    fprintf(stderr, "\n");   // L I O T J
+}
+
+void Del_Next_Block(APIGame *game, const int posX, const int posY) {
+    // On cherche tout les blocs non vides
+    for (int y = 0; y < 2; y++) {
+        ColorList color_list = Get_Color_List();
+
+        Debug("On met à jour l'affichage avec '%ls' au coordonnées x : %d - y : %d\n", CLEAR_NEXT_BLOCK, posX, y);
+        // On place le bloc sur l'écran
+        attron(COLOR_PAIR(color_list.colors[game->id_block]));
+        mvaddwstr(y + posY, posX, CLEAR_NEXT_BLOCK);
+        attroff(COLOR_PAIR(color_list.colors[game->id_block]));
+        refresh();
+    }
     fprintf(stderr, "\n");
 }
 
@@ -25,15 +57,23 @@ void Update_Block(APIGame *game, const int posX, const int posY, const wchar_t *
     int back_posY = posY;
 
     Debug("On veux placer '%ls' à x : %d - y : %d\n", state, posX, posY);
+    Debug("La pièce est  :\n");
+    for (int i = 0; i < BLOCK_SIZE; i++) {
+        Debug();
+        for (int j = 0; j < BLOCK_SIZE; j++) {
+            fprintf(stderr, "%d ", game->block[i][j]);
+        }
+        fprintf(stderr, "\n");
+    }
     // On cherche tout les blocs non vides
     for (int y = 0; y < BLOCK_SIZE; y++) {
         for (int x = 0; x < BLOCK_SIZE; x++) {
-            // Si on a un block1
+            // Si on a un block
             if (game->block[y][x]) {
                 // On met à jours la grille
-                if (posX < GAME_API_WEIGHT && posY < GAME_API_HEIGHT) {
+                if (posX / 2 < GAME_API_WEIGHT && posY / 2 < GAME_API_HEIGHT) {
                     Debug("On met à jour l'API avec game->grid[%d][%d] = %d\n", back_posY, back_posX / GAME_WEIGHT_MUL, wcscmp(state, BLOCK) == 0 ? game->block[y][x] : 0);
-                    game->grid[back_posY][back_posX / GAME_WEIGHT_MUL] = wcscmp(state, BLOCK) == 0 ? game->block[y][x] : 0;
+                    game->grid[back_posY][back_posX / GAME_WEIGHT_MUL + 1] = wcscmp(state, BLOCK) == 0 ? game->block[y][x] : 0;
                 }
 
                 ColorList color_list = Get_Color_List();
@@ -76,13 +116,12 @@ int Place_Block(APIGame *game, const int direction) {
     // On vérifie si il y a un block en dessous
     Debug("On test à x : %d - y : %d\n", game->pos.x, game->pos.y);
     int colision = 0;
-    if (game->pos.x <= GAME_API_WEIGHT && game->pos.y <= GAME_API_HEIGHT) {
+    if (game->pos.x < GAME_API_WEIGHT - 1 && game->pos.y < GAME_API_HEIGHT - 1) {
         Debug("On vérifie si il y a des colisions.\n");
         int ret = Block_Physics(game);
         if (ret == LOOSE) {
             return ret;
         } else if (ret == ERROR) {
-            Debug("Colision détecté.\n");
             game->pos.x = save_x;
             game->pos.y = save_y;
             colision = ret;
@@ -94,9 +133,9 @@ int Place_Block(APIGame *game, const int direction) {
     // Ajoute le bloc à la nouvelle position
     Put_Block(game, game->pos.x, game->pos.y);
     Debug("On donc cette nouvelle grille :\n");
-    for (int i = 0; i <= GAME_API_HEIGHT + 1; i++) {
+    for (int i = 0; i < GAME_API_HEIGHT; i++) {
         Debug();
-        for (int j = 0; j <= GAME_API_WEIGHT; j++) {
+        for (int j = 0; j < GAME_API_WEIGHT; j++) {
             fprintf(stderr, "%d ", game->grid[i][j]);
         }
         fprintf(stderr, "\n");
@@ -108,7 +147,7 @@ int Place_Block(APIGame *game, const int direction) {
 void Borders(const wchar_t *c1, const wchar_t *c2) {
     // Pour crée la bordure haut ou bas
     addwstr(c1);
-    for(int i = 0; i < GAME_WEIGHT; i++) {
+    for(int i = 0; i < GAME_WEIGHT - 2; i++) {
         addwstr(MIDLESCORE);
     }
     addwstr(c2);
@@ -128,9 +167,9 @@ void Create_Frame() {
     addwstr(L"\n");
 
     // On crée la grille
-    for (int i = 0; i < GAME_HEIGHT; i++) {
+    for (int i = 0; i < GAME_HEIGHT - 2; i++) {
 	    addwstr(WALL);
-	    for (int j = 0; j < GAME_WEIGHT; j++) {
+	    for (int j = 0; j < GAME_WEIGHT - 2; j++) {
 	        addwstr(L" ");
 	    }
 	    addwstr(WALL);
@@ -158,6 +197,20 @@ void Create_Frame() {
                 addwstr(MIDLESCORE);
             }
             addwstr(CORNER_BOT_RIGHT);
+        } else if (i == GAME_HEIGHT - 3) {
+            addwstr(L"  q   : Quit");
+        } else if (i == GAME_HEIGHT - 4) {
+            addwstr(L"  p   : Pause");
+        } else if (i == GAME_HEIGHT - 5) {
+            addwstr(L"  +/- : Speed Up/Down");
+        } else if (i == GAME_HEIGHT - 7) {
+            addwstr(L"  arrow up    : Rotate");
+        } else if (i == GAME_HEIGHT - 8) {
+            addwstr(L"  arrow left  : Left");
+        } else if (i == GAME_HEIGHT - 9) {
+            addwstr(L"  arrow right : Right");
+        } else if (i == GAME_HEIGHT - 10) {
+            addwstr(L"  arrow down  : Down");
         }
 	    addwstr(L"\n");
     }
@@ -206,9 +259,9 @@ int Game() {
     }
     Debug("APIGame initialisé.\n");
     Debug("On a notre grille :\n");
-    for (int i = 0; i <= GAME_API_HEIGHT + 1; i++) {
+    for (int i = 0; i < GAME_API_HEIGHT; i++) {
         Debug();
-        for (int j = 0; j <= GAME_API_WEIGHT; j++) {
+        for (int j = 0; j < GAME_API_WEIGHT; j++) {
             fprintf(stderr, "%d ", game.grid[i][j]);
         }
         fprintf(stderr, "\n");
@@ -223,7 +276,7 @@ int Game() {
             if (!has_spawned) {
                 Debug("On fait spawn un nouveau bloc.\n");
                 int ret = Get_New_Block(&game);
-                Debug("On a maintenant un nouveau bloc :\n");
+                Debug("On a maintenant un nouveau bloc (%d) :\n", game.id_block);
                 for (int i = 0; i < BLOCK_SIZE; i++) {
                     Debug();
                     for (int j = 0; j < BLOCK_SIZE; j++) {
@@ -231,7 +284,7 @@ int Game() {
                     }
                     fprintf(stderr, "\n");
                 }
-                Debug("Et le prochaine bloc est :\n");
+                Debug("Et le prochaine bloc est (%d) :\n", game.id_next_block);
                 for (int i = 0; i < BLOCK_SIZE; i++) {
                     Debug();
                     for (int j = 0; j < BLOCK_SIZE; j++) {
@@ -242,6 +295,8 @@ int Game() {
                 fprintf(stderr, "\n");
 
                 if (ret) {
+                    Stop_Game(&game);
+                    endwin();
                     return ret;
                 }
                 Put_Next_Block(&game);
@@ -253,7 +308,7 @@ int Game() {
 
                 if (elapsed >= BLOCK_WAIT || !has_spawned) {
                     start = current;
-                    Debug("On va placer le bloc actuelle :\n");
+                    Debug("On va placer le bloc actuelle (%d) :\n", game.id_block);
                     for (int i = 0; i < BLOCK_SIZE; i++) {
                         Debug();
                         for (int j = 0; j < BLOCK_SIZE; j++) {
@@ -265,13 +320,14 @@ int Game() {
                     int ret = Place_Block(&game, GO_DOWN);
                     if (ret) {
                         if (ret == LOOSE) {
+                            Stop_Game(&game);
+                            endwin();
                             return ret;
                         }
                         game.pos.y = 0;
                         has_spawned = 0;
                     }
                 }
-                Put_Next_Block(&game);
             }
         }
 
@@ -286,6 +342,12 @@ int Game() {
                     }
                     paused = !paused;
                     // Mettre un menu de pause
+                    break;
+                case 'q':
+                    Stop_Game(&game);
+                    Debug("Exit : %d\n", EXIT);
+                    endwin();
+                    return EXIT;
                     break;
                 case KEY_DOWN:
                     int true_y = Get_End_Of_Block(&game);
@@ -309,6 +371,7 @@ int Game() {
         }
     }
 
+    endwin();
     Stop_Game(&game);
     return SUCCESS;
 }
