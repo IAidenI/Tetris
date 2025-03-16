@@ -19,10 +19,13 @@ typedef struct {
 // Pour les infos sur la game en cours
 typedef struct {
     Position pos;
+    
     int (*block)[BLOCK_SIZE];
     int id_block;
+
     int (*next_block)[BLOCK_SIZE];
     int id_next_block;
+
     int **grid;
 } APIGame;
 #define APIGAME_WALL 9
@@ -53,7 +56,7 @@ typedef struct {
 int Get_X_Of_Block(APIGame *game, const int first);
 int Get_Block_Width(APIGame *game);
 
-int Is_Block_Under(APIGame *game);
+int Is_Colision(APIGame *game);
 int Block_Physics(APIGame *game);
 
 int Start_Game(APIGame *game);

@@ -36,21 +36,21 @@ int Get_Block_Width(APIGame *game) {
     return (found ? max_col - min_col + 1 : 0);
 }
 
-int Is_Block_Under(APIGame *game) {
+int Is_Colision(APIGame *game) {
     // On prend le y en inverser pour évité la détection du propre bloc comme étant un autre bloc
     int api_x = game->pos.x / GAME_WEIGHT_MUL;
     int api_y = game->pos.y;
+    int offset = game->pos.x >= 0 ? 1 : -1;
     for (int y = 0; y < BLOCK_SIZE; y++) {
         for (int x = 0; x < BLOCK_SIZE; x++) {
             // On regarde si je suis sur un bloc non vide
             if (game->block[y][x]) {
-                Debug("On a game->block[%d][%d] = %d\n", y, x, game->block[y][x]);
+                Debug("On a game->block[%d][%d] = %d\n", y, x, game->block[y + 1][x]);
                 // On se remet dans l'environement de la grille et on regarde si il y a un bloc en dessous
-                Debug("Et game->grid[%d][%d] = %d\n", api_y + y, api_x + x, game->grid[api_y + y][api_x + x]);
-                if (game->grid[api_y + y][api_x + x + 1] && !game->block[y + 1][x]) { // Ici il va y avoir un problème avec les rotation à cause du y + 1
-                    Debug("Moi j'ai détecter avec game->grid[%d][%d] = %d\n", api_y + y, api_x + x, game->grid[api_y + y][api_x + x]);
+                Debug("Et game->grid[%d][%d] = %d\n", api_y + y, api_x + x + offset, game->grid[api_y + y][api_x + x + offset]);
+                if (game->grid[api_y + y][api_x + x + offset] && !game->block[y + 1][x]) { // Ici il va y avoir un problème avec les rotation à cause du y + 1
                     fprintf(stderr, "\n");
-                    return ERROR;
+                    return game->grid[api_y + y][api_x + x + offset] == 9 ? COLISION_WALL : COLISION;
                 }
             }
         }
@@ -60,19 +60,19 @@ int Is_Block_Under(APIGame *game) {
 }
 
 int Block_Physics(APIGame *game) {
-    // Vérification si on est au niveau de la bordure
-    /*if (game->pos.y + Get_Start_Of_Block(game) + Get_End_Of_Block(game) >= GAME_API_HEIGHT) {
-        return ERROR;
-    }*/
-
-    // Vérification de si il y a un bloc en dessous
-    if (Is_Block_Under(game)) {
+    // Vérification de si il y a un bloc en dessous ou une bordure en dessous
+    int ret = Is_Colision(game);
+    Debug("On détecte %d\n", ret);
+    Debug("la %d - %d\n", Get_End_Of_Block(game), game->pos.y);
+    if (ret) {
         if (game->pos.y == 1) {
             Debug("Perdu!\n");
             return LOOSE;
+        } else if (game->pos.y + Get_End_Of_Block(game) >= 21) {
+            return COLISION;
         }
         Debug("Colision détecté.\n");
-        return ERROR;
+        return ret;
     }
     return SUCCESS;
 }

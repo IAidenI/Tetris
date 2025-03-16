@@ -116,12 +116,12 @@ int Place_Block(APIGame *game, const int direction) {
     // On vérifie si il y a un block en dessous
     Debug("On test à x : %d - y : %d\n", game->pos.x, game->pos.y);
     int colision = 0;
-    if (game->pos.x < GAME_API_WEIGHT - 1 && game->pos.y < GAME_API_HEIGHT - 1) {
+    if (game->pos.x / 2 < GAME_API_WEIGHT - 1 && game->pos.y < GAME_API_HEIGHT - 1) {
         Debug("On vérifie si il y a des colisions.\n");
         int ret = Block_Physics(game);
         if (ret == LOOSE) {
             return ret;
-        } else if (ret == ERROR) {
+        } else if (ret) {
             game->pos.x = save_x;
             game->pos.y = save_y;
             colision = ret;
@@ -224,7 +224,7 @@ int Get_New_Block(APIGame *game) {
     Spawn(game);
 
     // On vérifie si on peut placer le bloc avant de le faire spawn
-    if (Is_Block_Under(game)) {
+    if (Is_Colision(game)) {
         return LOOSE;
     }
 
@@ -323,9 +323,12 @@ int Game() {
                             Stop_Game(&game);
                             endwin();
                             return ret;
+                        } else if (ret == COLISION) {
+                            game.pos.y = 0;
+                            has_spawned = 0;
+                        } else if (ret == COLISION_WALL) {
+
                         }
-                        game.pos.y = 0;
-                        has_spawned = 0;
                     }
                 }
             }
@@ -350,19 +353,52 @@ int Game() {
                     return EXIT;
                     break;
                 case KEY_DOWN:
+                    Debug("DOWN\n");
                     int true_y = Get_End_Of_Block(&game);
-                    if (true_y < GAME_HEIGHT && game.pos.y > 1) {
-                        Place_Block(&game, GO_DOWN);
+                    if (true_y < GAME_HEIGHT && game.pos.y > 1 && !paused) {
+                        int ret = Place_Block(&game, GO_DOWN);
+                        if (ret) {
+                            if (ret == LOOSE) {
+                                Stop_Game(&game);
+                                endwin();
+                                return ret;
+                            } else if (ret == COLISION) {
+                                game.pos.y = 0;
+                                has_spawned = 0;
+                            }
+                        }
                     }
                     break;
                 case KEY_LEFT:
-                    if (game.pos.x > 1 && game.pos.y > 1) {
-                        Place_Block(&game, GO_LEFT);
+                    Debug("LEFT\n");
+                    if (game.pos.y > 1 && !paused) {
+                        int ret = Place_Block(&game, GO_LEFT);
+                        if (ret) {
+                            if (ret == LOOSE) {
+                                Stop_Game(&game);
+                                endwin();
+                                return ret;
+                            } else if (ret == COLISION) {
+                                game.pos.y = 0;
+                                has_spawned = 0;
+                            }
+                        }
                     }
                     break;
                 case KEY_RIGHT:
-                    if (game.pos.x < GAME_WEIGHT - Get_Block_Width(&game) * 2 && game.pos.y > 1) {
-                        Place_Block(&game, GO_RIGHT);
+                    Debug("RIGHT\n");
+                    if (game.pos.x < GAME_WEIGHT - Get_Block_Width(&game) * 2 && game.pos.y > 1 && !paused) {
+                        int ret = Place_Block(&game, GO_RIGHT);
+                        if (ret) {
+                            if (ret == LOOSE) {
+                                Stop_Game(&game);
+                                endwin();
+                                return ret;
+                            } else if (ret == COLISION) {
+                               game.pos.y = 0;
+                                has_spawned = 0;
+                            }
+                        }
                     }
                     break;
                 default:
