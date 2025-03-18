@@ -38,19 +38,16 @@ int Get_Block_Width(APIGame *game) {
 
 int Is_Colision(APIGame *game) {
     // On prend le y en inverser pour évité la détection du propre bloc comme étant un autre bloc
-    int api_x = game->pos.x / GAME_WEIGHT_MUL;
-    int api_y = game->pos.y;
-    int offset = game->pos.x >= 0 ? 1 : -1;
     for (int y = 0; y < BLOCK_SIZE; y++) {
         for (int x = 0; x < BLOCK_SIZE; x++) {
             // On regarde si je suis sur un bloc non vide
             if (game->block[y][x]) {
                 Debug("On a game->block[%d][%d] = %d\n", y, x, game->block[y + 1][x]);
                 // On se remet dans l'environement de la grille et on regarde si il y a un bloc en dessous
-                Debug("Et game->grid[%d][%d] = %d\n", api_y + y, api_x + x + offset, game->grid[api_y + y][api_x + x + offset]);
-                if (game->grid[api_y + y][api_x + x + offset] && !game->block[y + 1][x]) { // Ici il va y avoir un problème avec les rotation à cause du y + 1
+                Debug("Et game->grid[%d][%d] = %d\n", game->pos.y + y, game->pos.x + x, game->grid[game->pos.y + y][game->pos.x + x]);
+                if (game->grid[game->pos.y + y][game->pos.x + x] && !game->block[y + 1][x]) { // Ici il va y avoir un problème avec les rotation à cause du y + 1
                     fprintf(stderr, "\n");
-                    return game->grid[api_y + y][api_x + x + offset] == 9 ? COLISION_WALL : COLISION;
+                    return game->grid[game->pos.y + y][game->pos.x + x] == 9 ? COLISION_WALL : COLISION;
                 }
             }
         }
@@ -65,14 +62,8 @@ int Block_Physics(APIGame *game) {
     Debug("On détecte %d\n", ret);
     Debug("la %d - %d\n", Get_End_Of_Block(game), game->pos.y);
     if (ret) {
-        if (game->pos.y == 1) {
-            Debug("Perdu!\n");
-            return LOOSE;
-        } else if (game->pos.y + Get_End_Of_Block(game) >= 21) {
-            return COLISION;
-        }
         Debug("Colision détecté.\n");
-        return ret;
+        return game->pos.y + Get_End_Of_Block(game) >= 21 ? COLISION : ret;
     }
     return SUCCESS;
 }
@@ -80,9 +71,10 @@ int Block_Physics(APIGame *game) {
 void Spawn(APIGame *game) {
     srand(time(NULL));
     // On génere un bloc random à une position random
-    int random_bloc = (rand() % (BLOCK_COUNT - 1)) + 1;
-    
-    game->pos.x = 7; // Dans un tetris le bloc spawn à la 3ème colonne (1 pour la bordure 3 * 2 car une case c'est 2 caractères
+    int random_block = (rand() % (BLOCK_COUNT - 1)) + 1;
+    //int random_block = 4;
+
+    game->pos.x = 4; // Dans un tetris le bloc spawn à la 3ème colonne (1 pour la bordure)
     game->pos.y = 1;
 
     int (**shapes)[BLOCK_SIZE] = Get_Shapes();
@@ -90,13 +82,13 @@ void Spawn(APIGame *game) {
     // Si on est au début donc pas de bloc initialisé
     if (game->block == NULL) {
         // On affecte le random au bloc courant
-        game->block = shapes[random_bloc];
-        game->id_block = random_bloc;
+        game->block = shapes[random_block];
+        game->id_block = random_block;
 
         // Et on fait un autre random pour le next
-        random_bloc = (rand() % (BLOCK_COUNT - 1)) + 1;
-        game->next_block = shapes[random_bloc];
-        game->id_next_block = random_bloc;
+        random_block = (rand() % (BLOCK_COUNT - 1)) + 1;
+        game->next_block = shapes[random_block];
+        game->id_next_block = random_block;
     } else {
         // On vide les blocs
         game->block = shapes[0];
@@ -107,8 +99,8 @@ void Spawn(APIGame *game) {
         game->id_block = game->id_next_block;
 
         // Et on mets le random dans le suivant
-        game->next_block = shapes[random_bloc];
-        game->id_next_block = random_bloc;
+        game->next_block = shapes[random_block];
+        game->id_next_block = random_block;
     }
 }
 
@@ -119,7 +111,7 @@ int Start_Game(APIGame *game) {
     game->next_block = NULL;
     game->grid = malloc((GAME_API_HEIGHT) * sizeof(int *));
     if (!game->grid) {
-        Error("N'as pas réussis à allouer de la mémoire.");
+        Error("N'as pas réussis à allouer de la mémoire.\n");
         return ERROR;
     }
 

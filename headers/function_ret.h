@@ -8,5 +8,6 @@
 #define LOOSE         3
 #define COLISION      4
 #define COLISION_WALL 5
+#define CLEAR_BLOCK   6
 
 #endif

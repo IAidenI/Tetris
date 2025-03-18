@@ -1,17 +1,83 @@
 #include "../headers/ihm.h"
 
+int Clear_Full_Lines(APIGame *game) {
+    // On vérifie si une ligne est pleine
+    int full_cases = 0;
+    int full_count = 0;
+    int *full_lines = NULL;
+
+    Debug("pos y : %d - max : %d\n", game->pos.y, game->pos.y + Get_End_Of_Block(game));
+    for (int y = game->pos.y; y <= game->pos.y + Get_End_Of_Block(game); y++) {
+        for (int x = 1; x < GAME_API_WEIGHT - 1; x++) {
+            // Si un bloc est présent un incrémente notre compteur
+            Debug("On test : x : %d - y : %d\n", x, y);
+            if (game->grid[y][x]) {
+                Debug("Oui %d\n", game->grid[y][x]);
+                full_cases++;
+            }
+        }
+        if (full_cases == GAME_API_WEIGHT - 2) {
+            full_lines = realloc(full_lines, (full_count + 1) * sizeof(int));
+            if (!full_lines) {
+                Error("N'as pas réussis à réallouer de la mémoire.\n");
+                return ERROR;
+            }
+            full_lines[full_count++] = y;
+        }
+        full_cases = 0;
+    }
+
+    Debug("On a détecter %d lines complètes.\n", full_count);
+    if (!full_count) return SUCCESS;
+
+    // On supprime toutes les lignes full
+    for (int i = 0; i < full_count; i++) {
+        for (int x = 1; x < GAME_API_WEIGHT - 1; x++) {
+            Debug("test de %d\n", full_lines[i]);
+            game->grid[full_lines[i]][x] = 0;
+        }
+    }
+
+    Debug("C'est fait.\n");
+
+    // On descend les lignes au-dessus des lignes supprimées
+    for (int i = 0; i < full_count; i++) {
+        int y = full_lines[i];
+
+        // Déplacer toutes les lignes du dessus vers le bas
+        for (int row = y; row > 1; row--) {
+            for (int x = 1; x < GAME_API_WEIGHT - 1; x++) {
+                game->grid[row][x] = game->grid[row - 1][x];
+            }
+        }
+
+        // Remplir la première ligne de vide
+        for (int x = 1; x < GAME_API_WEIGHT - 1; x++) {
+            game->grid[1][x] = 0;
+        }
+
+        // Décaler les indices pour les lignes pleines restantes
+        for (int j = i + 1; j < full_count; j++) {
+            full_lines[j]++; 
+        }
+    }
+    return CLEAR_BLOCK;
+}
+
 void Put_Next_Block(APIGame *game) {
+    int (**shapes)[BLOCK_SIZE] = Get_Shapes();
+
     // On veux mettre le next_block pas le bloc, donc on save et on met le next_block à la place du bloc
     int id_block = game->id_block;
-    game->block = game->next_block;
     game->id_block = game->id_next_block;
+    game->block = shapes[game->id_block];
 
     // On calcul la positon pour le bloc
-    int x = GAME_WEIGHT + NEXT_BLOCK_WEIGHT / 2 - Get_Block_Width(game);
+    int x = GAME_API_WEIGHT - 1 + (NEXT_BLOCK_WEIGHT - 2) / GAME_WEIGHT_MUL / 2 + 1 - (Get_Block_Width(game) + 1) / 2; // Ouais elle a le cancer je sais
     int y = NEXT_BLOCK_HEIGHT - 3;
 
     Debug("On place la prochaie pièce (%d) à x : %d - y : %d\n", id_block, x, y);
-    Debug("Détails : %d + %d / 2 - %d\n", GAME_WEIGHT, NEXT_BLOCK_WEIGHT, Get_Block_Width(game));
+    Debug("Détails : %d + (%d - 2) / %d / 2 + 1 - (%d - 1) / 2\n", GAME_API_WEIGHT, NEXT_BLOCK_WEIGHT, GAME_WEIGHT_MUL, Get_Block_Width(game));
     for (int i = 0; i < BLOCK_SIZE; i++) {
         Debug();
         for (int j = 0; j < BLOCK_SIZE; j++) {
@@ -22,7 +88,6 @@ void Put_Next_Block(APIGame *game) {
     Del_Next_Block(game, GAME_HEIGHT + 1, 3);
     Put_Block(game, x, y);
     // On ne veux pas vraiment passer au bloc suivant, on veux juste l'affiché donc en remet l'ancien bloc
-    int (**shapes)[BLOCK_SIZE] = Get_Shapes();
     game->block = shapes[0];
     game->block = shapes[id_block];
     game->id_block = id_block;
@@ -71,9 +136,9 @@ void Update_Block(APIGame *game, const int posX, const int posY, const wchar_t *
             // Si on a un block
             if (game->block[y][x]) {
                 // On met à jours la grille
-                if (posX / 2 < GAME_API_WEIGHT && posY / 2 < GAME_API_HEIGHT) {
-                    Debug("On met à jour l'API avec game->grid[%d][%d] = %d\n", back_posY, back_posX / GAME_WEIGHT_MUL, wcscmp(state, BLOCK) == 0 ? game->block[y][x] : 0);
-                    game->grid[back_posY][back_posX / GAME_WEIGHT_MUL + 1] = wcscmp(state, BLOCK) == 0 ? game->block[y][x] : 0;
+                if (posX < GAME_API_WEIGHT && posY < GAME_API_HEIGHT) {
+                    Debug("On met à jour l'API avec game->grid[%d][%d] = %d\n", back_posY, back_posX, wcscmp(state, BLOCK) == 0 ? game->block[y][x] : 0);
+                    game->grid[back_posY][back_posX] = wcscmp(state, BLOCK) == 0 ? game->block[y][x] : 0;
                 }
 
                 ColorList color_list = Get_Color_List();
@@ -81,12 +146,11 @@ void Update_Block(APIGame *game, const int posX, const int posY, const wchar_t *
                 Debug("On met à jour l'affichage avec '%ls' au coordonnées x : %d - y : %d\n", state, back_posX, back_posY);
                 // On place le bloc sur l'écran
                 attron(COLOR_PAIR(color_list.colors[game->id_block]));
-                mvaddwstr(back_posY, back_posX, state);
+                mvaddwstr(back_posY, (back_posX - 1) * GAME_WEIGHT_MUL + 1, state);
                 attroff(COLOR_PAIR(color_list.colors[game->id_block]));
                 refresh();
             }
             back_posX++;
-            back_posX++; // Car on est sur deux caractères pour une case
         }
         back_posX = posX;
         back_posY++;
@@ -105,10 +169,8 @@ int Place_Block(APIGame *game, const int direction) {
     // On descend le bloc
     if (direction == GO_LEFT) {
         game->pos.x--;
-        game->pos.x--; // Parce que une case fait deux caractères
     } else if (direction == GO_RIGHT) {
         game->pos.x++;
-        game->pos.x++; // Parce que une case fait deux caractères
     } else if (direction == GO_DOWN) {
         game->pos.y++;
     }
@@ -116,7 +178,7 @@ int Place_Block(APIGame *game, const int direction) {
     // On vérifie si il y a un block en dessous
     Debug("On test à x : %d - y : %d\n", game->pos.x, game->pos.y);
     int colision = 0;
-    if (game->pos.x / 2 < GAME_API_WEIGHT - 1 && game->pos.y < GAME_API_HEIGHT - 1) {
+    if (game->pos.x < GAME_API_WEIGHT - 1 && game->pos.y < GAME_API_HEIGHT - 1) {
         Debug("On vérifie si il y a des colisions.\n");
         int ret = Block_Physics(game);
         if (ret == LOOSE) {
@@ -141,6 +203,25 @@ int Place_Block(APIGame *game, const int direction) {
         fprintf(stderr, "\n");
     }
     fprintf(stderr, "\n");
+
+    // On met à jour la grille si il y a des lignes full
+    if (colision) {
+        int ret = Clear_Full_Lines(game);
+        if (ret == CLEAR_BLOCK) {
+            Refresh_Grid(game);
+        } else if (ret) {
+            return ret;
+        }
+        Debug("On a alors :\n");
+        for (int i = 0; i < GAME_API_HEIGHT; i++) {
+            Debug();
+            for (int j = 0; j < GAME_API_WEIGHT; j++) {
+                fprintf(stderr, "%d ", game->grid[i][j]);
+            }
+            fprintf(stderr, "\n");
+        }
+        fprintf(stderr, "\n");
+    }
     return colision;
 }
 
@@ -151,6 +232,18 @@ void Borders(const wchar_t *c1, const wchar_t *c2) {
         addwstr(MIDLESCORE);
     }
     addwstr(c2);
+}
+
+void Refresh_Grid(APIGame *game) {
+    for (int y = 1; y < GAME_API_HEIGHT - 1; y++) {
+        for (int x = 1; x < GAME_API_WEIGHT - 1; x++) {
+            Debug("On test %d à x : %d - y : %d\n", game->grid[y][x], x, y);
+            ColorList color_list = Get_Color_List();
+            attron(COLOR_PAIR(color_list.colors[game->grid[y][x]]));
+            game->grid[y][x] ? mvaddwstr(y, (x - 1) * GAME_WEIGHT_MUL + 1, L"[]") : mvaddwstr(y, (x - 1) * GAME_WEIGHT_MUL + 1, L"  ");
+            attron(COLOR_PAIR(color_list.colors[game->grid[y][x]]));
+        }
+    }
 }
 
 void Create_Frame() {
@@ -224,7 +317,7 @@ int Get_New_Block(APIGame *game) {
     Spawn(game);
 
     // On vérifie si on peut placer le bloc avant de le faire spawn
-    if (Is_Colision(game)) {
+    if (Block_Physics(game)) {
         return LOOSE;
     }
 
@@ -326,8 +419,6 @@ int Game() {
                         } else if (ret == COLISION) {
                             game.pos.y = 0;
                             has_spawned = 0;
-                        } else if (ret == COLISION_WALL) {
-
                         }
                     }
                 }

@@ -56,6 +56,8 @@ typedef struct {
 int Get_X_Of_Block(APIGame *game, const int first);
 int Get_Block_Width(APIGame *game);
 
+void Refresh_Grid(APIGame *game);
+
 int Is_Colision(APIGame *game);
 int Block_Physics(APIGame *game);
 
