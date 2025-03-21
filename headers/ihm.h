@@ -31,14 +31,13 @@
 
 void Print_Shape(int shape[BLOCK_SIZE][BLOCK_SIZE]);
 void Del_Next_Block(APIGame *game, const int posX, const int posY);
-void Put_Next_Block(APIGame *game);
+int Put_Next_Block(APIGame *game);
 void Update_Block(APIGame *game, int posX, int posY, const wchar_t *state);
 int Place_Block(APIGame *game, const int direction);
 
 void Borders(const wchar_t *c1, const wchar_t *c2);
 void Create_Frame();
 
-int Spawn(APIGame *game);
 int Game();
 
 #endif

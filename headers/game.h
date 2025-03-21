@@ -20,15 +20,18 @@ typedef struct {
 typedef struct {
     Position pos;
     
-    int (*block)[BLOCK_SIZE];
+    int **block;
     int id_block;
 
-    int (*next_block)[BLOCK_SIZE];
+    int **next_block;
     int id_next_block;
 
     int **grid;
 } APIGame;
 #define APIGAME_WALL 9
+
+#define IS_BLOCK     1
+#define IS_NEXT_BLOCK 2
 
 // Dimensions du jeu
 // Pour les dimensions on prend en compte les bordures
@@ -47,21 +50,32 @@ typedef struct {
 // Pour savoir la direction où on veux se déplacer
 #define GO_LEFT  15
 #define GO_RIGHT 16
-#define GO_DOWN   17
+#define GO_DOWN  17
+#define GO_UP    18
 
 // Gestion recuperation pos bloc
 #define Get_Start_Of_Block(game) Get_X_Of_Block(game, 1)
 #define Get_End_Of_Block(game) Get_X_Of_Block(game, 0)
 
+
+void Rotate_Block(APIGame *game);
 int Get_X_Of_Block(APIGame *game, const int first);
 int Get_Block_Width(APIGame *game);
+
+int Set_Block(APIGame *game, int block);
 
 void Refresh_Grid(APIGame *game);
 
 int Is_Colision(APIGame *game);
 int Block_Physics(APIGame *game);
 
+int Spawn(APIGame *game);
 int Start_Game(APIGame *game);
 void Stop_Game(APIGame *game);
+
+
+void Display_Block(const char *text, APIGame *game);
+void Display_Next_Block(const char *text, APIGame *game);
+void Display_Grid(const char *text, APIGame *game);
 
 #endif
