@@ -7,11 +7,11 @@ void Display_Block(const char *text, APIGame *game) {
     for (int i = 0; i < size; i++) {
         Debug();
         for (int j = 0; j < size; j++) {
-            fprintf(stderr, "%d ", game->block[i][j]);
+            DebugSimple("%d ", game->block[i][j]);
         }
-        fprintf(stderr, "\n");
+        DebugSimple("\n");
     }
-    fprintf(stderr, "\n");
+    DebugSimple("\n");
 }
 
 void Display_Next_Block(const char *text, APIGame *game) {
@@ -21,11 +21,11 @@ void Display_Next_Block(const char *text, APIGame *game) {
     for (int i = 0; i < size; i++) {
         Debug();
         for (int j = 0; j < size; j++) {
-            fprintf(stderr, "%d ", game->next_block[i][j]);
+            DebugSimple("%d ", game->next_block[i][j]);
         }
-        fprintf(stderr, "\n");
+        DebugSimple("\n");
     }
-    fprintf(stderr, "\n");
+    DebugSimple("\n");
 }
 
 void Display_Grid(const char *text, APIGame *game) {
@@ -33,11 +33,11 @@ void Display_Grid(const char *text, APIGame *game) {
     for (int i = 0; i < GAME_API_HEIGHT; i++) {
         Debug();
         for (int j = 0; j < GAME_API_WEIGHT; j++) {
-            fprintf(stderr, "%d ", game->grid[i][j]);
+            DebugSimple("%d ", game->grid[i][j]);
         }
-        fprintf(stderr, "\n");
+        DebugSimple("\n");
     }
-    fprintf(stderr, "\n");
+    DebugSimple("\n");
 }
 
 
@@ -114,7 +114,7 @@ int Get_Block_Width(APIGame *game) {
 
 int Is_Colision(APIGame *game) {
     int size = Get_Block_Size(game->id_block);
-    Debug("la taille c'est : %d\n", size)
+    Debug("la taille c'est : %d\n", size);
     // On prend le y en inverser pour évité la détection du propre bloc comme étant un autre bloc
     for (int y = 0; y < size; y++) {
         for (int x = 0; x < size; x++) {
@@ -124,14 +124,14 @@ int Is_Colision(APIGame *game) {
                 // On se remet dans l'environement de la grille et on regarde si il y a un bloc en dessous
                 Debug("Et game->grid[%d][%d] = %d\n", game->pos.y + y, game->pos.x + x, game->grid[game->pos.y + y][game->pos.x + x]);
                 if (game->grid[game->pos.y + y][game->pos.x + x]) {
-                    fprintf(stderr, "\n");
+                    DebugSimple("\n");
                     return game->grid[game->pos.y + y][game->pos.x + x] == 9 ? COLISION_WALL : COLISION;
                 }
-                fprintf(stderr, "\n");
+                DebugSimple("\n");
             }
         }
     }
-    fprintf(stderr, "\n");
+    DebugSimple("\n");
     return SUCCESS;
 }
 
@@ -148,7 +148,7 @@ int Block_Physics(APIGame *game) {
     return SUCCESS;
 }
 
-int Set_Block(APIGame *game, int block) {
+int Set_Block(APIGame *game, int block, const int old_size) {
     if (block == IS_BLOCK) {
         // On réalloue une nouvelle taille et on copie le bon bloc, pour le block actuelle
         int size = Get_Block_Size(game->id_block);
@@ -158,13 +158,23 @@ int Set_Block(APIGame *game, int block) {
             return ERROR;
         }
 
+        // On initialise tout
+        if (size > old_size) {
+            for (int i = old_size; i < size; i++) {
+                game->block[i] = NULL;
+            }
+        }        
+
+        Debug("taille %d\n", size);
         for (int i = 0; i < size; i++) {
+            Debug("game->block[%d] passe\n", i);
             game->block[i] = realloc(game->block[i], size * sizeof(int));
             if (!game->block[i]) {
                 Error("N'as pas réussis à allouer de la mémoire.\n");
                 return ERROR;
             }
             memcpy(game->block[i], ((int (*)[size]) shapes[game->id_block])[i], size * sizeof(int));
+            Debug("fini\n");
         }
         Display_Block("On a realloc pour avoir :", game);
     } else {
@@ -174,6 +184,13 @@ int Set_Block(APIGame *game, int block) {
         if (!game->next_block) {
             Error("N'as pas réussis à allouer de la mémoire.\n");
             return ERROR;
+        }
+
+        // On initialise tout
+        if (size > old_size) {
+            for (int i = old_size; i < size; i++) {
+                game->next_block[i] = NULL;
+            }
         }
 
         for (int i = 0; i < size; i++) {
@@ -242,22 +259,28 @@ int Spawn(APIGame *game) {
         }
     } else {
         // On vide le blocs
+        size = Get_Block_Size(game->id_block);
         game->id_block = 0;
-        Debug("On vide\n");
-        if (Set_Block(game, IS_BLOCK)) return ERROR;
+        Debug("On vide l'actuelle\n");
+        if (Set_Block(game, IS_BLOCK, size)) return ERROR;
 
-        Debug("On rempli\n");
+        Debug("On rempli l'actuelle\n");
+        size = Get_Block_Size(game->id_block);
         // Sinon on mets la valeur suivante dans la valeur courante
         game->id_block = game->id_next_block;
-        if (Set_Block(game, IS_BLOCK)) return ERROR;
+        if (Set_Block(game, IS_BLOCK, size)) return ERROR;
 
+        Debug("On vide le suivant\n");
         // On vide le bloc
+        size = Get_Block_Size(game->id_next_block);
         game->id_next_block = 0;
-        if (Set_Block(game, IS_NEXT_BLOCK)) return ERROR;
+        if (Set_Block(game, IS_NEXT_BLOCK, size)) return ERROR;
 
+        Debug("On rempli le suivant");
         // Et on mets le random dans le suivant
+        size = Get_Block_Size(game->id_next_block);
         game->id_next_block = random_block;
-        if (Set_Block(game, IS_NEXT_BLOCK)) return ERROR;
+        if (Set_Block(game, IS_NEXT_BLOCK, size)) return ERROR;
     }
     return SUCCESS;
 }

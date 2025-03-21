@@ -3,6 +3,7 @@
 #include "headers/print.h"
 
 int main() {
+    InitDebug();
     int ret = Menu(0);
     while (ret != EXIT) {
         Debug("Code de retour : %d\n", ret);

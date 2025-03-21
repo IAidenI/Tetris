@@ -41,28 +41,41 @@ int Clear_Full_Lines(APIGame *game) {
 
     Debug("C'est fait.\n");
 
+    // On récupère l'index de la première ligne vide (en partant du bas)
+    int max_bloc_y = 0;
+    for (int y = full_lines[0] - 1; y > 0; y--) {
+        for (int x = 1; x < GAME_API_WEIGHT - 1; x++) {
+            if (game->grid[y][x] == 0) {
+                max_bloc_y = 1;
+            } else {
+                max_bloc_y = 0;
+                break;
+            }
+        }
+        if (max_bloc_y) {
+            max_bloc_y = y;
+            break;
+        }
+    }
+
+    Display_Grid("grille avant :", game);
     // On descend les lignes au-dessus des lignes supprimées
     for (int i = 0; i < full_count; i++) {
         int y = full_lines[i];
 
+        Debug("On le fait pour y = %d\n", y);
         // Déplacer toutes les lignes du dessus vers le bas
-        for (int row = y; row > 1; row--) {
-            if (y == 0 || y == GAME_API_HEIGHT - 1) continue;
+        // Ca sert à rien d'aller jusqu'à row > 1 car on a calculer l'index
+        for (int row = y; row >= max_bloc_y; row--) {
             for (int x = 1; x < GAME_API_WEIGHT - 1; x++) {
-                game->grid[row][x] = game->grid[row - 1][x];
+                // On prends pas si c'est un wall
+                if (game->grid[row][x] != APIGAME_WALL) {
+                    game->grid[row][x] = game->grid[row - 1][x];
+                }
             }
         }
-
-        // Remplir la première ligne de vide
-        for (int x = 1; x < GAME_API_WEIGHT - 1; x++) {
-            game->grid[1][x] = 0;
-        }
-
-        // Décaler les indices pour les lignes pleines restantes
-        for (int j = i + 1; j < full_count; j++) {
-            full_lines[j]++; 
-        }
     }
+    Display_Grid("grille après :", game);
 
     free(full_lines);
     return CLEAR_BLOCK;
@@ -71,8 +84,9 @@ int Clear_Full_Lines(APIGame *game) {
 int Put_Next_Block(APIGame *game) {
     // On veux mettre le next_block pas le bloc, donc on save et on met le next_block à la place du bloc
     int id_block = game->id_block;
+    int size = Get_Block_Size(game->id_block);
     game->id_block = game->id_next_block;
-    if (Set_Block(game, IS_BLOCK)) return ERROR;
+    if (Set_Block(game, IS_BLOCK, size)) return ERROR;
 
     // On calcul la positon pour le bloc
     int x = GAME_API_WEIGHT - 1 + (NEXT_BLOCK_WEIGHT - 2) / GAME_WEIGHT_MUL / 2 + 1 - (Get_Block_Width(game) + 1) / 2; // Ouais elle a le cancer je sais
@@ -84,12 +98,17 @@ int Put_Next_Block(APIGame *game) {
 
     Del_Next_Block(game, GAME_HEIGHT + 1, 3);
     Put_Block(game, x, y);
+    
+    Display_Block("lalala :", game);
     // On ne veux pas vraiment passer au bloc suivant, on veux juste l'affiché donc en remet l'ancien bloc
+    size = Get_Block_Size(game->id_block);
     game->id_block = 0;
-    if (Set_Block(game, IS_BLOCK)) return ERROR;
+    if (Set_Block(game, IS_BLOCK, size)) return ERROR;
 
+    Debug("ui\n");
+    size = Get_Block_Size(game->id_block);
     game->id_block = id_block;
-    if (Set_Block(game, IS_BLOCK)) return ERROR;
+    if (Set_Block(game, IS_BLOCK, size)) return ERROR;
     Display_Block("On a après :", game);
     return SUCCESS;
 }
@@ -106,7 +125,7 @@ void Del_Next_Block(APIGame *game, const int posX, const int posY) {
         attroff(COLOR_PAIR(color_list.colors[game->id_block]));
         refresh();
     }
-    fprintf(stderr, "\n");
+    DebugSimple("\n");
 }
 
 void Update_Block(APIGame *game, const int posX, const int posY, const wchar_t *state) {
@@ -142,7 +161,7 @@ void Update_Block(APIGame *game, const int posX, const int posY, const wchar_t *
         back_posX = posX;
         back_posY++;
     }
-    fprintf(stderr, "\n");
+    DebugSimple("\n");
 }
 
 int Place_Block(APIGame *game, const int direction) {
@@ -421,7 +440,7 @@ int Game() {
                     break;
                 case KEY_RIGHT:
                     Debug("RIGHT\n");
-                    if (game.pos.x < GAME_WEIGHT - Get_Block_Width(&game) * 2 && game.pos.y > 1 && !paused) {
+                    if (game.pos.x < GAME_API_WEIGHT - Get_Block_Width(&game) && game.pos.y > 1 && !paused) {
                         int ret = Place_Block(&game, GO_RIGHT);
                         if (ret) {
                             if (ret == LOOSE) {
@@ -437,16 +456,19 @@ int Game() {
                     break;
                 case KEY_UP:
                     Debug("UP\n");
-                    // Il faut pense à vérifier si on peux rotate avant
-                    int ret = Place_Block(&game, GO_UP);
-                    if (ret) {
-                        if (ret == LOOSE) {
-                            Stop_Game(&game);
-                            endwin();
-                            return ret;
-                        } else if (ret == COLISION) {
-                           game.pos.y = 0;
-                            has_spawned = 0;
+                    Debug("huu : %d - %d ; x : %d\n", GAME_API_WEIGHT, Get_Block_Size(game.id_block), game.pos.x);
+                    if (game.pos.x > 0 && game.pos.x + Get_Block_Size(game.id_block) < GAME_API_WEIGHT && !paused) {
+                        // On vérifie si on peut tourner dans Place_Block
+                        int ret = Place_Block(&game, GO_UP);
+                        if (ret) {
+                            if (ret == LOOSE) {
+                                Stop_Game(&game);
+                                endwin();
+                                return ret;
+                            } else if (ret == COLISION) {
+                            game.pos.y = 0;
+                                has_spawned = 0;
+                            }
                         }
                     }
                     break;

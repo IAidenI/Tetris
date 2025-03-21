@@ -62,7 +62,7 @@ void Rotate_Block(APIGame *game);
 int Get_X_Of_Block(APIGame *game, const int first);
 int Get_Block_Width(APIGame *game);
 
-int Set_Block(APIGame *game, int block);
+int Set_Block(APIGame *game, int block, const int old_size);
 
 void Refresh_Grid(APIGame *game);
 
