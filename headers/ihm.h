@@ -38,6 +38,6 @@ int Place_Block(APIGame *game);
 void Borders(const wchar_t *c1, const wchar_t *c2);
 void Create_Frame();
 
-int Game();
+int Game(APIGame *game);
 
 #endif

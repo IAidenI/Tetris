@@ -320,7 +320,7 @@ int Get_New_Block(APIGame *game) {
     return SUCCESS;
 }
 
-int Game() {
+int Game(APIGame *game) {
     initscr();   // Initialise ncurses
     // Vérifie que le terminal supporte les couleurs
     if (!has_colors()) {
@@ -337,16 +337,10 @@ int Game() {
     Init_Colors();
 
     int key;
-    int has_spawned = 0;
+    int has_spawned = game->flag ? 1 : 0;
+    if (game->flag) game->flag = !game->flag;
     int paused = 0;
     struct timespec current, start;
-    
-    APIGame game;
-    if (Start_Game(&game)) {
-        return ERROR;
-    }
-    Debug("APIGame initialisé.\n");
-    Display_Grid("On a initialiser la grille :", &game);
 
     clear();
     Create_Frame(); // On crée le cadre
@@ -355,16 +349,16 @@ int Game() {
             // On vérifie si un bloc à déjà spawn pour pas en faire apparaire plusieurs
             if (!has_spawned) {
                 Debug("On fait spawn un nouveau bloc.\n");
-                int ret = Get_New_Block(&game);
-                Display_Block("On a maintenant un nouveau bloc :", &game);
-                Display_Next_Block("Et le prochaine bloc est :", &game);
+                int ret = Get_New_Block(game);
+                Display_Block("On a maintenant un nouveau bloc :", game);
+                Display_Next_Block("Et le prochaine bloc est :", game);
 
                 if (ret) {
-                    Stop_Game(&game);
+                    Stop_Game(game);
                     endwin();
                     return ret;
                 }
-                if (Put_Next_Block(&game)) return ERROR;
+                if (Put_Next_Block(game)) return ERROR;
                 has_spawned = 1;
                 clock_gettime(CLOCK_MONOTONIC, &start);
             } else {
@@ -373,16 +367,16 @@ int Game() {
 
                 if (elapsed >= BLOCK_WAIT || !has_spawned) {
                     start = current;
-                    Display_Block("On va placer le bloc actuelle :", &game);
-                    game.direction = GO_DOWN;
-                    int ret = Place_Block(&game);
+                    Display_Block("On va placer le bloc actuelle :", game);
+                    game->direction = GO_DOWN;
+                    int ret = Place_Block(game);
                     if (ret) {
                         if (ret == LOOSE) {
-                            Stop_Game(&game);
+                            Stop_Game(game);
                             endwin();
                             return ret;
                         } else if (ret == COLISION) {
-                            game.pos.y = 0;
+                            game->pos.y = 0;
                             has_spawned = 0;
                         }
                     }
@@ -403,24 +397,24 @@ int Game() {
                     // Mettre un menu de pause
                     break;
                 case 'q':
-                    Stop_Game(&game);
+                    Stop_Game(game);
                     Debug("Exit : %d\n", EXIT);
                     endwin();
                     return EXIT;
                     break;
                 case KEY_DOWN:
                     Debug("DOWN\n");
-                    int true_y = Get_End_Of_Block(&game);
-                    if (true_y < GAME_HEIGHT && game.pos.y > 1 && !paused) {
-                        game.direction = GO_DOWN;
-                        int ret = Place_Block(&game);
+                    int true_y = Get_End_Of_Block(game);
+                    if (true_y < GAME_HEIGHT && game->pos.y > 1 && !paused) {
+                        game->direction = GO_DOWN;
+                        int ret = Place_Block(game);
                         if (ret) {
                             if (ret == LOOSE) {
-                                Stop_Game(&game);
+                                Stop_Game(game);
                                 endwin();
                                 return ret;
                             } else if (ret == COLISION) {
-                                game.pos.y = 0;
+                                game->pos.y = 0;
                                 has_spawned = 0;
                             }
                         }
@@ -428,16 +422,16 @@ int Game() {
                     break;
                 case KEY_LEFT:
                     Debug("LEFT\n");
-                    if (game.pos.y > 1 && !paused) {
-                        game.direction = GO_LEFT;
-                        int ret = Place_Block(&game);
+                    if (game->pos.y > 1 && !paused) {
+                        game->direction = GO_LEFT;
+                        int ret = Place_Block(game);
                         if (ret) {
                             if (ret == LOOSE) {
-                                Stop_Game(&game);
+                                Stop_Game(game);
                                 endwin();
                                 return ret;
                             } else if (ret == COLISION) {
-                                game.pos.y = 0;
+                                game->pos.y = 0;
                                 has_spawned = 0;
                             }
                         }
@@ -445,16 +439,16 @@ int Game() {
                     break;
                 case KEY_RIGHT:
                     Debug("RIGHT\n");
-                    if (game.pos.x < GAME_API_WEIGHT - Get_Block_Width(&game) && game.pos.y > 1 && !paused) {
-                        game.direction = GO_RIGHT;
-                        int ret = Place_Block(&game);
+                    if (game->pos.x < GAME_API_WEIGHT - Get_Block_Width(game) && game->pos.y > 1 && !paused) {
+                        game->direction = GO_RIGHT;
+                        int ret = Place_Block(game);
                         if (ret) {
                             if (ret == LOOSE) {
-                                Stop_Game(&game);
+                                Stop_Game(game);
                                 endwin();
                                 return ret;
                             } else if (ret == COLISION) {
-                               game.pos.y = 0;
+                               game->pos.y = 0;
                                 has_spawned = 0;
                             }
                         }
@@ -462,18 +456,18 @@ int Game() {
                     break;
                 case KEY_UP:
                     Debug("UP\n");
-                    Debug("huu : %d - %d ; x : %d\n", GAME_API_WEIGHT, Get_Block_Size(game.id_block), game.pos.x);
-                    if (game.pos.x > 0 && game.pos.x + Get_Block_Size(game.id_block) < GAME_API_WEIGHT && !paused) {
+                    Debug("huu : %d - %d ; x : %d\n", GAME_API_WEIGHT, Get_Block_Size(game->id_block), game->pos.x);
+                    if (game->pos.x > 0 && game->pos.x + Get_Block_Size(game->id_block) < GAME_API_WEIGHT && !paused) {
                         // On vérifie si on peut tourner dans Place_Block
-                        game.direction = GO_UP;
-                        int ret = Place_Block(&game);
+                        game->direction = GO_UP;
+                        int ret = Place_Block(game);
                         if (ret) {
                             if (ret == LOOSE) {
-                                Stop_Game(&game);
+                                Stop_Game(game);
                                 endwin();
                                 return ret;
                             } else if (ret == COLISION) {
-                            game.pos.y = 0;
+                            game->pos.y = 0;
                                 has_spawned = 0;
                             }
                         }
@@ -486,6 +480,6 @@ int Game() {
     }
 
     endwin();
-    Stop_Game(&game);
+    Stop_Game(game);
     return SUCCESS;
 }

@@ -3,6 +3,7 @@
 void Display_Block(const char *text, APIGame *game) {
     Debug("%s\n", text);
     Debug("id du bloc : %d\n", game->id_block);
+    Debug("position : x : %d - y : %d\n", game->pos.x, game->pos.y);
     int size = Get_Block_Size(game->id_block);
     for (int i = 0; i < size; i++) {
         Debug();
@@ -38,6 +39,153 @@ void Display_Grid(const char *text, APIGame *game) {
         DebugSimple("\n");
     }
     DebugSimple("\n");
+}
+
+int Search_Key_Word(FILE *fp, const char *key_word) {
+    char buffer[BUFFER_DEBUG];
+    rewind(fp); // On remet la tête de lecture au début du fichier
+
+    while (fgets(buffer, BUFFER_DEBUG, fp)) {
+        buffer[strcspn(buffer, "\r\n")] = 0; // On enlève le \r et/ou \n
+
+        // On vérifie si il correspond au key word
+        if (strcmp(buffer, key_word) == 0) {
+            return SUCCESS;
+        }
+    }
+    return ERROR;
+}
+
+int Set_Game(APIGame *game, const char *path_name) {
+    // Liste des key words
+    const char *position = "[position]";
+    const char *current_block = "[current block]";
+    const char *next_block = "[next block]";
+    const char *grid_key = "[grid]";
+
+    char buffer[BUFFER_DEBUG];
+    int x = -1, y = -1, current_id = -1, next_id = -1;
+    int grid[GAME_API_HEIGHT][GAME_API_WEIGHT];
+
+    FILE *fp = fopen(path_name, "r");
+    if (!fp) {
+        Error("N'as pas réussit à lire le fichier.\n");
+        return ERROR;
+    }
+
+    // On commencer par chercher la position du bloc actuelle dans le fichier
+    if (Search_Key_Word(fp, position)) {
+        Error("Format du fichier invalide, %s introuvable.\n", position);
+        return ERROR;
+    }
+
+    // On extrait les positions
+    while (x == -1 || y == -1) {
+        if (!fgets(buffer, BUFFER_DEBUG, fp)) {
+            Error("Format du fichier invalide, %s trouvé, mais aucune données à chargé trouvé (%s).\n", position, buffer);
+            return ERROR;
+        }
+
+        // On enlève les espaces au début
+        char *line = buffer;
+        while (*line == ' ' || *line == '\t') line++;
+
+        if (sscanf(line, "x : %d", &x) == 1) {
+            continue;
+        }
+
+        if (sscanf(line, "y : %d", &y) == 1) {
+            continue;
+        }
+    }
+
+    // On cherche ensuite l'id du bloc actuelle
+    if (Search_Key_Word(fp, current_block)) {
+        Error("Format du fichier invalide, %s introuvable.\n", current_block);
+        return ERROR;
+    }
+
+    // On extrait l'id
+    while (current_id == -1) {
+        if (!fgets(buffer, BUFFER_DEBUG, fp)) {
+            Error("Format du fichier invalide, %s trouvé, mais aucune données à chargé trouvé.\n", current_block);
+            return ERROR;
+        }
+
+        // On enlève les espaces au début
+        char *line = buffer;
+        while (*line == ' ' || *line == '\t') line++;
+
+        if (sscanf(line, "id : %d", &current_id) == 1) {
+            continue;
+        }
+    }
+
+    // On cherche l'id du bloc suivant
+    if (Search_Key_Word(fp, next_block)) {
+        Error("Format du fichier invalide, %s introuvable.\n", next_block);
+        return ERROR;
+    }
+
+    // On extrait l'id
+    while (next_id == -1) {
+        if (!fgets(buffer, BUFFER_DEBUG, fp)) {
+            Error("Format du fichier invalide, %s trouvé, mais aucune données à chargé trouvé.\n", next_block);
+            return ERROR;
+        }
+
+        // On enlève les espaces au début
+        char *line = buffer;
+        while (*line == ' ' || *line == '\t') line++;
+
+        if (sscanf(line, "id : %d", &next_id) == 1) {
+            continue;
+        }
+    }
+
+    // Et enfin on cherche la grille
+    if (Search_Key_Word(fp, grid_key)) {
+        Error("Format du fichier invalide, %s introuvable.", grid_key);
+        return ERROR;
+    }
+
+    // On extrait la grille
+    for (int y_index = 0; y_index < GAME_API_HEIGHT; y_index++) {
+        if (!fgets(buffer, BUFFER_DEBUG, fp)) {
+            Error("Format du fichier invalide, %s trouvé, mais aucune données à charger.\n", grid_key);
+            return ERROR;
+        }
+    
+        char *ptr = buffer;
+        char *end;
+        for (int x_index = 0; x_index < GAME_API_WEIGHT; x_index++) {
+            int value = (int)strtol(ptr, &end, 10);
+    
+            if (ptr == end) {
+                Error("Valeur invalide à la ligne %d, colonne %d.\n", y_index + 1, x_index + 1);
+                return ERROR;
+            }
+    
+            grid[y_index][x_index] = value;
+            ptr = end;
+        }
+    }
+
+    // On set l'API avec ces valeurs
+    game->pos.x = x; game->pos.y = y;
+
+    int size = Get_Block_Size(game->id_block);
+    game->id_block = current_id;
+    if (Set_Block(game, IS_BLOCK, size)) return ERROR;
+
+    size = Get_Block_Size(game->id_next_block);
+    game->id_next_block = next_id;
+    if (Set_Block(game, IS_NEXT_BLOCK, size)) return ERROR;
+
+    memcpy(game->grid, grid, sizeof(game->grid));
+    Display_Grid("On a cette grille :", game);
+
+    return SUCCESS;
 }
 
 void Cancel_Rotate(APIGame *game) {
@@ -187,6 +335,7 @@ int Block_Physics(APIGame *game) {
 
 int Set_Block(APIGame *game, int block, const int old_size) {
     if (block == IS_BLOCK) {
+        Debug("block id : %d\n", game->id_block);
         // On réalloue une nouvelle taille et on copie le bon bloc, pour le block actuelle
         int size = Get_Block_Size(game->id_block);
         game->block = realloc(game->block, size * sizeof(int *));
@@ -215,6 +364,7 @@ int Set_Block(APIGame *game, int block, const int old_size) {
         }
         Display_Block("On a realloc pour avoir :", game);
     } else {
+        Debug("block id : %d\n", game->id_block);
         // On réalloue une nouvelle taille et on copie le bon bloc, pour le block suivant        size = Get_Block_Size(random_block);
         int size = Get_Block_Size(game->id_next_block);
         game->next_block = realloc(game->next_block, size * sizeof(int *));
@@ -236,6 +386,7 @@ int Set_Block(APIGame *game, int block, const int old_size) {
                 Error("N'as pas réussis à allouer de la mémoire.\n");
                 return ERROR;
             }
+
             memcpy(game->next_block[i], ((int (*)[size]) shapes[game->id_next_block])[i], size * sizeof(int));
         }
         Display_Next_Block("On a realloc pour avoir :", game);
@@ -252,102 +403,89 @@ int Spawn(APIGame *game) {
     game->pos.x = 4; // Dans un tetris le bloc spawn à la 3ème colonne (1 pour la bordure)
     game->pos.y = 1;
 
-    void **shapes = Get_Shapes();
-    int size = Get_Block_Size(random_block);
+    // On vide le blocs
+    int size = Get_Block_Size(game->id_block);
+    game->id_block = 0;
+    Debug("On vide l'actuelle\n");
+    if (Set_Block(game, IS_BLOCK, size)) return ERROR;
 
-    // Si on est au début donc pas de bloc initialisé
-    if (game->block == NULL) {
-        // On affecte le random au bloc courant
-        game->id_block = random_block;
-        game->block = malloc(size * sizeof(int *));
-        if (!game->block) {
-            Error("N'as pas réussis à allouer de la mémoire.\n");
-            return ERROR;
-        }
+    Debug("On rempli l'actuelle\n");
+    size = Get_Block_Size(game->id_block);
+    // Sinon on met la valeur suivante dans la valeur courante
+    game->id_block = game->flag ? random_block : game->id_next_block;
+    if (game->flag) game->flag = !game->flag;
+    if (Set_Block(game, IS_BLOCK, size)) return ERROR;
 
-        for (int i = 0; i < size; i++) {
-            game->block[i] = malloc(size * sizeof(int));
-            if (!game->block[i]) {
-                Error("N'as pas réussis à allouer de la mémoire.\n");
-                return ERROR;
-            }
-            memcpy(game->block[i], ((int (*)[size]) shapes[game->id_block])[i], size * sizeof(int));
-        }
+    Debug("On vide le suivant\n");
+    // On vide le bloc
+    size = Get_Block_Size(game->id_next_block);
+    game->id_next_block = 0;
+    if (Set_Block(game, IS_NEXT_BLOCK, size)) return ERROR;
 
-        // Et on fait un autre random pour le next
-        random_block = (rand() % (BLOCK_COUNT - 1)) + 1;
-        //random_block = 4;
-        size = Get_Block_Size(random_block);
-        
-        game->id_next_block = random_block;
-        game->next_block = malloc(size * sizeof(int *));
-        if (!game->next_block) {
-            Error("N'as pas réussis à allouer de la mémoire.\n");
-            return ERROR;
-        }
+    Debug("On rempli le suivant");
+    // Et on mets une valeur random dans le suivant
+    size = Get_Block_Size(game->id_next_block);
+    random_block = (rand() % (BLOCK_COUNT - 1)) + 1;
+    game->id_next_block = random_block;
+    if (Set_Block(game, IS_NEXT_BLOCK, size)) return ERROR;
 
-        for (int i = 0; i < size; i++) {
-            game->next_block[i] = malloc(size * sizeof(int));
-            if (!game->next_block[i]) {
-                Error("N'as pas réussis à allouer de la mémoire.\n");
-                return ERROR;
-            }
-            memcpy(game->next_block[i], ((int (*)[size]) shapes[game->id_next_block])[i], size * sizeof(int));
-        }
-    } else {
-        // On vide le blocs
-        size = Get_Block_Size(game->id_block);
-        game->id_block = 0;
-        Debug("On vide l'actuelle\n");
-        if (Set_Block(game, IS_BLOCK, size)) return ERROR;
-
-        Debug("On rempli l'actuelle\n");
-        size = Get_Block_Size(game->id_block);
-        // Sinon on mets la valeur suivante dans la valeur courante
-        game->id_block = game->id_next_block;
-        if (Set_Block(game, IS_BLOCK, size)) return ERROR;
-
-        Debug("On vide le suivant\n");
-        // On vide le bloc
-        size = Get_Block_Size(game->id_next_block);
-        game->id_next_block = 0;
-        if (Set_Block(game, IS_NEXT_BLOCK, size)) return ERROR;
-
-        Debug("On rempli le suivant");
-        // Et on mets le random dans le suivant
-        size = Get_Block_Size(game->id_next_block);
-        game->id_next_block = random_block;
-        if (Set_Block(game, IS_NEXT_BLOCK, size)) return ERROR;
-    }
     return SUCCESS;
 }
 
 int Start_Game(APIGame *game) {
     game->pos.x = 0;
     game->pos.y = 0;
-    game->block = NULL;
     game->direction = 0;
-    game->next_block = NULL;
-    game->grid = malloc((GAME_API_HEIGHT) * sizeof(int *));
-    if (!game->grid) {
-        Error("N'as pas réussis à allouer de la mémoire.\n");
+    game->flag = 1;
+
+    game->id_block = 0;
+    int size = Get_Block_Size(game->id_block);
+    // Allocation du tableau de pointeurs
+    game->block = malloc(size * sizeof(int *));
+    if (!game->block) {
+        Error("N'as pas réussi à allouer game->block.\n");
         return ERROR;
     }
 
-    // On initialise toutes les lignes avec des ' '
-    for (int i = 0; i < GAME_API_HEIGHT; i++) {
-        game->grid[i] = malloc((GAME_API_WEIGHT) * sizeof(int));
-        if (!game->grid[i]) {
-            Error("N'as pas réussis à allouer de la mémoire.");
+    // Allocation de chaque ligne
+    for (int i = 0; i < size; i++) {
+        game->block[i] = malloc(size * sizeof(int));
+        if (!game->block[i]) {
+            Error("N'as pas réussi à allouer game->block[%d].\n", i);
             return ERROR;
         }
-        // On ajoute le contenu
-        for (int j = 0; j < GAME_API_WEIGHT; j++) {
-            // Mise en place du contour
-            if (i == 0 || j == 0 || i == GAME_API_HEIGHT - 1 || j == GAME_API_WEIGHT - 1) {
-                game->grid[i][j] = APIGAME_WALL;
+
+        // Tu peux aussi initialiser à 0 ou à partir de shapes[game->id_block]
+        memset(game->block[i], 0, size * sizeof(int));
+    }
+    
+    game->id_next_block = 0;
+    size = Get_Block_Size(game->id_block);
+    // Allocation du tableau de pointeurs
+    game->next_block = malloc(size * sizeof(int *));
+    if (!game->next_block) {
+        Error("N'as pas réussi à allouer game->block.\n");
+        return ERROR;
+    }
+
+    // Allocation de chaque ligne
+    for (int i = 0; i < size; i++) {
+        game->next_block[i] = malloc(size * sizeof(int));
+        if (!game->next_block[i]) {
+            Error("N'as pas réussi à allouer game->next_block[%d].\n", i);
+            return ERROR;
+        }
+
+        // Tu peux aussi initialiser à 0 ou à partir de shapes[game->id_block]
+        memset(game->next_block[i], 0, size * sizeof(int));
+    }
+    
+    for (int y = 0; y < GAME_API_HEIGHT; y++) {
+        for (int x = 0; x < GAME_API_WEIGHT; x++) {
+            if (y == 0 || x == 0 || y == GAME_API_HEIGHT - 1 || x == GAME_API_WEIGHT - 1) {
+                game->grid[y][x] = APIGAME_WALL;
             } else {
-                game->grid[i][j] = 0;
+                game->grid[y][x] = 0;
             }
         }
     }
@@ -367,9 +505,4 @@ void Stop_Game(APIGame *game) {
         free(game->next_block[i]);
     }
     free(game->next_block);
-
-    for (int i = 0; i < GAME_API_HEIGHT; i++) {
-        free(game->grid[i]);
-    }
-    free(game->grid);
 }

@@ -17,9 +17,9 @@ Le jeu fonctionne dans un terminal Linux. La compatibilité avec Windows n’a p
 
 Voici un aperçu de l'application.
 
-<p>
-  <img src="./docs/HomePage.png" alt="Page d'accueil" height="400">
-  <img src="./docs/GameExemple.png" alt="Exemple de jeu" height="400">
+<p align="center">
+  <img src="./docs/HomePage.png" alt="Page d'accueil" width="45%" style="display:inline-block; margin-right: 10px;" />
+  <img src="./docs/GameExemple.png" alt="Exemple de jeu" width="45%" style="display:inline-block;" />
 </p>
 
 ## Fonctionnalités
