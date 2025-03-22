@@ -97,3 +97,13 @@ int Menu(const int is_loose) {
         return ERROR;
     }
 }
+
+void Help(const char* buffer) {
+	printf("Usage: %s [OPTION]\n", buffer);
+	printf("Une implémentation basique du jeu Tetris en C, jouable dans un terminal.\n\n");
+	printf("Pour jouer au jeu il suffit de lancer sans arguments, mais voici quand même quelques options.\n");
+	printf("  -d [FICHIER]    Pour fournir un état prédéfinit au jeu\n");
+    printf("                  pour facilité le debug. (a faire)\n");
+	printf("  -h, --help      Affiche ce message\n");
+	printf("      --version   Affiche la version du script\n");
+}

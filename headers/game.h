@@ -22,6 +22,7 @@ typedef struct {
     
     int **block;
     int id_block;
+    int direction;
 
     int **next_block;
     int id_next_block;
@@ -57,7 +58,7 @@ typedef struct {
 #define Get_Start_Of_Block(game) Get_X_Of_Block(game, 1)
 #define Get_End_Of_Block(game) Get_X_Of_Block(game, 0)
 
-
+void Cancel_Rotate(APIGame *game);
 void Rotate_Block(APIGame *game);
 int Get_X_Of_Block(APIGame *game, const int first);
 int Get_Block_Width(APIGame *game);

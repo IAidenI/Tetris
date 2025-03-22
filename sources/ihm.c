@@ -164,7 +164,7 @@ void Update_Block(APIGame *game, const int posX, const int posY, const wchar_t *
     DebugSimple("\n");
 }
 
-int Place_Block(APIGame *game, const int direction) {
+int Place_Block(APIGame *game) {
     Debug("On supprime l'ancienne position du bloc.\n");
     // On supprimer l'ancienne position du bloc
     Del_Block(game, game->pos.x, game->pos.y);
@@ -174,13 +174,13 @@ int Place_Block(APIGame *game, const int direction) {
     int save_y = game->pos.y;
 
     // On descend le bloc
-    if (direction == GO_LEFT) {
+    if (game->direction == GO_LEFT) {
         game->pos.x--;
-    } else if (direction == GO_RIGHT) {
+    } else if (game->direction == GO_RIGHT) {
         game->pos.x++;
-    } else if (direction == GO_DOWN) {
+    } else if (game->direction == GO_DOWN) {
         game->pos.y++;
-    } else if (direction == GO_UP) {
+    } else if (game->direction == GO_UP) {
         Rotate_Block(game);
     }
 
@@ -190,12 +190,14 @@ int Place_Block(APIGame *game, const int direction) {
     if (game->pos.x < GAME_API_WEIGHT - 1 && game->pos.y < GAME_API_HEIGHT - 1) {
         Debug("On vérifie si il y a des colisions.\n");
         int ret = Block_Physics(game);
+        Debug("ret ???? : %d\n", ret);
         if (ret == LOOSE) {
             return ret;
         } else if (ret) {
             game->pos.x = save_x;
             game->pos.y = save_y;
             colision = ret;
+            if (game->direction == GO_UP) Cancel_Rotate(game);
         }
     }
     Debug("On a au final à x : %d - y : %d\n", game->pos.x, game->pos.y);
@@ -372,7 +374,8 @@ int Game() {
                 if (elapsed >= BLOCK_WAIT || !has_spawned) {
                     start = current;
                     Display_Block("On va placer le bloc actuelle :", &game);
-                    int ret = Place_Block(&game, GO_DOWN);
+                    game.direction = GO_DOWN;
+                    int ret = Place_Block(&game);
                     if (ret) {
                         if (ret == LOOSE) {
                             Stop_Game(&game);
@@ -409,7 +412,8 @@ int Game() {
                     Debug("DOWN\n");
                     int true_y = Get_End_Of_Block(&game);
                     if (true_y < GAME_HEIGHT && game.pos.y > 1 && !paused) {
-                        int ret = Place_Block(&game, GO_DOWN);
+                        game.direction = GO_DOWN;
+                        int ret = Place_Block(&game);
                         if (ret) {
                             if (ret == LOOSE) {
                                 Stop_Game(&game);
@@ -425,7 +429,8 @@ int Game() {
                 case KEY_LEFT:
                     Debug("LEFT\n");
                     if (game.pos.y > 1 && !paused) {
-                        int ret = Place_Block(&game, GO_LEFT);
+                        game.direction = GO_LEFT;
+                        int ret = Place_Block(&game);
                         if (ret) {
                             if (ret == LOOSE) {
                                 Stop_Game(&game);
@@ -441,7 +446,8 @@ int Game() {
                 case KEY_RIGHT:
                     Debug("RIGHT\n");
                     if (game.pos.x < GAME_API_WEIGHT - Get_Block_Width(&game) && game.pos.y > 1 && !paused) {
-                        int ret = Place_Block(&game, GO_RIGHT);
+                        game.direction = GO_RIGHT;
+                        int ret = Place_Block(&game);
                         if (ret) {
                             if (ret == LOOSE) {
                                 Stop_Game(&game);
@@ -459,7 +465,8 @@ int Game() {
                     Debug("huu : %d - %d ; x : %d\n", GAME_API_WEIGHT, Get_Block_Size(game.id_block), game.pos.x);
                     if (game.pos.x > 0 && game.pos.x + Get_Block_Size(game.id_block) < GAME_API_WEIGHT && !paused) {
                         // On vérifie si on peut tourner dans Place_Block
-                        int ret = Place_Block(&game, GO_UP);
+                        game.direction = GO_UP;
+                        int ret = Place_Block(&game);
                         if (ret) {
                             if (ret == LOOSE) {
                                 Stop_Game(&game);

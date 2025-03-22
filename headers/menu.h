@@ -9,5 +9,6 @@
 #define MENU_ITEMS 2
 
 int Menu(const int is_loose);
+void Help(const char* buffer);
 
 #endif
