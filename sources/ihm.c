@@ -130,7 +130,6 @@ int Put_Next_Block(APIGame *game) {
     Del_Next_Block(game, GAME_HEIGHT + 1, 3);
     Put_Block(game, x, y);
     
-    Display_Block("lalala :", game);
     // On ne veux pas vraiment passer au bloc suivant, on veux juste l'affiché donc en remet l'ancien bloc
     Free_Block(game->block, saved_size);
     game->block = saved_block;
@@ -452,8 +451,7 @@ int Game(APIGame *game) {
                     break;
                 case KEY_DOWN:
                     Debug("DOWN\n");
-                    int true_y = Get_End_Of_Block(game);
-                    if (true_y < GAME_HEIGHT && game->pos.y > 1 && !paused) {
+                    if (!paused) {
                         game->direction = GO_DOWN;
                         int ret = Place_Block(game);
                         if (ret) {
@@ -469,7 +467,7 @@ int Game(APIGame *game) {
                     break;
                 case KEY_LEFT:
                     Debug("LEFT\n");
-                    if (game->pos.y > 1 && !paused) {
+                    if (!paused) {
                         game->direction = GO_LEFT;
                         int ret = Place_Block(game);
                         if (ret) {
@@ -485,7 +483,7 @@ int Game(APIGame *game) {
                     break;
                 case KEY_RIGHT:
                     Debug("RIGHT\n");
-                    if (game->pos.x < GAME_API_WEIGHT - Get_Block_Width(game) && game->pos.y > 1 && !paused) {
+                    if (!paused) {
                         game->direction = GO_RIGHT;
                         int ret = Place_Block(game);
                         if (ret) {
@@ -501,8 +499,7 @@ int Game(APIGame *game) {
                     break;
                 case KEY_UP:
                     Debug("UP\n");
-                    Debug("huu : %d - %d ; x : %d\n", GAME_API_WEIGHT, Get_Block_Size(game->id_block), game->pos.x);
-                    if (game->pos.x > 0 && game->pos.x + Get_Block_Size(game->id_block) < GAME_API_WEIGHT && !paused) {
+                    if (!paused) {
                         // On vérifie si on peut tourner dans Place_Block
                         game->direction = GO_UP;
                         int ret = Place_Block(game);

@@ -77,8 +77,8 @@ Ajout utilisateur
 - [ ] Système de niveaux
 - [ ] Ajout d'un menu de pause
 - [ ] Ajout d'un aperce d'où sera la pièce
-- [ ] Ajout du 7-bag randomizer
-- [ ] Spawn d'un bloc pas fluide avec les flèches
+- [X] Ajout du 7-bag randomizer
+- [X] Spawn d'un bloc pas fluide avec les flèches
 - [ ] Quitter ingame, demande de confirmation + revenir au menu
 
 Ajout technique

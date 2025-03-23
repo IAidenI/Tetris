@@ -52,6 +52,8 @@ typedef struct {
 
     int grid[GAME_API_HEIGHT][GAME_API_WEIGHT];
 
+    int seven_bag[BLOCK_COUNT - 1];
+
     int flag; // Un flag global pour vérifier des conditions 
               // (principalement pour savoir si c'est le début de la game)
 } APIGame;
@@ -77,6 +79,10 @@ int Get_Block_Width(APIGame *game);
 int Set_Block(APIGame *game, int block, const int old_size);
 
 void Refresh_Grid(APIGame *game);
+
+void Fill_Bag(APIGame *game);
+int Is_Bag_Empty(APIGame *game);
+int Random_Block(APIGame *game);
 
 int Search_Key_Word(FILE *fp, const char *key_word);
 int Set_Game(APIGame *game, const char *path_name);

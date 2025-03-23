@@ -41,6 +41,14 @@ void Display_Grid(const char *text, APIGame *game) {
     DebugSimple("\n");
 }
 
+void Display_Bag(const char *text, APIGame *game) {
+    Debug("%s\n", text);
+    for (int i = 0; i < BLOCK_COUNT - 1; i++) {
+        DebugSimple("%d ", game->seven_bag[i]);
+    }
+    DebugSimple("\n");
+}
+
 int Search_Key_Word(FILE *fp, const char *key_word) {
     char buffer[BUFFER_DEBUG];
     rewind(fp); // On remet la tête de lecture au début du fichier
@@ -368,6 +376,44 @@ int Block_Physics(APIGame *game) {
     return SUCCESS;
 }
 
+void Fill_Bag(APIGame *game) {
+    for (int i = 0; i < BLOCK_COUNT - 1; i++) {
+        game->seven_bag[i] = i + 1;
+    }
+}
+
+int Is_Bag_Empty(APIGame *game) {
+    for (int i = 0; i < BLOCK_COUNT; i++) {
+        if (game->seven_bag[i] != 0) return 0;
+    }
+    return 1;
+}
+
+int Random_Block(APIGame *game) {
+    srand(time(NULL));
+    // Si le sac est vide on le rempli
+    if (Is_Bag_Empty(game)) Fill_Bag(game);
+    Display_Bag("Bag :", game);
+    
+    // On récupère les indices des blocs encore présent
+    int available_indices[BLOCK_COUNT - 1];
+    int count = 0;
+    for (int i = 0; i < BLOCK_COUNT - 1; i ++) {
+        if (game->seven_bag[i] != 0) {
+            available_indices[count++] = i;
+        }
+    }
+
+    // On choisi un nombre random parmis les restant
+    int random_pos = rand() % count;
+    int random_block = game->seven_bag[available_indices[random_pos]];
+    game->seven_bag[available_indices[random_pos]] = 0;
+
+    Debug("random : %d\n", random_block);
+    Display_Bag("Nouveau bag :", game);
+    return random_block;
+}
+
 int Set_Block(APIGame *game, int block, const int old_size) {
     if (block == IS_BLOCK) {
         Debug("block id : %d\n", game->id_block);
@@ -430,9 +476,8 @@ int Set_Block(APIGame *game, int block, const int old_size) {
 }
 
 int Spawn(APIGame *game) {
-    srand(time(NULL));
-    // On génere un bloc random à une position random
-    int random_block = (rand() % (BLOCK_COUNT - 1)) + 1;
+    // On génere un bloc random en utilisant la méthode 7-bag
+    int random_block = Random_Block(game);
     //random_block = 4;
 
     game->pos.x = 4; // Dans un tetris le bloc spawn à la 3ème colonne (1 pour la bordure)
@@ -448,8 +493,7 @@ int Spawn(APIGame *game) {
     size = Get_Block_Size(game->id_block);
     // Sinon on met la valeur suivante dans la valeur courante
     Debug("flag : %d\n", game->flag);
-    game->id_block = game->flag ? random_block : game->id_next_block;
-    if (game->flag) game->flag = FLAG_NEUTRAL;
+    game->id_block = game->flag == FLAG_START ? random_block : game->id_next_block;
     if (Set_Block(game, IS_BLOCK, size)) return ERROR;
 
     Debug("On vide le suivant\n");
@@ -458,10 +502,11 @@ int Spawn(APIGame *game) {
     game->id_next_block = 0;
     if (Set_Block(game, IS_NEXT_BLOCK, size)) return ERROR;
 
-    Debug("On rempli le suivant");
+    Debug("On rempli le suivant\n");
     // Et on mets une valeur random dans le suivant
     size = Get_Block_Size(game->id_next_block);
-    random_block = (rand() % (BLOCK_COUNT - 1)) + 1;
+    random_block = game->flag == FLAG_START ? Random_Block(game) : random_block;
+    if (game->flag == FLAG_START) game->flag = FLAG_NEUTRAL;
     game->id_next_block = random_block;
     if (Set_Block(game, IS_NEXT_BLOCK, size)) return ERROR;
 
@@ -473,6 +518,8 @@ int Start_Game(APIGame *game) {
     game->pos.y = 0;
     game->direction = 0;
     game->flag = FLAG_START;
+    Fill_Bag(game);
+    Display_Bag("Bag initialisé :", game);
 
     game->id_block = 0;
     int size = Get_Block_Size(game->id_block);
