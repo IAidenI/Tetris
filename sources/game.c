@@ -61,10 +61,11 @@ int Set_Game(APIGame *game, const char *path_name) {
     const char *position = "[position]";
     const char *current_block = "[current block]";
     const char *next_block = "[next block]";
+    const char *rotation = "[rotation]";
     const char *grid_key = "[grid]";
 
     char buffer[BUFFER_DEBUG];
-    int x = -1, y = -1, current_id = -1, next_id = -1;
+    int x = -1, y = -1, current_id = -1, next_id = -1, rot = -1;
     int grid[GAME_API_HEIGHT][GAME_API_WEIGHT];
 
     FILE *fp = fopen(path_name, "r");
@@ -99,6 +100,7 @@ int Set_Game(APIGame *game, const char *path_name) {
         }
     }
 
+
     // On cherche ensuite l'id du bloc actuelle
     if (Search_Key_Word(fp, current_block)) {
         Error("Format du fichier invalide, %s introuvable.\n", current_block);
@@ -121,6 +123,7 @@ int Set_Game(APIGame *game, const char *path_name) {
         }
     }
 
+
     // On cherche l'id du bloc suivant
     if (Search_Key_Word(fp, next_block)) {
         Error("Format du fichier invalide, %s introuvable.\n", next_block);
@@ -142,6 +145,30 @@ int Set_Game(APIGame *game, const char *path_name) {
             continue;
         }
     }
+
+
+    // On cherhe les rotations du bloc
+    if (Search_Key_Word(fp, rotation)) {
+        Error("Format du fichier invalide, %s introuvable.\n", rotation);
+        return ERROR;
+    }
+
+    // On extrait les rotations
+    while (rot == -1) {
+        if (!fgets(buffer, BUFFER_DEBUG, fp)) {
+            Error("Format du fichier invalide, %s trouvé, mais aucune données à chargé trouvé.\n", rotation);
+            return ERROR;
+        }
+
+        // On enlève les espaces au début
+        char *line = buffer;
+        while (*line == ' ' || *line == '\t') line++;
+
+        if (sscanf(line, "rot : %d", &rot) == 1) {
+            continue;
+        }
+    }
+
 
     // Et enfin on cherche la grille
     if (Search_Key_Word(fp, grid_key)) {
@@ -171,6 +198,7 @@ int Set_Game(APIGame *game, const char *path_name) {
         }
     }
 
+
     // On set l'API avec ces valeurs
     game->pos.x = x; game->pos.y = y;
 
@@ -181,6 +209,11 @@ int Set_Game(APIGame *game, const char *path_name) {
     size = Get_Block_Size(game->id_next_block);
     game->id_next_block = next_id;
     if (Set_Block(game, IS_NEXT_BLOCK, size)) return ERROR;
+
+    Debug("%d rotations\n", rot);
+    for (int i = 0; i < rot; i ++) {
+        Rotate_Block(game);
+    }
 
     memcpy(game->grid, grid, sizeof(game->grid));
     Display_Grid("On a cette grille :", game);
@@ -231,6 +264,7 @@ void Rotate_Block(APIGame *game) {
         return; // Ne rien faire pour BLOCK_O
     }
 
+    Display_Block("Avant :", game);
     int size = Get_Block_Size(game->id_block);
     int **new_block = (int **)malloc(size * sizeof(int *));
     for (int i = 0; i < size; i++) {
@@ -252,6 +286,7 @@ void Rotate_Block(APIGame *game) {
 
     // Assignation du bloc tourné
     game->block = new_block;
+    Display_Block("Après :", game);
 }
 
 int Get_X_Of_Block(APIGame *game, const int first) {
@@ -412,8 +447,9 @@ int Spawn(APIGame *game) {
     Debug("On rempli l'actuelle\n");
     size = Get_Block_Size(game->id_block);
     // Sinon on met la valeur suivante dans la valeur courante
+    Debug("flag : %d\n", game->flag);
     game->id_block = game->flag ? random_block : game->id_next_block;
-    if (game->flag) game->flag = !game->flag;
+    if (game->flag) game->flag = FLAG_NEUTRAL;
     if (Set_Block(game, IS_BLOCK, size)) return ERROR;
 
     Debug("On vide le suivant\n");
@@ -436,7 +472,7 @@ int Start_Game(APIGame *game) {
     game->pos.x = 0;
     game->pos.y = 0;
     game->direction = 0;
-    game->flag = 1;
+    game->flag = FLAG_START;
 
     game->id_block = 0;
     int size = Get_Block_Size(game->id_block);

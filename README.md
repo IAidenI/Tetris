@@ -17,9 +17,9 @@ Le jeu fonctionne dans un terminal Linux. La compatibilité avec Windows n’a p
 
 Voici un aperçu de l'application.
 
-<p align="center">
-  <img src="./docs/HomePage.png" alt="Page d'accueil" width="45%" style="display:inline-block; margin-right: 10px;" />
-  <img src="./docs/GameExemple.png" alt="Exemple de jeu" width="45%" style="display:inline-block;" />
+<p align=center>
+  <img src="./docs/HomePage.png" alt="Page d'accueil" height="350">
+  <img src="./docs/GameExemple.png" alt="Exemple de jeu" height="350">
 </p>
 
 ## Fonctionnalités
@@ -67,15 +67,29 @@ Il contient également des fichiers secondaires pour :
 Un fichier de log est disponible ici : `/tmp/debug_tetris.log`  
 Il contient des informations utiles pour diagnostiquer l'état de l'application.
 
+Il est également possible de crée un snapshot via un fichier. En utilisant l'option -d <fichier> il est possible de mettre le jeu à un état précis. Le fichier doit avoir le même format que celui indiqué dans `example_snapshot.txt`. L'ordre n'importe pas et les espaces non plus.
+
+
 ## A faire
 
-- [ ] Fix le segfault quand on spam la rotation
-- [ ] Spawn d'un bloc pas fluide avec les flèches
-- [ ] Ajout d'un outil de debug pour mettre le jeu à un état précis
-- [ ] Quitter ingame, demande de confirmation + revenir au menu
+Ajout utilisateur
 - [ ] Ajout du score
 - [ ] Système de niveaux
 - [ ] Ajout d'un menu de pause
-- [ ] Refactoring pour améliorer certaines parties du code
+- [ ] Ajout d'un aperce d'où sera la pièce
 - [ ] Ajout du 7-bag randomizer
+- [ ] Spawn d'un bloc pas fluide avec les flèches
+- [ ] Quitter ingame, demande de confirmation + revenir au menu
+
+Ajout technique
+- [X] Ajout d'un outil de debug pour mettre le jeu à un état précis
+- [ ] Fix le segfault quand on spam la rotation
+- [ ] Refactoring pour améliorer certaines parties du code
 - [ ] Vérifier la compatibilité windows
+- [ ] Refaire les debug pour en avoir des génériques
+- [ ] Tri dans les .h
+- [ ] Mieux commenter
+
+Facultatif
+- [ ] Crée un snapshot en pressant sur une touche
+- [ ] Option pour utiliser le fichier de debug

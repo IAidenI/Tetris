@@ -57,6 +57,11 @@ typedef struct {
 } APIGame;
 #define APIGAME_WALL 9
 
+// Pour le flag
+#define FLAG_NEUTRAL 0
+#define FLAG_START   1
+#define FLAG_DEBUG   2
+
 // Gestion recuperation pos bloc
 #define Get_Start_Of_Block(game) Get_X_Of_Block(game, 1)
 #define Get_End_Of_Block(game) Get_X_Of_Block(game, 0)

@@ -19,10 +19,11 @@ int main(int argc, char **argv) {
                 return 1;
             }
             
-            game.flag = 1;
             if (Set_Game(&game, argv[2])) {
+                Stop_Game(&game);
                 return 1;
             }
+            game.flag = FLAG_DEBUG;
         } else if (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0) {
             Help(argv[0]);
             return 0;
@@ -37,20 +38,23 @@ int main(int argc, char **argv) {
     }
 
     
-    int ret = Menu(0);
+    int ret = game.flag == FLAG_DEBUG ? 0 : Menu(0);
     while (ret != EXIT) {
         Debug("Code de retour : %d\n", ret);
         if (ret == ERROR) {
+            Stop_Game(&game);
             return 1;
         } else {
             ret = Game(&game);
             if (ret == ERROR) {
+                Stop_Game(&game);
                 return 1;
             } else if (ret == LOOSE) {
                 ret = Menu(1);
             }
         }
     }
+    Stop_Game(&game);
     printf("Au revoir.\n");
     return 0;
 }

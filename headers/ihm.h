@@ -35,6 +35,14 @@ int Put_Next_Block(APIGame *game);
 void Update_Block(APIGame *game, int posX, int posY, const wchar_t *state);
 int Place_Block(APIGame *game);
 
+int **Clone_Block(int **src, int size);
+void Free_Block(int **block, int size);
+
+void Refresh_Game(APIGame *game);
+void Refresh_Grid(APIGame *game);
+
+void Create_Info();
+void Create_Frame_Next_Block();
 void Borders(const wchar_t *c1, const wchar_t *c2);
 void Create_Frame();
 

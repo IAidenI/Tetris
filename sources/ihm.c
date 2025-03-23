@@ -81,9 +81,40 @@ int Clear_Full_Lines(APIGame *game) {
     return CLEAR_BLOCK;
 }
 
+int **Clone_Block(int **src, int size) {
+    int **copy = malloc(size * sizeof(int *));
+    if (!copy) return NULL;
+
+    for (int i = 0; i < size; i++) {
+        copy[i] = malloc(size * sizeof(int));
+        if (!copy[i]) {
+            // Nettoie en cas d'échec partiel
+            for (int j = 0; j < i; j++) free(copy[j]);
+            free(copy);
+            return NULL;
+        }
+        memcpy(copy[i], src[i], size * sizeof(int));
+    }
+
+    return copy;
+}
+
+void Free_Block(int **block, int size) {
+    for (int i = 0; i < size; i++) {
+        free(block[i]);
+    }
+    free(block);
+}
+
 int Put_Next_Block(APIGame *game) {
     // On veux mettre le next_block pas le bloc, donc on save et on met le next_block à la place du bloc
     int id_block = game->id_block;
+    int saved_id = game->id_block;
+    int saved_size = Get_Block_Size(saved_id);
+    int **saved_block = Clone_Block(game->block, saved_size);
+    if (!saved_block) return ERROR;
+
+    // On replace temporairement par le bloc suivant
     int size = Get_Block_Size(game->id_block);
     game->id_block = game->id_next_block;
     if (Set_Block(game, IS_BLOCK, size)) return ERROR;
@@ -101,14 +132,10 @@ int Put_Next_Block(APIGame *game) {
     
     Display_Block("lalala :", game);
     // On ne veux pas vraiment passer au bloc suivant, on veux juste l'affiché donc en remet l'ancien bloc
-    size = Get_Block_Size(game->id_block);
-    game->id_block = 0;
-    if (Set_Block(game, IS_BLOCK, size)) return ERROR;
-
-    Debug("ui\n");
-    size = Get_Block_Size(game->id_block);
-    game->id_block = id_block;
-    if (Set_Block(game, IS_BLOCK, size)) return ERROR;
+    Free_Block(game->block, saved_size);
+    game->block = saved_block;
+    game->id_block = saved_id;
+    
     Display_Block("On a après :", game);
     return SUCCESS;
 }
@@ -229,16 +256,66 @@ void Borders(const wchar_t *c1, const wchar_t *c2) {
     addwstr(c2);
 }
 
+void Refresh_Game(APIGame *game) {
+    Refresh_Grid(game);
+    // On refresh aussi le next bloc
+    Put_Next_Block(game);
+}
+
 void Refresh_Grid(APIGame *game) {
     for (int y = 1; y < GAME_API_HEIGHT - 1; y++) {
         for (int x = 1; x < GAME_API_WEIGHT - 1; x++) {
-            Debug("On test %d à x : %d - y : %d\n", game->grid[y][x], x, y);
             ColorList color_list = Get_Color_List();
             attron(COLOR_PAIR(color_list.colors[game->grid[y][x]]));
             game->grid[y][x] ? mvaddwstr(y, (x - 1) * GAME_WEIGHT_MUL + 1, L"[]") : mvaddwstr(y, (x - 1) * GAME_WEIGHT_MUL + 1, L"  ");
             attron(COLOR_PAIR(color_list.colors[game->grid[y][x]]));
         }
     }
+}
+
+void Create_Frame_Next_Block() {
+    mvaddwstr(0, GAME_WEIGHT, CORNER_TOP_LEFT);
+    for (int i = GAME_WEIGHT + 1; i < GAME_WEIGHT + NEXT_BLOCK_WEIGHT - 1; i++) {
+        mvaddwstr(0, i, MIDLESCORE);
+    }
+    mvaddwstr(0, GAME_WEIGHT + NEXT_BLOCK_WEIGHT  - 1, CORNER_TOP_RIGHT);
+
+    move(1, GAME_WEIGHT);
+    addwstr(WALL);
+    addwstr(L" Next block ");
+    addwstr(WALL);
+
+    mvaddwstr(2, GAME_WEIGHT, CROSS_LEFT);
+    for (int i = GAME_WEIGHT + 1; i < GAME_WEIGHT + NEXT_BLOCK_WEIGHT - 1; i++) {
+        mvaddwstr(2, i, MIDLESCORE);
+    }
+    mvaddwstr(2, GAME_WEIGHT + NEXT_BLOCK_WEIGHT - 1, CROSS_RIGHT);
+
+    for (int i = 0; i < 2; i++) {
+        mvaddwstr(3 + i, GAME_WEIGHT, WALL);
+        for (int j = GAME_WEIGHT + 1; j < GAME_WEIGHT + NEXT_BLOCK_WEIGHT - 1; j++) {
+            mvaddwstr(3 + i, j, L" ");
+        }
+        mvaddwstr(3 + i, GAME_WEIGHT + NEXT_BLOCK_WEIGHT - 1, WALL);
+    }
+
+    mvaddwstr(NEXT_BLOCK_HEIGHT - 1, GAME_WEIGHT, CORNER_BOT_LEFT);
+    for (int i = GAME_WEIGHT + 1; i < GAME_WEIGHT + NEXT_BLOCK_WEIGHT - 1; i++) {
+        mvaddwstr(NEXT_BLOCK_HEIGHT - 1, i, MIDLESCORE);
+    }
+    mvaddwstr(NEXT_BLOCK_HEIGHT - 1, GAME_WEIGHT + NEXT_BLOCK_WEIGHT - 1, CORNER_BOT_RIGHT);
+}
+
+void Create_Info() {
+    mvaddwstr(GAME_HEIGHT - 9, GAME_WEIGHT + 1, L"  ↑ : Rotate");
+    mvaddwstr(GAME_HEIGHT - 8, GAME_WEIGHT + 1, L"  ← : Right");
+    mvaddwstr(GAME_HEIGHT - 7, GAME_WEIGHT + 1, L"  → : Left");
+    mvaddwstr(GAME_HEIGHT - 6, GAME_WEIGHT + 1, L"  ↓ : Down");
+
+
+    mvaddwstr(GAME_HEIGHT - 4, GAME_WEIGHT + 1, L"  +/- : Speed Up/Down");
+    mvaddwstr(GAME_HEIGHT - 3, GAME_WEIGHT + 1, L"  p   : Pause");
+    mvaddwstr(GAME_HEIGHT - 2, GAME_WEIGHT + 1, L"  q   : Quit");
 }
 
 void Create_Frame() {
@@ -261,50 +338,14 @@ void Create_Frame() {
 	        addwstr(L" ");
 	    }
 	    addwstr(WALL);
-
-        // Pour ajouter la Next Block
-        if (i == 0) {
-            addwstr(WALL);
-            addwstr(L" Next block ");
-            addwstr(WALL);
-        } else if (i == 1) {
-            addwstr(CROSS_LEFT);
-            for (int j = 0; j < NEXT_BLOCK_IHM_LEN; j++) {
-                addwstr(MIDLESCORE);
-            }
-            addwstr(CROSS_RIGHT);
-        } else if (i == 2 || i == 3) {
-            addwstr(WALL);
-            for (int j = 0; j < NEXT_BLOCK_IHM_LEN; j++) {
-                addwstr(L" ");
-            }
-            addwstr(WALL);
-        } else if (i == 4) {
-            addwstr(CORNER_BOT_LEFT);
-            for (int j = 0; j < NEXT_BLOCK_IHM_LEN; j++) {
-                addwstr(MIDLESCORE);
-            }
-            addwstr(CORNER_BOT_RIGHT);
-        } else if (i == GAME_HEIGHT - 3) {
-            addwstr(L"  q   : Quit");
-        } else if (i == GAME_HEIGHT - 4) {
-            addwstr(L"  p   : Pause");
-        } else if (i == GAME_HEIGHT - 5) {
-            addwstr(L"  +/- : Speed Up/Down");
-        } else if (i == GAME_HEIGHT - 7) {
-            addwstr(L"  arrow up    : Rotate");
-        } else if (i == GAME_HEIGHT - 8) {
-            addwstr(L"  arrow left  : Left");
-        } else if (i == GAME_HEIGHT - 9) {
-            addwstr(L"  arrow right : Right");
-        } else if (i == GAME_HEIGHT - 10) {
-            addwstr(L"  arrow down  : Down");
-        }
 	    addwstr(L"\n");
     }
 
     Bottom_Border();
     addwstr(L"\n");
+
+    Create_Frame_Next_Block();
+    Create_Info();
 }
 
 /* Gestion de la game */
@@ -337,13 +378,20 @@ int Game(APIGame *game) {
     Init_Colors();
 
     int key;
-    int has_spawned = game->flag ? 1 : 0;
-    if (game->flag) game->flag = !game->flag;
+    int has_spawned = 0;
     int paused = 0;
     struct timespec current, start;
 
     clear();
     Create_Frame(); // On crée le cadre
+    if (game->flag == FLAG_DEBUG) {
+        has_spawned = 1;
+        game->flag = FLAG_NEUTRAL;
+        Refresh_Game(game);
+        clock_gettime(CLOCK_MONOTONIC, &start);
+        Debug("Jeu chargé.\n");
+    }
+
     while(1) {
         if (!paused) {
             // On vérifie si un bloc à déjà spawn pour pas en faire apparaire plusieurs
@@ -354,7 +402,6 @@ int Game(APIGame *game) {
                 Display_Next_Block("Et le prochaine bloc est :", game);
 
                 if (ret) {
-                    Stop_Game(game);
                     endwin();
                     return ret;
                 }
@@ -372,7 +419,6 @@ int Game(APIGame *game) {
                     int ret = Place_Block(game);
                     if (ret) {
                         if (ret == LOOSE) {
-                            Stop_Game(game);
                             endwin();
                             return ret;
                         } else if (ret == COLISION) {
@@ -392,12 +438,14 @@ int Game(APIGame *game) {
                         Debug("Jeu relancé.\n");
                     } else {
                         Debug("Jeu mis en pause.\n");
+                        Display_Grid("Status grille :", game);
+                        Display_Block("Status block :", game);
+                        Display_Next_Block("Status next block :", game);
                     }
                     paused = !paused;
                     // Mettre un menu de pause
                     break;
                 case 'q':
-                    Stop_Game(game);
                     Debug("Exit : %d\n", EXIT);
                     endwin();
                     return EXIT;
@@ -410,7 +458,6 @@ int Game(APIGame *game) {
                         int ret = Place_Block(game);
                         if (ret) {
                             if (ret == LOOSE) {
-                                Stop_Game(game);
                                 endwin();
                                 return ret;
                             } else if (ret == COLISION) {
@@ -427,7 +474,6 @@ int Game(APIGame *game) {
                         int ret = Place_Block(game);
                         if (ret) {
                             if (ret == LOOSE) {
-                                Stop_Game(game);
                                 endwin();
                                 return ret;
                             } else if (ret == COLISION) {
@@ -444,7 +490,6 @@ int Game(APIGame *game) {
                         int ret = Place_Block(game);
                         if (ret) {
                             if (ret == LOOSE) {
-                                Stop_Game(game);
                                 endwin();
                                 return ret;
                             } else if (ret == COLISION) {
@@ -463,7 +508,6 @@ int Game(APIGame *game) {
                         int ret = Place_Block(game);
                         if (ret) {
                             if (ret == LOOSE) {
-                                Stop_Game(game);
                                 endwin();
                                 return ret;
                             } else if (ret == COLISION) {
@@ -480,6 +524,5 @@ int Game(APIGame *game) {
     }
 
     endwin();
-    Stop_Game(game);
     return SUCCESS;
 }
