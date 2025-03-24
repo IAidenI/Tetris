@@ -12,6 +12,13 @@
 #define LIGHT_BLUE 5
 #define PURPLE     6
 #define DARK_BLUE  7
+#define SCORE      8
+
+#define LEVEL_EASY   9
+#define LEVEL_MEDIUM 10
+#define LEVEL_HARD   11
+#define LEVEL_EXPERT 12
+#define LEVEL_INSANE 13
 
 #define BLOCK_COUNT 8
 typedef struct {

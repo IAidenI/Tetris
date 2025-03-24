@@ -78,7 +78,7 @@ Ajout utilisateur
 - [ ] Ajout d'un menu de pause
 - [ ] Ajout d'un aperce d'où sera la pièce
 - [X] Ajout du 7-bag randomizer
-- [X] Spawn d'un bloc pas fluide avec les flèches
+- [ ] Spawn d'un bloc pas fluide avec les flèches
 - [ ] Quitter ingame, demande de confirmation + revenir au menu
 
 Ajout technique
@@ -89,6 +89,7 @@ Ajout technique
 - [ ] Refaire les debug pour en avoir des génériques
 - [ ] Tri dans les .h
 - [ ] Mieux commenter
+- [ ] Timing chelou si on presse sur un bouton pile au moment ou la pièce se pose(c.f. discord)
 
 Facultatif
 - [ ] Crée un snapshot en pressant sur une touche

@@ -49,6 +49,33 @@ void Display_Bag(const char *text, APIGame *game) {
     DebugSimple("\n");
 }
 
+const char *Get_Difficulty(int level) {
+    if (level >= 0 && level <= 4) {
+        return "Easy";
+    } else if (level >= 5 && level <= 9) {
+        return "Medium";
+    } else if (level >= 10 && level <= 15) {
+        return "Hard";
+    } else if (level >= 16 && level <= 28) {
+        return "Expert";
+    } else if (level >= 29) {
+        return "Insane";
+    }
+
+    return "Inconnu";
+}
+
+void Compute_Score(GameState *state, int lines) {
+    Debug("aaaa : %d\n", lines);
+    static const int base_scores[] = {0, 40, 100, 300, 1200};
+    if (lines >= 1 && lines <= 4) {
+        Debug("Donc : %d * %d\n", base_scores[lines], state->level);
+        state->score += base_scores[lines] * state->level;
+    }
+    Debug("Modif : %d\n", state->score);
+}
+
+
 int Search_Key_Word(FILE *fp, const char *key_word) {
     char buffer[BUFFER_DEBUG];
     rewind(fp); // On remet la tête de lecture au début du fichier
@@ -517,6 +544,9 @@ int Start_Game(APIGame *game) {
     game->pos.x = 0;
     game->pos.y = 0;
     game->direction = 0;
+    game->state.score = 0;
+    game->state.level = 1;
+    game->state.nb_lines = 0;
     game->flag = FLAG_START;
     Fill_Bag(game);
     Display_Bag("Bag initialisé :", game);

@@ -39,6 +39,12 @@ typedef struct {
     int y;
 } Position;
 
+typedef struct {
+    int score;
+    int level;
+    int nb_lines;
+} GameState;
+
 // Pour les infos sur la game en cours
 typedef struct {
     Position pos;
@@ -51,6 +57,8 @@ typedef struct {
     int id_next_block;
 
     int grid[GAME_API_HEIGHT][GAME_API_WEIGHT];
+    
+    GameState state;
 
     int seven_bag[BLOCK_COUNT - 1];
 
@@ -70,6 +78,9 @@ typedef struct {
 
 
 #define BUFFER_DEBUG 32
+
+const char *Get_Difficulty(int level);
+void Compute_Score(GameState *state, int lines);
 
 void Cancel_Rotate(APIGame *game);
 void Rotate_Block(APIGame *game);

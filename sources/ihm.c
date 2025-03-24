@@ -28,7 +28,22 @@ int Clear_Full_Lines(APIGame *game) {
     }
 
     Debug("On a détecter %d lines complètes.\n", full_count);
+    Debug("bbbb : %d\n", game->state.nb_lines);
     if (!full_count) return SUCCESS;
+    
+    // On met à jour le niveau
+    game->state.nb_lines += full_count;
+    Debug("aaa : %d\n", game->state.nb_lines);
+    if (game->state.nb_lines >= 10) {
+        Debug("weeeee\n");
+        game->state.level++;
+        game->state.nb_lines = 0;
+    }
+
+    //On met à jour le score
+    Compute_Score(&game->state, full_count);
+    Display_Score(game->state.score);
+    Display_Level(game->state.level);
 
     // On supprime toutes les lignes full
     for (int i = 0; i < full_count; i++) {
@@ -257,6 +272,7 @@ void Borders(const wchar_t *c1, const wchar_t *c2) {
 
 void Refresh_Game(APIGame *game) {
     Refresh_Grid(game);
+
     // On refresh aussi le next bloc
     Put_Next_Block(game);
 }
@@ -270,6 +286,59 @@ void Refresh_Grid(APIGame *game) {
             attron(COLOR_PAIR(color_list.colors[game->grid[y][x]]));
         }
     }
+}
+
+void Display_Level(int level) {
+    int y = GAME_API_HEIGHT;
+    int x = 1;
+
+    const char *label = "Niveau : ";
+    mvprintw(y, x, "%s", label);
+    x += strlen(label);
+
+    char level_str[8];
+    snprintf(level_str, sizeof(level_str), "%d", level);
+    const char *difficulty = Get_Difficulty(level);
+
+    int color_pair = 0;
+    if (strcmp(difficulty, "Easy") == 0) {
+        color_pair = LEVEL_EASY;
+    } else if (strcmp(difficulty, "Medium") == 0) {
+        color_pair = LEVEL_MEDIUM;
+    } else if (strcmp(difficulty, "Hard") == 0) {
+        color_pair = LEVEL_HARD;
+    } else if (strcmp(difficulty, "Expert") == 0) {
+        color_pair = LEVEL_EXPERT;
+    } else if (strcmp(difficulty, "Insane") == 0) {
+        color_pair = LEVEL_INSANE;
+    }
+
+    attron(COLOR_PAIR(color_pair));
+    mvprintw(y, x, "%s", level_str);
+    x += strlen(level_str);
+    mvprintw(y, x, " - %s", difficulty);
+    attroff(COLOR_PAIR(color_pair));
+}
+
+void Display_Score(int score) {
+    // Largeur utile à l'intérieur du bloc (sans les bordures)
+    int block_inner_width = NEXT_BLOCK_WEIGHT - 2;
+
+    // Début en X du bloc "Next block" (juste après la grille)
+    int block_start_x = GAME_WEIGHT + 1;
+
+    // Affichage du mot "Score"
+    const char *label = "Score";
+    int label_x = block_start_x + 1 + (block_inner_width - strlen(label)) / 2;
+    mvprintw(7, label_x, "%s", label);
+
+    // Affichage du score
+    char score_str[16];
+    snprintf(score_str, sizeof(score_str), "%d", score);
+    int score_x = block_start_x + 1 + (block_inner_width - strlen(score_str)) / 2;
+    attron(COLOR_PAIR(SCORE));
+    mvprintw(8, score_x, "%s", score_str);
+    attroff(COLOR_PAIR(SCORE));
 }
 
 void Create_Frame_Next_Block() {
@@ -391,6 +460,9 @@ int Game(APIGame *game) {
         Debug("Jeu chargé.\n");
     }
 
+    Display_Score(game->state.score);
+    Display_Level(game->state.level);
+
     while(1) {
         if (!paused) {
             // On vérifie si un bloc à déjà spawn pour pas en faire apparaire plusieurs
@@ -451,7 +523,8 @@ int Game(APIGame *game) {
                     break;
                 case KEY_DOWN:
                     Debug("DOWN\n");
-                    if (!paused) {
+                    int true_y = Get_End_Of_Block(game);
+                    if (true_y < GAME_HEIGHT && game->pos.y > 1 && !paused) {
                         game->direction = GO_DOWN;
                         int ret = Place_Block(game);
                         if (ret) {
@@ -467,7 +540,7 @@ int Game(APIGame *game) {
                     break;
                 case KEY_LEFT:
                     Debug("LEFT\n");
-                    if (!paused) {
+                    if (game->pos.y > 1  && !paused) {
                         game->direction = GO_LEFT;
                         int ret = Place_Block(game);
                         if (ret) {
@@ -483,7 +556,7 @@ int Game(APIGame *game) {
                     break;
                 case KEY_RIGHT:
                     Debug("RIGHT\n");
-                    if (!paused) {
+                    if (game->pos.x < GAME_API_WEIGHT - Get_Block_Width(game) && game->pos.y > 1 && !paused) {
                         game->direction = GO_RIGHT;
                         int ret = Place_Block(game);
                         if (ret) {
@@ -499,7 +572,7 @@ int Game(APIGame *game) {
                     break;
                 case KEY_UP:
                     Debug("UP\n");
-                    if (!paused) {
+                    if (game->pos.x > 0 && game->pos.x + Get_Block_Size(game->id_block) < GAME_API_WEIGHT && !paused) {
                         // On vérifie si on peut tourner dans Place_Block
                         game->direction = GO_UP;
                         int ret = Place_Block(game);

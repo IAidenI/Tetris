@@ -41,6 +41,9 @@ void Free_Block(int **block, int size);
 void Refresh_Game(APIGame *game);
 void Refresh_Grid(APIGame *game);
 
+void Display_Score(int score);
+void Display_Level(int level);
+
 void Create_Info();
 void Create_Frame_Next_Block();
 void Borders(const wchar_t *c1, const wchar_t *c2);
