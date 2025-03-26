@@ -37,7 +37,7 @@ Voici un aperçu de l'application.
 - `↑` : faire pivoter la pièce
 - `p` : met le jeu en pause
 - `q` : quitter le jeu
-- `-` et `+` : accélére/décélére le jeu (pas implémenté)
+- `s` : crée un snapshot du jeu en cours (pas implémenté)
 
 ## Installation
 
@@ -67,7 +67,9 @@ Il contient également des fichiers secondaires pour :
 Un fichier de log est disponible ici : `/tmp/debug_tetris.log`  
 Il contient des informations utiles pour diagnostiquer l'état de l'application.
 
-Il est également possible de crée un snapshot via un fichier. En utilisant l'option -d <fichier> il est possible de mettre le jeu à un état précis. Le fichier doit avoir le même format que celui indiqué dans `example_snapshot.txt`. L'ordre n'importe pas et les espaces non plus.
+Il est également possible de crée un snapshot durant une partie via `s`. Ensuite il est possible de le charger utilisant l'option -d <fichier> pour mettre le jeu à un état précis.
+
+Il est possible de crée son propre snapshot mais il doit avoir le même format que celui indiqué dans `example_snapshot.txt`. L'ordre n'importe pas et les espaces non plus.
 
 
 ## A faire

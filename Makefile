@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -Wall -Iheaders
-LDFLAGS = -lncursesw
+LDFLAGS = -lncursesw -lm
 TARGET = Tetris
 SOURCEDIR = sources
 HEADERSDIR = headers

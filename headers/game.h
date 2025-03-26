@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
+#include <math.h>
 
 #include "colors.h"
 #include "print.h"
@@ -24,7 +25,6 @@
 
 #define NEXT_BLOCK_HEIGHT 6
 #define NEXT_BLOCK_WEIGHT 14
-#define BLOCK_WAIT 800 // 800 pour le classique
 #define NEXT_BLOCK_IHM_LEN 12
 
 // Pour savoir la direction où on veux se déplacer
@@ -43,6 +43,7 @@ typedef struct {
     int score;
     int level;
     int nb_lines;
+    float speed;
 } GameState;
 
 // Pour les infos sur la game en cours
@@ -81,6 +82,7 @@ typedef struct {
 
 const char *Get_Difficulty(int level);
 void Compute_Score(GameState *state, int lines);
+int Compute_Gravity(GameState *state);
 
 void Cancel_Rotate(APIGame *game);
 void Rotate_Block(APIGame *game);

@@ -1,7 +1,8 @@
 #ifndef PRINT_H
 #define PRINT_H
 
-#define Error(text, ...) fprintf(stderr, "Erreur: " text, ##__VA_ARGS__)
+#define Error(text, ...) fprintf(stderr, "Erreur: " text, ##__VA_ARGS__); fflush(stderr);
+
 // On redirige les info de débug vers un fichier
 #define InitDebug() \
     do { \

@@ -75,6 +75,37 @@ void Compute_Score(GameState *state, int lines) {
     Debug("Modif : %d\n", state->score);
 }
 
+int Compute_Gravity(GameState *state) {
+    const int table_gravity[] = {48, 43, 38, 33, 28, 23, 18, 13, 8, 6, 5, 4, 3, 2, 1};
+    int frames = 0;
+
+    if (state->level == 0) {
+        frames = table_gravity[state->level];
+    } else if (state->level >= 1 && state->level <= 8) {
+        frames = table_gravity[state->level - 1];
+    } else if (state->level == 9) {
+        frames = table_gravity[9];
+    } else if (state->level >= 10 && state->level <= 12) {
+        frames = table_gravity[10];
+    } else if (state->level >= 13 && state->level <= 15) {
+        frames = table_gravity[11];
+    } else if (state->level >= 16 && state->level <= 18) {
+        frames = table_gravity[12];
+    } else if (state->level >= 19 && state->level <= 28) {
+        frames = table_gravity[13];
+    } else if (state->level >= 29) {
+        frames = table_gravity[14];
+    } else {
+        Error("Impossible de calculer la gravité.\n");
+        return ERROR;
+    }
+
+    // On calcule la conversion en ms
+    state->speed = (frames / 60.0) * 1000.0;
+    Debug("On a comme nouvelle speed : %f ms\n", state->speed);
+
+    return SUCCESS;
+}
 
 int Search_Key_Word(FILE *fp, const char *key_word) {
     char buffer[BUFFER_DEBUG];
@@ -544,9 +575,14 @@ int Start_Game(APIGame *game) {
     game->pos.x = 0;
     game->pos.y = 0;
     game->direction = 0;
+
     game->state.score = 0;
     game->state.level = 1;
     game->state.nb_lines = 0;
+    if (Compute_Gravity(&game->state)) {
+        return ERROR;
+    }
+
     game->flag = FLAG_START;
     Fill_Bag(game);
     Display_Bag("Bag initialisé :", game);

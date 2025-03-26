@@ -42,6 +42,7 @@ int Clear_Full_Lines(APIGame *game) {
 
     //On met à jour le score
     Compute_Score(&game->state, full_count);
+    Compute_Gravity(&game->state);
     Display_Score(game->state.score);
     Display_Level(game->state.level);
 
@@ -381,9 +382,9 @@ void Create_Info() {
     mvaddwstr(GAME_HEIGHT - 6, GAME_WEIGHT + 1, L"  ↓ : Down");
 
 
-    mvaddwstr(GAME_HEIGHT - 4, GAME_WEIGHT + 1, L"  +/- : Speed Up/Down");
-    mvaddwstr(GAME_HEIGHT - 3, GAME_WEIGHT + 1, L"  p   : Pause");
-    mvaddwstr(GAME_HEIGHT - 2, GAME_WEIGHT + 1, L"  q   : Quit");
+    mvaddwstr(GAME_HEIGHT - 4, GAME_WEIGHT + 1, L"  s : Snapshot");
+    mvaddwstr(GAME_HEIGHT - 3, GAME_WEIGHT + 1, L"  p : Pause");
+    mvaddwstr(GAME_HEIGHT - 2, GAME_WEIGHT + 1, L"  q : Quit");
 }
 
 void Create_Frame() {
@@ -441,7 +442,7 @@ int Game(APIGame *game) {
     curs_set(0);           // Cache le curseur
     setlocale(LC_ALL, ""); // Active l'UTF-8
     keypad(stdscr, TRUE);  // Pour détecter les flêches
-    timeout(BLOCK_WAIT);
+    timeout(game->state.speed);
     use_default_colors();
     Init_Colors();
 
@@ -483,7 +484,7 @@ int Game(APIGame *game) {
                 clock_gettime(CLOCK_MONOTONIC, &current);
                 long elapsed = (current.tv_sec - start.tv_sec) * 1000 + (current.tv_nsec - start.tv_nsec) / 1000000;
 
-                if (elapsed >= BLOCK_WAIT || !has_spawned) {
+                if (elapsed >= game->state.speed || !has_spawned) {
                     start = current;
                     Display_Block("On va placer le bloc actuelle :", game);
                     game->direction = GO_DOWN;
