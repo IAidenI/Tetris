@@ -13,13 +13,14 @@ Ce projet a été développé seul en 2025, dans le but de m'améliorer en langa
 
 ## Présentation
 
-Le jeu fonctionne dans un terminal Linux. La compatibilité avec Windows n’a pas encore été testée. Cette version initiale permet de jouer, mais certaines fonctionnalités comme le score sont encore absentes.
+Le jeu fonctionne dans un terminal Linux. Il est actuellement incompatible avec windows. Cette version permet de jouer de manière fluide d'un point de vue utilisateur, mais il y a un gros travail à faire côté code.
 
 Voici un aperçu de l'application.
 
 <p align=center>
-  <img src="./docs/HomePage.png" alt="Page d'accueil" height="350">
-  <img src="./docs/GameExemple.png" alt="Exemple de jeu" height="350">
+  <img src="./docs/HomePage.png" alt="Page d'accueil" height="330">
+  <img src="./docs/GameExemple.png" alt="Exemple de jeu" height="330">
+  <img src="./docs/Pause.png" alt="Exemple de jeu" height="330">
 </p>
 
 ## Fonctionnalités
@@ -52,9 +53,10 @@ make
 
 ## Architecture
 
-Le projet est organisé en deux grandes parties :
-- **API** – Logique métier du jeu ([voir ici](https://github.com/IAidenI/LinuxTools/tree/main/Permissions))
-- **IHM** – Affichage dans le terminal via `ncurses` ([voir ici](https://github.com/IAidenI/LinuxTools/tree/main/Permissions))
+Le projet est organisé en trois grandes parties :
+- **API** – Logique métier du jeu ([voir ici](https://github.com/IAidenI/Tetris/tree/main/sources/game.c))
+- **IHM** – Affichage dans le terminal via `ncurses` ([voir ici](https://github.com/IAidenI/Tetris/tree/main/sources/ihm.c))
+- **MENU** – Affichage des menus ([voir ici](https://github.com/IAidenI/Tetris/tree/main/sources/menu.c))
 
 Il contient également des fichiers secondaires pour :
 - la gestion des blocs
@@ -75,24 +77,27 @@ Il est possible de crée son propre snapshot mais il doit avoir le même format 
 ## A faire
 
 Ajout utilisateur
-- [ ] Ajout du score
-- [ ] Système de niveaux
-- [ ] Ajout d'un menu de pause
-- [ ] Ajout d'un aperce d'où sera la pièce
+- [X] Ajout du score
+- [X] Système de niveaux
+- [X] Ajout d'un menu de pause
+- [ ] Ajout d'un aperçue d'où sera la pièce
 - [X] Ajout du 7-bag randomizer
+- [ ] Ajout du hold
+- [ ] Ajout meilleur score
 - [ ] Spawn d'un bloc pas fluide avec les flèches
-- [ ] Quitter ingame, demande de confirmation + revenir au menu
+- [X] Quitter ingame, demande de confirmation + revenir au menu
 
 Ajout technique
 - [X] Ajout d'un outil de debug pour mettre le jeu à un état précis
 - [ ] Fix le segfault quand on spam la rotation
 - [ ] Refactoring pour améliorer certaines parties du code
-- [ ] Vérifier la compatibilité windows
+- [X] Vérifier la compatibilité windows
 - [ ] Refaire les debug pour en avoir des génériques
 - [ ] Tri dans les .h
 - [ ] Mieux commenter
-- [ ] Timing chelou si on presse sur un bouton pile au moment ou la pièce se pose(c.f. discord)
+- [ ] Faire les else de can_change_color()
 
 Facultatif
 - [ ] Crée un snapshot en pressant sur une touche
-- [ ] Option pour utiliser le fichier de debug
+- [X] Option pour utiliser le fichier de debug
+- [ ] Faire une version windows

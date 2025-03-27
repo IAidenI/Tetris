@@ -33,7 +33,7 @@ void Display_Grid(const char *text, APIGame *game) {
     Debug("%s\n", text);
     for (int i = 0; i < GAME_API_HEIGHT; i++) {
         Debug();
-        for (int j = 0; j < GAME_API_WEIGHT; j++) {
+        for (int j = 0; j < GAME_API_WIDTH; j++) {
             DebugSimple("%d ", game->grid[i][j]);
         }
         DebugSimple("\n");
@@ -132,7 +132,7 @@ int Set_Game(APIGame *game, const char *path_name) {
 
     char buffer[BUFFER_DEBUG];
     int x = -1, y = -1, current_id = -1, next_id = -1, rot = -1;
-    int grid[GAME_API_HEIGHT][GAME_API_WEIGHT];
+    int grid[GAME_API_HEIGHT][GAME_API_WIDTH];
 
     FILE *fp = fopen(path_name, "r");
     if (!fp) {
@@ -251,7 +251,7 @@ int Set_Game(APIGame *game, const char *path_name) {
     
         char *ptr = buffer;
         char *end;
-        for (int x_index = 0; x_index < GAME_API_WEIGHT; x_index++) {
+        for (int x_index = 0; x_index < GAME_API_WIDTH; x_index++) {
             int value = (int)strtol(ptr, &end, 10);
     
             if (ptr == end) {
@@ -630,8 +630,8 @@ int Start_Game(APIGame *game) {
     }
     
     for (int y = 0; y < GAME_API_HEIGHT; y++) {
-        for (int x = 0; x < GAME_API_WEIGHT; x++) {
-            if (y == 0 || x == 0 || y == GAME_API_HEIGHT - 1 || x == GAME_API_WEIGHT - 1) {
+        for (int x = 0; x < GAME_API_WIDTH; x++) {
+            if (y == 0 || x == 0 || y == GAME_API_HEIGHT - 1 || x == GAME_API_WIDTH - 1) {
                 game->grid[y][x] = APIGAME_WALL;
             } else {
                 game->grid[y][x] = 0;

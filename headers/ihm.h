@@ -5,6 +5,7 @@
 #include <ncurses.h>
 #include <locale.h>
 
+#include "menu.h"
 #include "game.h"
 #include "block.h"
 

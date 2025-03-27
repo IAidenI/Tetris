@@ -16,15 +16,15 @@
 
 // Dimensions du jeu
 // Pour les dimensions on prend en compte les bordures
-#define GAME_WEIGHT_MUL 2
+#define GAME_WIDTH_MUL 2
 #define GAME_HEIGHT (20 + 2) // Les 2 bordures
-#define GAME_WEIGHT (GAME_WEIGHT_MUL * 10 + 2) // Car une case c'est [] donc 2 caractères donc 2 * et les 2
+#define GAME_WIDTH (GAME_WIDTH_MUL * 10 + 2) // Car une case c'est [] donc 2 caractères donc 2 * et les 2
 
-#define GAME_API_WEIGHT ((GAME_WEIGHT - 2) / GAME_WEIGHT_MUL + 2)
+#define GAME_API_WIDTH ((GAME_WIDTH - 2) / GAME_WIDTH_MUL + 2)
 #define GAME_API_HEIGHT GAME_HEIGHT
 
 #define NEXT_BLOCK_HEIGHT 6
-#define NEXT_BLOCK_WEIGHT 14
+#define NEXT_BLOCK_WIDTH 14
 #define NEXT_BLOCK_IHM_LEN 12
 
 // Pour savoir la direction où on veux se déplacer
@@ -32,6 +32,8 @@
 #define GO_RIGHT 16
 #define GO_DOWN  17
 #define GO_UP    18
+
+#define SNAPSHOT_FILE "./snapshot"
 
 // Pour la position du block
 typedef struct {
@@ -57,7 +59,7 @@ typedef struct {
     int **next_block;
     int id_next_block;
 
-    int grid[GAME_API_HEIGHT][GAME_API_WEIGHT];
+    int grid[GAME_API_HEIGHT][GAME_API_WIDTH];
     
     GameState state;
 

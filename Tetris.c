@@ -4,13 +4,22 @@
 #include "headers/game_info.h"
 
 int main(int argc, char **argv) {
-    InitDebug();
-    APIGame game;
-    if (Start_Game(&game)) {
+    initscr();   // Initialise ncurses
+    // Vérifie que le terminal supporte les couleurs
+    if (!has_colors()) {
+        endwin();
+        Error("Votre terminal ne supporte pas les couleurs.\n");
         return ERROR;
     }
-    Debug("APIGame initialisé.\n");
-    Display_Grid("On a initialiser la grille :", &game);
+    noecho();              // Déactive l'affiche de la saisie utilisateur (si on presse sur 'k' il ne va pas s'afficher à l'écran
+    curs_set(0);           // Cache le curseur
+    setlocale(LC_ALL, ""); // Active l'UTF-8
+    keypad(stdscr, TRUE);  // Pour détecter les flêches
+    use_default_colors();
+    Init_Colors();
+    InitDebug();
+
+    APIGame game;
 
     if (argc > 1) {
         if (strcmp(argv[1], "-d") == 0) {
@@ -18,6 +27,12 @@ int main(int argc, char **argv) {
                 Error("Il faut spécifier un nom de fichier. (Voir %s --help)\n", argv[0]);
                 return 1;
             }
+
+            if (Start_Game(&game)) {
+                return 1;
+            }
+            Debug("APIGame initialisé.\n");
+            Display_Grid("On a initialiser la grille :", &game);
             
             if (Set_Game(&game, argv[2])) {
                 Stop_Game(&game);
@@ -41,20 +56,24 @@ int main(int argc, char **argv) {
     int ret = game.flag == FLAG_DEBUG ? 0 : Menu(0);
     while (ret != EXIT) {
         Debug("Code de retour : %d\n", ret);
+
         if (ret == ERROR) {
-            Stop_Game(&game);
             return 1;
-        } else {
-            ret = Game(&game);
-            if (ret == ERROR) {
-                Stop_Game(&game);
+        }
+
+        if (game.flag != FLAG_DEBUG) {
+            if (Start_Game(&game)) {
+                Error("Impossible de redémarrer le jeu.\n");
                 return 1;
-            } else if (ret == LOOSE) {
-                ret = Menu(1);
             }
         }
+
+        ret = Game(&game);
+        Stop_Game(&game);
+
+        ret = (ret == LOOSE) ? Menu(1) : Menu(0);
     }
-    Stop_Game(&game);
+    
     printf("Au revoir.\n");
     return 0;
 }

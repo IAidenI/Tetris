@@ -8,7 +8,7 @@ int Clear_Full_Lines(APIGame *game) {
 
     Debug("pos y : %d - max : %d\n", game->pos.y, game->pos.y + Get_End_Of_Block(game));
     for (int y = game->pos.y; y < GAME_API_HEIGHT - 1 && y <= game->pos.y + Get_End_Of_Block(game); y++) {
-        for (int x = 1; x < GAME_API_WEIGHT - 1; x++) {
+        for (int x = 1; x < GAME_API_WIDTH - 1; x++) {
             // Si un bloc est présent un incrémente notre compteur
             Debug("On test : x : %d - y : %d\n", x, y);
             if (game->grid[y][x]) {
@@ -16,7 +16,7 @@ int Clear_Full_Lines(APIGame *game) {
                 full_cases++;
             }
         }
-        if (full_cases == GAME_API_WEIGHT - 2) {
+        if (full_cases == GAME_API_WIDTH - 2) {
             full_lines = realloc(full_lines, (full_count + 1) * sizeof(int));
             if (!full_lines) {
                 Error("N'as pas réussis à réallouer de la mémoire.\n");
@@ -48,7 +48,7 @@ int Clear_Full_Lines(APIGame *game) {
 
     // On supprime toutes les lignes full
     for (int i = 0; i < full_count; i++) {
-        for (int x = 1; x < GAME_API_WEIGHT - 1; x++) {
+        for (int x = 1; x < GAME_API_WIDTH - 1; x++) {
             Debug("test de %d\n", full_lines[i]);
             Debug("Donc %d\n", game->grid[full_lines[i]][x]);
             game->grid[full_lines[i]][x] = 0;
@@ -60,7 +60,7 @@ int Clear_Full_Lines(APIGame *game) {
     // On récupère l'index de la première ligne vide (en partant du bas)
     int max_bloc_y = 0;
     for (int y = full_lines[0] - 1; y > 0; y--) {
-        for (int x = 1; x < GAME_API_WEIGHT - 1; x++) {
+        for (int x = 1; x < GAME_API_WIDTH - 1; x++) {
             if (game->grid[y][x] == 0) {
                 max_bloc_y = 1;
             } else {
@@ -83,7 +83,7 @@ int Clear_Full_Lines(APIGame *game) {
         // Déplacer toutes les lignes du dessus vers le bas
         // Ca sert à rien d'aller jusqu'à row > 1 car on a calculer l'index
         for (int row = y; row >= max_bloc_y; row--) {
-            for (int x = 1; x < GAME_API_WEIGHT - 1; x++) {
+            for (int x = 1; x < GAME_API_WIDTH - 1; x++) {
                 // On prends pas si c'est un wall
                 if (game->grid[row][x] != APIGAME_WALL) {
                     game->grid[row][x] = game->grid[row - 1][x];
@@ -136,11 +136,11 @@ int Put_Next_Block(APIGame *game) {
     if (Set_Block(game, IS_BLOCK, size)) return ERROR;
 
     // On calcul la positon pour le bloc
-    int x = GAME_API_WEIGHT - 1 + (NEXT_BLOCK_WEIGHT - 2) / GAME_WEIGHT_MUL / 2 + 1 - (Get_Block_Width(game) + 1) / 2; // Ouais elle a le cancer je sais
+    int x = GAME_API_WIDTH - 1 + (NEXT_BLOCK_WIDTH - 2) / GAME_WIDTH_MUL / 2 + 1 - (Get_Block_Width(game) + 1) / 2; // Ouais elle a le cancer je sais
     int y = NEXT_BLOCK_HEIGHT - 3;
 
     Debug("On place la prochaie pièce (%d) à x : %d - y : %d\n", id_block, x, y);
-    Debug("Détails : %d + (%d - 2) / %d / 2 + 1 - (%d - 1) / 2\n", GAME_API_WEIGHT, NEXT_BLOCK_WEIGHT, GAME_WEIGHT_MUL, Get_Block_Width(game));
+    Debug("Détails : %d + (%d - 2) / %d / 2 + 1 - (%d - 1) / 2\n", GAME_API_WIDTH, NEXT_BLOCK_WIDTH, GAME_WIDTH_MUL, Get_Block_Width(game));
     Display_Block("", game);
 
     Del_Next_Block(game, GAME_HEIGHT + 1, 3);
@@ -184,7 +184,7 @@ void Update_Block(APIGame *game, const int posX, const int posY, const wchar_t *
             // Si on a un block
             if (game->block[y][x]) {
                 // On met à jours la grille
-                if (posX < GAME_API_WEIGHT && posY < GAME_API_HEIGHT) {
+                if (posX < GAME_API_WIDTH && posY < GAME_API_HEIGHT) {
                     Debug("On met à jour l'API avec game->grid[%d][%d] = %d\n", back_posY, back_posX, wcscmp(state, BLOCK) == 0 ? game->block[y][x] : 0);
                     game->grid[back_posY][back_posX] = wcscmp(state, BLOCK) == 0 ? game->block[y][x] : 0;
                 }
@@ -194,7 +194,7 @@ void Update_Block(APIGame *game, const int posX, const int posY, const wchar_t *
                 Debug("On met à jour l'affichage avec '%ls' au coordonnées x : %d - y : %d\n", state, back_posX, back_posY);
                 // On place le bloc sur l'écran
                 attron(COLOR_PAIR(color_list.colors[game->id_block]));
-                mvaddwstr(back_posY, (back_posX - 1) * GAME_WEIGHT_MUL + 1, state);
+                mvaddwstr(back_posY, (back_posX - 1) * GAME_WIDTH_MUL + 1, state);
                 attroff(COLOR_PAIR(color_list.colors[game->id_block]));
                 refresh();
             }
@@ -229,7 +229,7 @@ int Place_Block(APIGame *game) {
     // On vérifie si il y a un block en dessous
     Debug("On test à x : %d - y : %d\n", game->pos.x, game->pos.y);
     int colision = 0;
-    if (game->pos.x < GAME_API_WEIGHT - 1 && game->pos.y < GAME_API_HEIGHT - 1) {
+    if (game->pos.x < GAME_API_WIDTH - 1 && game->pos.y < GAME_API_HEIGHT - 1) {
         Debug("On vérifie si il y a des colisions.\n");
         int ret = Block_Physics(game);
         Debug("ret ???? : %d\n", ret);
@@ -265,7 +265,7 @@ int Place_Block(APIGame *game) {
 void Borders(const wchar_t *c1, const wchar_t *c2) {
     // Pour crée la bordure haut ou bas
     addwstr(c1);
-    for(int i = 0; i < GAME_WEIGHT - 2; i++) {
+    for(int i = 0; i < GAME_WIDTH - 2; i++) {
         addwstr(MIDLESCORE);
     }
     addwstr(c2);
@@ -280,10 +280,10 @@ void Refresh_Game(APIGame *game) {
 
 void Refresh_Grid(APIGame *game) {
     for (int y = 1; y < GAME_API_HEIGHT - 1; y++) {
-        for (int x = 1; x < GAME_API_WEIGHT - 1; x++) {
+        for (int x = 1; x < GAME_API_WIDTH - 1; x++) {
             ColorList color_list = Get_Color_List();
             attron(COLOR_PAIR(color_list.colors[game->grid[y][x]]));
-            game->grid[y][x] ? mvaddwstr(y, (x - 1) * GAME_WEIGHT_MUL + 1, L"[]") : mvaddwstr(y, (x - 1) * GAME_WEIGHT_MUL + 1, L"  ");
+            game->grid[y][x] ? mvaddwstr(y, (x - 1) * GAME_WIDTH_MUL + 1, L"[]") : mvaddwstr(y, (x - 1) * GAME_WIDTH_MUL + 1, L"  ");
             attron(COLOR_PAIR(color_list.colors[game->grid[y][x]]));
         }
     }
@@ -323,10 +323,10 @@ void Display_Level(int level) {
 
 void Display_Score(int score) {
     // Largeur utile à l'intérieur du bloc (sans les bordures)
-    int block_inner_width = NEXT_BLOCK_WEIGHT - 2;
+    int block_inner_width = NEXT_BLOCK_WIDTH - 2;
 
     // Début en X du bloc "Next block" (juste après la grille)
-    int block_start_x = GAME_WEIGHT + 1;
+    int block_start_x = GAME_WIDTH + 1;
 
     // Affichage du mot "Score"
     const char *label = "Score";
@@ -343,67 +343,60 @@ void Display_Score(int score) {
 }
 
 void Create_Frame_Next_Block() {
-    mvaddwstr(0, GAME_WEIGHT, CORNER_TOP_LEFT);
-    for (int i = GAME_WEIGHT + 1; i < GAME_WEIGHT + NEXT_BLOCK_WEIGHT - 1; i++) {
+    mvaddwstr(0, GAME_WIDTH, CORNER_TOP_LEFT);
+    for (int i = GAME_WIDTH + 1; i < GAME_WIDTH + NEXT_BLOCK_WIDTH - 1; i++) {
         mvaddwstr(0, i, MIDLESCORE);
     }
-    mvaddwstr(0, GAME_WEIGHT + NEXT_BLOCK_WEIGHT  - 1, CORNER_TOP_RIGHT);
+    mvaddwstr(0, GAME_WIDTH + NEXT_BLOCK_WIDTH  - 1, CORNER_TOP_RIGHT);
 
-    move(1, GAME_WEIGHT);
+    move(1, GAME_WIDTH);
     addwstr(WALL);
     addwstr(L" Next block ");
     addwstr(WALL);
 
-    mvaddwstr(2, GAME_WEIGHT, CROSS_LEFT);
-    for (int i = GAME_WEIGHT + 1; i < GAME_WEIGHT + NEXT_BLOCK_WEIGHT - 1; i++) {
+    mvaddwstr(2, GAME_WIDTH, CROSS_LEFT);
+    for (int i = GAME_WIDTH + 1; i < GAME_WIDTH + NEXT_BLOCK_WIDTH - 1; i++) {
         mvaddwstr(2, i, MIDLESCORE);
     }
-    mvaddwstr(2, GAME_WEIGHT + NEXT_BLOCK_WEIGHT - 1, CROSS_RIGHT);
+    mvaddwstr(2, GAME_WIDTH + NEXT_BLOCK_WIDTH - 1, CROSS_RIGHT);
 
     for (int i = 0; i < 2; i++) {
-        mvaddwstr(3 + i, GAME_WEIGHT, WALL);
-        for (int j = GAME_WEIGHT + 1; j < GAME_WEIGHT + NEXT_BLOCK_WEIGHT - 1; j++) {
+        mvaddwstr(3 + i, GAME_WIDTH, WALL);
+        for (int j = GAME_WIDTH + 1; j < GAME_WIDTH + NEXT_BLOCK_WIDTH - 1; j++) {
             mvaddwstr(3 + i, j, L" ");
         }
-        mvaddwstr(3 + i, GAME_WEIGHT + NEXT_BLOCK_WEIGHT - 1, WALL);
+        mvaddwstr(3 + i, GAME_WIDTH + NEXT_BLOCK_WIDTH - 1, WALL);
     }
 
-    mvaddwstr(NEXT_BLOCK_HEIGHT - 1, GAME_WEIGHT, CORNER_BOT_LEFT);
-    for (int i = GAME_WEIGHT + 1; i < GAME_WEIGHT + NEXT_BLOCK_WEIGHT - 1; i++) {
+    mvaddwstr(NEXT_BLOCK_HEIGHT - 1, GAME_WIDTH, CORNER_BOT_LEFT);
+    for (int i = GAME_WIDTH + 1; i < GAME_WIDTH + NEXT_BLOCK_WIDTH - 1; i++) {
         mvaddwstr(NEXT_BLOCK_HEIGHT - 1, i, MIDLESCORE);
     }
-    mvaddwstr(NEXT_BLOCK_HEIGHT - 1, GAME_WEIGHT + NEXT_BLOCK_WEIGHT - 1, CORNER_BOT_RIGHT);
+    mvaddwstr(NEXT_BLOCK_HEIGHT - 1, GAME_WIDTH + NEXT_BLOCK_WIDTH - 1, CORNER_BOT_RIGHT);
 }
 
 void Create_Info() {
-    mvaddwstr(GAME_HEIGHT - 9, GAME_WEIGHT + 1, L"  ↑ : Rotate");
-    mvaddwstr(GAME_HEIGHT - 8, GAME_WEIGHT + 1, L"  ← : Right");
-    mvaddwstr(GAME_HEIGHT - 7, GAME_WEIGHT + 1, L"  → : Left");
-    mvaddwstr(GAME_HEIGHT - 6, GAME_WEIGHT + 1, L"  ↓ : Down");
+    mvaddwstr(GAME_HEIGHT - 9, GAME_WIDTH + 1, L"  ↑ : Rotate");
+    mvaddwstr(GAME_HEIGHT - 8, GAME_WIDTH + 1, L"  ← : Right");
+    mvaddwstr(GAME_HEIGHT - 7, GAME_WIDTH + 1, L"  → : Left");
+    mvaddwstr(GAME_HEIGHT - 6, GAME_WIDTH + 1, L"  ↓ : Down");
 
 
-    mvaddwstr(GAME_HEIGHT - 4, GAME_WEIGHT + 1, L"  s : Snapshot");
-    mvaddwstr(GAME_HEIGHT - 3, GAME_WEIGHT + 1, L"  p : Pause");
-    mvaddwstr(GAME_HEIGHT - 2, GAME_WEIGHT + 1, L"  q : Quit");
+    mvaddwstr(GAME_HEIGHT - 4, GAME_WIDTH + 1, L"  s : Snapshot");
+    mvaddwstr(GAME_HEIGHT - 3, GAME_WIDTH + 1, L"  p : Pause");
+    mvaddwstr(GAME_HEIGHT - 2, GAME_WIDTH + 1, L"  q : Quit");
 }
 
 void Create_Frame() {
     // On crée la top bordure pour la game
     clear();
     Top_Border();
-
-    // On ajoute la top bordure pour la partie Next Block
-    addwstr(CORNER_TOP_LEFT);
-    for (int j = 0; j < NEXT_BLOCK_IHM_LEN; j++) {
-        addwstr(MIDLESCORE);
-    }
-    addwstr(CORNER_TOP_RIGHT);
     addwstr(L"\n");
 
     // On crée la grille
     for (int i = 0; i < GAME_HEIGHT - 2; i++) {
 	    addwstr(WALL);
-	    for (int j = 0; j < GAME_WEIGHT - 2; j++) {
+	    for (int j = 0; j < GAME_WIDTH - 2; j++) {
 	        addwstr(L" ");
 	    }
 	    addwstr(WALL);
@@ -431,25 +424,11 @@ int Get_New_Block(APIGame *game) {
 }
 
 int Game(APIGame *game) {
-    initscr();   // Initialise ncurses
-    // Vérifie que le terminal supporte les couleurs
-    if (!has_colors()) {
-        endwin();
-        Error("Votre terminal ne supporte pas les couleurs.\n");
-        return ERROR;
-    }
-    noecho();              // Déactive l'affiche de la saisie utilisateur (si on presse sur 'k' il ne va pas s'afficher à l'écran
-    curs_set(0);           // Cache le curseur
-    setlocale(LC_ALL, ""); // Active l'UTF-8
-    keypad(stdscr, TRUE);  // Pour détecter les flêches
-    timeout(game->state.speed);
-    use_default_colors();
-    Init_Colors();
-
     int key;
     int has_spawned = 0;
     int paused = 0;
     struct timespec current, start;
+    timeout(game->state.speed);
 
     clear();
     Create_Frame(); // On crée le cadre
@@ -508,19 +487,38 @@ int Game(APIGame *game) {
                 case 'p':
                     if (paused) {
                         Debug("Jeu relancé.\n");
+                        paused = !paused;
                     } else {
+                        paused = !paused;
                         Debug("Jeu mis en pause.\n");
                         Display_Grid("Status grille :", game);
                         Display_Block("Status block :", game);
                         Display_Next_Block("Status next block :", game);
+                        
+                        int check = 1;
+                        while (check) {
+                            if (Menu_Pause()) {
+                                if (Menu_Confirm()) {
+                                    return EXIT;
+                                }
+                                check = 1;
+                            } else {
+                                check = 0;
+                            }
+                        }
+                        Refresh_Grid(game);
+                        paused = !paused;
                     }
-                    paused = !paused;
-                    // Mettre un menu de pause
                     break;
                 case 'q':
-                    Debug("Exit : %d\n", EXIT);
-                    endwin();
-                    return EXIT;
+                    paused = !paused;
+                    if (Menu_Confirm()) {
+                        return EXIT;
+                        Debug("Exit : %d\n", EXIT);
+                        endwin();
+                    }
+                    Refresh_Grid(game);
+                    paused = !paused;
                     break;
                 case KEY_DOWN:
                     Debug("DOWN\n");
@@ -557,7 +555,7 @@ int Game(APIGame *game) {
                     break;
                 case KEY_RIGHT:
                     Debug("RIGHT\n");
-                    if (game->pos.x < GAME_API_WEIGHT - Get_Block_Width(game) && game->pos.y > 1 && !paused) {
+                    if (game->pos.x < GAME_API_WIDTH - Get_Block_Width(game) && game->pos.y > 1 && !paused) {
                         game->direction = GO_RIGHT;
                         int ret = Place_Block(game);
                         if (ret) {
@@ -573,7 +571,7 @@ int Game(APIGame *game) {
                     break;
                 case KEY_UP:
                     Debug("UP\n");
-                    if (game->pos.x > 0 && game->pos.x + Get_Block_Size(game->id_block) < GAME_API_WEIGHT && !paused) {
+                    if (game->pos.x > 0 && game->pos.x + Get_Block_Size(game->id_block) < GAME_API_WIDTH && !paused) {
                         // On vérifie si on peut tourner dans Place_Block
                         game->direction = GO_UP;
                         int ret = Place_Block(game);
@@ -597,3 +595,34 @@ int Game(APIGame *game) {
     endwin();
     return SUCCESS;
 }
+
+
+
+
+/*
+
+╭────────────────────╮╭────────────╮
+│      [][]          ││ Next block │
+│        [][]        │├────────────┤
+│                    ││            │
+│                    ││  [][][][]  │
+│                    │╰────────────╯
+│                    │
+│                    │     Score
+│    ╭──────────╮    │       0
+│    │  Are you │    │
+│    │  sure ?  │    │
+│    │          │    │
+│    │   Y ▶ N  │    │
+│    ╰──────────╯    │   ↑ : Rotate
+│                    │   ← : Right
+│                    │   → : Left
+│                    │   ↓ : Down
+│                    │
+│                    │   s : Snapshot
+│                    │   p : Pause
+│                    │   q : Quit
+╰────────────────────╯
+ Niveau : 1 - Easy
+
+*/
