@@ -93,7 +93,7 @@ Ajout technique
 - [ ] Refactoring pour améliorer certaines parties du code
 - [X] Vérifier la compatibilité windows
 - [ ] Refaire les debug pour en avoir des génériques
-- [ ] Tri dans les .h
+- [X] Tri dans les .h
 - [ ] Mieux commenter
 - [ ] Faire les else de can_change_color()
 

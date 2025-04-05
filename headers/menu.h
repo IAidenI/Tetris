@@ -4,9 +4,10 @@
 #define _XOPEN_SOURCE_EXTENDED 1
 #include <ncurses.h>
 
-#include "game.h"
+#include "structs.h"
+#include "game_settings.h"
 #include "colors.h"
-#include "function_ret.h"
+#include "return_code.h"
 #include "print.h"
 #include "ihm.h"
 
