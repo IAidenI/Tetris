@@ -58,4 +58,12 @@ int Is_Bag_Empty(APIGame *game);
 int Search_Key_Word(FILE *fp, const char *key_word);
 int Set_Game(APIGame *game, const char *path_name);
 
+
+// Relatif à la linge full
+int Clear_Full_Lines(APIGame *game);
+
+
+// Relatif à l'ajout d'un bloc
+void Update_Block_API(APIGame *game, const int x, const int y, const int value, const wchar_t *state);
+
 #endif

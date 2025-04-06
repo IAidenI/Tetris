@@ -2,7 +2,8 @@
 #define STRUCTS_H
 
 #include "game_settings.h"
-#include "block.h"
+
+#define BLOCK_COUNT 8
 
 // Pour la position du block
 typedef struct {

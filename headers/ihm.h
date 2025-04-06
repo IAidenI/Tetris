@@ -23,17 +23,12 @@
 #define CROSS_LEFT       L"\u251C"
 #define CROSS_RIGHT      L"\u2524"
 
-// Gestion affichage d'un bloc
-#define Put_Block(game, x, y) Update_Block(game, x, y, BLOCK)
-#define Del_Block(game, x, y) Update_Block(game, x, y, NO_BLOCK)
-
 // Cadre de la game
 #define Top_Border() Borders(CORNER_TOP_LEFT, CORNER_TOP_RIGHT)
 #define Bottom_Border() Borders(CORNER_BOT_LEFT, CORNER_BOT_RIGHT)
 
 // Game
 int Game(APIGame *game);
-int Get_New_Block(APIGame *game);
 
 
 // Relatif à la création du visuel
@@ -44,10 +39,10 @@ void Borders(const wchar_t *c1, const wchar_t *c2);
 
 
 // Relatif à l'affichage d'un bloc
-int Place_Block(APIGame *game);
-void Update_Block(APIGame *game, int posX, int posY, const wchar_t *state);
+void Update_Block_IHM(APIGame *game, const int x, const int y, const int value, const wchar_t *state);
+int Place_Block(APIGame *game); // non
 
-int Put_Next_Block(APIGame *game);
+int Put_Next_Block(APIGame *game); // non
 void Del_Next_Block(APIGame *game, const int posX, const int posY);
 
 
@@ -64,9 +59,5 @@ void Refresh_Grid(APIGame *game);
 // Relatif au scoring
 void Put_Score(int score);
 void Put_Level(int level);
-
-
-// Relatif à la linge full
-int Clear_Full_Lines(APIGame *game);
 
 #endif

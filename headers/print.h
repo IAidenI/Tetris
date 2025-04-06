@@ -3,7 +3,8 @@
 
 #include <stdio.h>
 
-#include "../headers/structs.h"
+#include "structs.h"
+#include "block.h"
 
 #define Error(text, ...) fprintf(stderr, "Erreur: " text, ##__VA_ARGS__); fflush(stderr);
 

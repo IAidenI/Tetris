@@ -647,3 +647,113 @@ int Set_Game(APIGame *game, const char *path_name) {
 
     return SUCCESS;
 }
+
+
+
+/*
+    Relatif à la linge full
+*/
+int Clear_Full_Lines(APIGame *game) {
+    // On vérifie si une ligne est pleine
+    int full_cases = 0;
+    int full_count = 0;
+    int *full_lines = NULL;
+
+    Debug("pos y : %d - max : %d\n", game->pos.y, game->pos.y + Get_End_Of_Block(game));
+    for (int y = game->pos.y; y < GAME_API_HEIGHT - 1 && y <= game->pos.y + Get_End_Of_Block(game); y++) {
+        for (int x = 1; x < GAME_API_WIDTH - 1; x++) {
+            // Si un bloc est présent un incrémente notre compteur
+            Debug("On test : x : %d - y : %d\n", x, y);
+            if (game->grid[y][x]) {
+                Debug("Oui %d\n", game->grid[y][x]);
+                full_cases++;
+            }
+        }
+        if (full_cases == GAME_API_WIDTH - 2) {
+            full_lines = realloc(full_lines, (full_count + 1) * sizeof(int));
+            if (!full_lines) {
+                Error("N'as pas réussis à réallouer de la mémoire.\n");
+                return ERROR;
+            }
+            full_lines[full_count++] = y;
+        }
+        full_cases = 0;
+    }
+
+    Debug("On a détecter %d lines complètes.\n", full_count);
+    Debug("bbbb : %d\n", game->state.nb_lines);
+    if (!full_count) return SUCCESS;
+    
+    // On met à jour le niveau
+    game->state.nb_lines += full_count;
+    Debug("aaa : %d\n", game->state.nb_lines);
+    if (game->state.nb_lines >= 10) {
+        Debug("weeeee\n");
+        game->state.level++;
+        game->state.nb_lines = 0;
+    }
+
+    //On met à jour le score
+    Compute_Score(&game->state, full_count);
+    Compute_Gravity(&game->state);
+
+    // On supprime toutes les lignes full
+    for (int i = 0; i < full_count; i++) {
+        for (int x = 1; x < GAME_API_WIDTH - 1; x++) {
+            Debug("test de %d\n", full_lines[i]);
+            Debug("Donc %d\n", game->grid[full_lines[i]][x]);
+            game->grid[full_lines[i]][x] = 0;
+        }
+    }
+
+    Debug("C'est fait.\n");
+
+    // On récupère l'index de la première ligne vide (en partant du bas)
+    int max_bloc_y = 0;
+    for (int y = full_lines[0] - 1; y > 0; y--) {
+        for (int x = 1; x < GAME_API_WIDTH - 1; x++) {
+            if (game->grid[y][x] == 0) {
+                max_bloc_y = 1;
+            } else {
+                max_bloc_y = 0;
+                break;
+            }
+        }
+        if (max_bloc_y) {
+            max_bloc_y = y;
+            break;
+        }
+    }
+
+    Display_Grid("grille avant :", game);
+    // On descend les lignes au-dessus des lignes supprimées
+    for (int i = 0; i < full_count; i++) {
+        int y = full_lines[i];
+
+        Debug("On le fait pour y = %d\n", y);
+        // Déplacer toutes les lignes du dessus vers le bas
+        // Ca sert à rien d'aller jusqu'à row > 1 car on a calculer l'index
+        for (int row = y; row >= max_bloc_y; row--) {
+            for (int x = 1; x < GAME_API_WIDTH - 1; x++) {
+                // On prends pas si c'est un wall
+                if (game->grid[row][x] != APIGAME_WALL) {
+                    game->grid[row][x] = game->grid[row - 1][x];
+                }
+            }
+        }
+    }
+    Display_Grid("grille après :", game);
+
+    free(full_lines);
+    return CLEAR_BLOCK;
+}
+
+
+
+/*
+    Relatif à l'ajout d'un bloc
+*/
+void Update_Block_API(APIGame *game, const int x, const int y, const int value, const wchar_t *state) {
+    Debug("On met à jour l'API avec game->grid[%d][%d] = %d\n", y, x, wcscmp(state, BLOCK) == 0 ? value : 0);
+    game->grid[y][x] = wcscmp(state, BLOCK) == 0 ? value : 0;
+}

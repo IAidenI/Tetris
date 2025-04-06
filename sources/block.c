@@ -81,3 +81,26 @@ void **Get_Shapes() {
 int Get_Block_Size(int block_id) {
     return block_sizes[block_id];
 }
+
+void For_Each_Block(APIGame *game, const int posX, const int posY, const wchar_t *state, BlockActionFunc action) {
+    int back_posX = posX;
+    int back_posY = posY;
+    int size = Get_Block_Size(game->id_block);
+
+    Debug("On veux placer '%ls' à x : %d - y : %d\n", state, posX, posY);
+    Display_Block("La pièce est :", game);
+
+    // On cherche tout les blocs non vides
+    for (int y = 0; y < size; y++) {
+        for (int x = 0; x < size; x++) {
+            // Si on a un block
+            if (game->block[y][x]) {
+                action(game, back_posX, back_posY, game->block[y][x], state);
+            }
+            back_posX++;
+        }
+        back_posX = posX;
+        back_posY++;
+    }
+    DebugSimple("\n");
+}
