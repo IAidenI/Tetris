@@ -35,6 +35,7 @@ int Game(APIGame *game);
 void Create_Frame();
 void Create_Frame_Next_Block();
 void Create_Info();
+void Highlight_Info_Line(int offsetY, const wchar_t key_char);
 void Borders(const wchar_t *c1, const wchar_t *c2);
 
 

@@ -11,6 +11,7 @@ int Start_Game(APIGame *game) {
     game->state.score = 0;
     game->state.level = 1;
     game->state.nb_lines = 0;
+    game->rotation = 0;
     if (Compute_Gravity(&game->state)) {
         return ERROR;
     }
@@ -574,7 +575,7 @@ int Set_Game(APIGame *game, const char *path_name) {
     }
 
 
-    // On cherhe les rotations du bloc
+    // On cherche les rotations du bloc
     if (Search_Key_Word(fp, rotation)) {
         Error("Format du fichier invalide, %s introuvable.\n", rotation);
         return ERROR;
@@ -637,8 +638,9 @@ int Set_Game(APIGame *game, const char *path_name) {
     game->id_next_block = next_id;
     if (Set_Block(game, IS_NEXT_BLOCK, size)) return ERROR;
 
-    Debug("%d rotations\n", rot);
-    for (int i = 0; i < rot; i ++) {
+    game->rotation = (rot + 1) % 4;
+    Debug("%d rotations\n", game->rotation);
+    for (int i = 0; i < game->rotation; i ++) {
         Rotate_Block(game);
     }
 
@@ -646,6 +648,48 @@ int Set_Game(APIGame *game, const char *path_name) {
     Display_Grid("On a cette grille :", game);
 
     return SUCCESS;
+}
+
+
+void Snapshot_Gen(APIGame *game) {
+    // Liste des key words
+    const char *position = "[position]";
+    const char *current_block = "[current block]";
+    const char *next_block = "[next block]";
+    const char *rotation = "[rotation]";
+    const char *grid_key = "[grid]";
+
+    FILE *fp = fopen(SNAPSHOT_FILE, "w");
+
+    // On commencer par écrire la position du bloc actuelle dans le fichier
+    fprintf(fp, "%s\n", position);
+    fprintf(fp, "    x : %d\n", game->pos.x);
+    fprintf(fp, "    y : %d\n\n", game->pos.y);
+
+    // On cherche ensuite l'id du bloc actuelle
+    fprintf(fp, "%s\n", current_block);
+    fprintf(fp, "    id : %d\n\n", game->id_block);
+
+    // On écrit l'id du bloc suivant
+    fprintf(fp, "%s\n", next_block);
+    fprintf(fp, "    id : %d\n\n", game->id_next_block);
+
+    // On écrit les rotations du bloc
+    fprintf(fp, "%s\n", rotation);
+    fprintf(fp, "    rot : %d\n\n", game->rotation);
+
+    // Et enfin on écrit la grille
+    fprintf(fp, "%s\n", grid_key);
+    for (int y = 0; y < GAME_API_HEIGHT; y++) {
+        fprintf(fp, "    ");
+        for (int x = 0; x < GAME_API_WIDTH; x++) {
+            fprintf(fp, "%d ", game->grid[y][x]);
+        }
+        fprintf(fp, "\n");
+    }
+    fprintf(fp, "\n");
+
+    fclose(fp);
 }
 
 

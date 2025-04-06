@@ -71,6 +71,7 @@ int Game(APIGame *game) {
         if (key != ERR) {
             switch (key) {
                 case 'p':
+                    Highlight_Info_Line(3, L'p');
                     if (paused) {
                         Debug("Jeu relancé.\n");
                         paused = !paused;
@@ -92,11 +93,18 @@ int Game(APIGame *game) {
                                 check = 0;
                             }
                         }
+                        Highlight_Info_Line(3, L'p');
                         Refresh_Grid(game);
                         paused = !paused;
                     }
                     break;
+                case 's':
+                    Highlight_Info_Line(4, L's');
+                    Snapshot_Gen(game);
+                    Debug("Snapshot crée.\n");
+                    break;
                 case 'q':
+                    Highlight_Info_Line(2, L'q');
                     paused = !paused;
                     if (Menu_Confirm()) {
                         return EXIT;
@@ -108,6 +116,7 @@ int Game(APIGame *game) {
                     break;
                 case KEY_DOWN:
                     Debug("DOWN\n");
+                    //Highlight_Info_Line(6, L'↓');
                     int true_y = Get_End_Of_Block(game);
                     if (true_y < GAME_HEIGHT && game->pos.y > 1 && !paused) {
                         game->direction = GO_DOWN;
@@ -125,6 +134,7 @@ int Game(APIGame *game) {
                     break;
                 case KEY_LEFT:
                     Debug("LEFT\n");
+                    //Highlight_Info_Line(7, L'→');
                     if (game->pos.y > 1  && !paused) {
                         game->direction = GO_LEFT;
                         int ret = Place_Block(game);
@@ -141,6 +151,7 @@ int Game(APIGame *game) {
                     break;
                 case KEY_RIGHT:
                     Debug("RIGHT\n");
+                    //Highlight_Info_Line(8, L'←');
                     if (game->pos.x < GAME_API_WIDTH - Get_Block_Width(game) && game->pos.y > 1 && !paused) {
                         game->direction = GO_RIGHT;
                         int ret = Place_Block(game);
@@ -157,6 +168,7 @@ int Game(APIGame *game) {
                     break;
                 case KEY_UP:
                     Debug("UP\n");
+                    //Highlight_Info_Line(9, L'↑');
                     if (game->pos.x > 0 && game->pos.x + Get_Block_Size(game->id_block) < GAME_API_WIDTH && !paused) {
                         // On vérifie si on peut tourner dans Place_Block
                         game->direction = GO_UP;
@@ -255,6 +267,21 @@ void Create_Info() {
     mvaddwstr(GAME_HEIGHT - 2, GAME_WIDTH + 1, L"  q : Quit");
 }
 
+void Highlight_Info_Line(int offsetY, const wchar_t key_char) {
+    int y = GAME_HEIGHT - offsetY;
+    int x = GAME_WIDTH + 3;
+
+    attron(A_REVERSE);
+    mvaddnwstr(y, x, &key_char, 1);
+    attroff(A_REVERSE);
+    refresh();
+
+    napms(100);
+
+    mvaddnwstr(y, x, &key_char, 1); // redraw sans reverse
+    refresh();
+}
+
 void Borders(const wchar_t *c1, const wchar_t *c2) {
     // Pour crée la bordure haut ou bas
     addwstr(c1);
@@ -300,6 +327,7 @@ int Place_Block(APIGame *game) {
         game->pos.y++;
     } else if (game->direction == GO_UP) {
         Rotate_Block(game);
+        game->rotation = (game->rotation + 1) % 4;
     }
 
     // On vérifie si il y a un block en dessous

@@ -58,6 +58,8 @@ int Is_Bag_Empty(APIGame *game);
 int Search_Key_Word(FILE *fp, const char *key_word);
 int Set_Game(APIGame *game, const char *path_name);
 
+void Snapshot_Gen();
+
 
 // Relatif à la linge full
 int Clear_Full_Lines(APIGame *game);

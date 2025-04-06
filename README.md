@@ -96,8 +96,12 @@ Ajout technique
 - [X] Tri dans les .h
 - [ ] Mieux commenter
 - [ ] Faire les else de can_change_color()
+- [ ] Highlight pour les flêches car là ça bug si on reste enfoncer sur la touche
+- [ ] Si on a un mauvais timing/spam la touche, les menus peuvent faire bug les couleurs
+
 
 Facultatif
-- [ ] Crée un snapshot en pressant sur une touche
+- [X] Crée un snapshot en pressant sur une touche
+- [ ] Ajout du score/niveau pour le snapshot
 - [X] Option pour utiliser le fichier de debug
 - [ ] Faire une version windows

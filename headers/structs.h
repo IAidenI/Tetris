@@ -30,6 +30,8 @@ typedef struct {
     int **next_block;
     int id_next_block;
 
+    int rotation;
+
     int grid[GAME_API_HEIGHT][GAME_API_WIDTH];
     
     GameState state;
