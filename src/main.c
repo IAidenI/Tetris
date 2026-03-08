@@ -1,6 +1,11 @@
 #include "core/game.h"
+#include "ui/display.h"
+#include "ui/input.h"
+#include <signal.h>
 
 int main(int argc, char **argv) {
+    signal(SIGINT, handle_sigint);
+
     if (argc > 1) {
         /*if (strcmp(argv[1], "-d") == 0) {
             if (argc < 3) {
@@ -21,24 +26,16 @@ int main(int argc, char **argv) {
         }
     }
 
-    /*Tetromino piece = TETROMINO_Z;
-    tetromino_display_infos(&piece);
-
-    tetromino_rotate(&piece);
-    tetromino_display_infos(&piece);
-    
-    tetromino_rotate(&piece);
-    tetromino_display_infos(&piece);
-    
-    tetromino_rotate(&piece);
-    tetromino_display_infos(&piece);*/
-
     Game game;
     game_init(&game);
-    game_display_grid(&game);
-    printf("\n\n");
-    game_spawn_tetromino(&game);
-    game_display_grid(&game);
+    display_init();
 
+    game_spawn_tetromino(&game);
+    while (game.status != QUIT) {
+        handle_input(&game);
+        if (game_update(&game)) render(&game);
+    }
+
+    endwin();
     return 0;
 }

@@ -12,7 +12,8 @@ OBJECTS := $(SOURCES:.c=.o)
 .INTERMEDIATE: $(OBJECTS)
 
 # ================== Flags ==================
-CFLAGS = -Wall -Wextra -g -std=c11 -I$(INC_DIR)
+CFLAGS = -Wall -Wextra -g -std=c11 -D_POSIX_C_SOURCE=199309L -I$(INC_DIR)
+LDLIBS = -lncurses -lm
 
 # ================== Rules ==================
 .PHONY: all clean run
@@ -22,11 +23,11 @@ all: $(APP)
 
 $(APP): $(OBJECTS)
 	@echo "Linking $(APP)..."
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) $(LDLIBS) -o $@ $^
 
 %.o: %.c
 	@echo "Compiling $<..."
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(LDLIBS) -c $< -o $@
 
 clean:
 	@echo "Cleaning..."

@@ -11,6 +11,18 @@ void shuffle_array(void *arr, int n, size_t size) {
     }
 }
 
+double get_time() {
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    return ts.tv_sec + ts.tv_nsec / 1e9;
+}
+
+void handle_sigint(int sig) {
+    (void)sig;
+    endwin();
+    exit(0);
+}
+
 void help(const char* buffer) {
 	printf("Usage: %s [OPTION]\n", buffer);
 	printf("Une implémentation basique du jeu Tetris en C, jouable dans un terminal.\n\n");

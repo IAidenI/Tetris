@@ -61,11 +61,23 @@ void tetromino_rotate(Tetromino *t) {
     }
 
     // Place new values
-    for (int h = 0; h < t->size; h++) {
-        for (int w = 0; w < t->size; w++) {
-            t->shape[h][w] = tmp[h][w];
-        }
-    }
+    memcpy(t->next_shape, tmp, sizeof(tmp));
+    t->next_pos = t->pos;
+}
+
+void tetromino_move_left(Tetromino *t) {
+    t->next_pos = t->pos;
+    t->next_pos.x--;
+}
+
+void tetromino_move_right(Tetromino *t) {
+    t->next_pos = t->pos;
+    t->next_pos.x++;
+}
+
+void tetromino_move_down(Tetromino *t) {
+    t->next_pos = t->pos;
+    t->next_pos.y++;
 }
 
 Tetromino get_tetromino(TetrominoType t) {
@@ -80,19 +92,4 @@ Tetromino get_tetromino(TetrominoType t) {
         case __:
         default: return TETROMINO_E;
     }
-}
-
-void tetromino_display_infos(const Tetromino *t) {
-    printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
-    printf("Position : X=%d;Y=%d\n", t->pos.x, t->pos.y);
-    printf("Shape    :\n");
-    
-    for (int h = 0; h < t->size; h++) {
-        printf("           ");
-        for (int w = 0; w < t->size; w++) {
-            printf("%d ", t->shape[h][w]);
-        }
-        printf("\n");
-    }
-    printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n");
 }

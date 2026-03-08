@@ -24,5 +24,5 @@ Tetromino seven_bag_get_tetromino() {
             return get_tetromino(t);
         }
     }
-    return TETROMINO_E;
+    return get_tetromino(__);
 }

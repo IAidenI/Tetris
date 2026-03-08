@@ -1,42 +1,48 @@
 #include "core/game.h"
 
 void game_init(Game *g) {
-    // Initialise 7-bag
-    srand(time(NULL));
+    srand(time(NULL)); // Initialise 7-bag
+    
+    grid_init(&g->grid);
+    
+    g->current = seven_bag_get_tetromino();
+    g->next = seven_bag_get_tetromino();
+    
+    g->level = 1;
+    g->score = 0;
 
-    // Initialize grid
-    for (int w = 0; w < GRID_WIDTH; w++) {
-        for (int h = 0; h < GRID_HEIGHT; h++) {
-            g->grid[w][h] = 0;
-        }
-    }
-}
-
-void game_place_tetromino(Game *g, const Tetromino *t, Position p) {
-    Position p_tmp = p;
-    for (int h = 0; h < t->size; h++) {
-        for (int w = 0; w < t->size; w++) {
-            if (t->shape[h][w]) {
-                g->grid[p_tmp.x][p_tmp.y] = t->shape[h][w];
-            }
-            p_tmp.x++;
-        }
-        p_tmp.y++;
-        p_tmp.x = p.x;
-    }
+    g->status = RUNNING;
 }
 
 void game_spawn_tetromino(Game *g) {
-    Tetromino t = seven_bag_get_tetromino();
-    game_place_tetromino(g, &t, START_SPAWN);
+    g->current.pos = START_SPAWN;
+
+    // Place tetromino
+    for (int h = 0; h < g->current.size; h++) {
+        for (int w = 0; w < g->current.size; w++) {
+            if (g->current.shape[h][w]) {
+                Position pos = { .x = g->current.pos.x + w, .y = g->current.pos.y + h };
+                grid_set_cell(&g->grid, pos, g->current.shape[h][w]);
+            }
+        }
+    }
 }
 
-void game_display_grid(Game *g) {
-    printf("Grid :\n");
-    for (int h = 0; h < GRID_HEIGHT; h++) {
-        for (int w = 0; w < GRID_WIDTH; w++) {
-            printf("%d ", g->grid[w][h]);
-        }
-        printf("\n");
+int game_update(Game *g) {
+    int changed = 0;
+    changed |= grid_apply_move(&g->grid, &g->current);
+    changed |= grid_apply_rotation(&g->grid, &g->current);
+    if (tick_should_fall(g->level)) {
+        tetromino_move_down(&g->current);
+        changed |= grid_apply_move(&g->grid, &g->current);
     }
+    return changed;
+}
+
+void paused(Game *g) {
+    g->status = PAUSED;
+}
+
+void quit(Game *g) {
+    g->status = QUIT;
 }
