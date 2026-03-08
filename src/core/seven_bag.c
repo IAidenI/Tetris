@@ -1,4 +1,4 @@
-#include "seven_bag.h"
+#include "core/seven_bag.h"
 
 TetrominoType seven_bag[TETROMINO_TYPE_COUNT];
 

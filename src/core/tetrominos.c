@@ -1,4 +1,4 @@
-#include "tetrominos.h"
+#include "core/tetrominos.h"
 
 const Tetromino TETROMINO_E = MAKE_TETROMINO(4,
    {{__,__,__,__},

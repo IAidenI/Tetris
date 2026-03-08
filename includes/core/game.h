@@ -1,9 +1,10 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "tetrominos.h"
-#include "seven_bag.h"
-#include "game_settings.h"
+#include "core/tetrominos.h"
+#include "core/seven_bag.h"
+#include "core/game_settings.h"
+#include "info.h"
 
 typedef struct {
     int grid[GRID_WIDTH][GRID_HEIGHT];

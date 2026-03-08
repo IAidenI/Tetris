@@ -1,4 +1,4 @@
-#include "game.h"
+#include "core/game.h"
 
 void game_init(Game *g) {
     // Initialise 7-bag

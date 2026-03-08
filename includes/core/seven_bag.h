@@ -1,8 +1,8 @@
 #ifndef SEVEN_BAG_H
 #define SEVEN_BAG_H
 
-#include "tools.h"
-#include "tetrominos.h"
+#include "utils/tools.h"
+#include "core/tetrominos.h"
 
 void seven_bag_fill();
 int seven_bag_is_empty();

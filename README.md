@@ -50,9 +50,9 @@ make
 
 Architecture
 - [ ] Organiser proprement l’arborescence du projet (moteur, interface, utilitaires)
-- [ ] Restructure des dossiers/fichiers
+- [X] Restructure des dossiers/fichiers
 - [ ] Ajouter des commentaires et documenter le code
-- [ ] Ajouter un parser d’arguments pour la ligne de commande
+- [X] Ajouter un parser d’arguments pour la ligne de commande
 
 Moteur du jeu
 - [ ] Implémenter la boucle de jeu (ticks)

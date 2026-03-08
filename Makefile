@@ -1,61 +1,36 @@
-# ================== Choix de l'app ==================
-# Usage:
-#   make                 -> build tetris
-#   make APP= -> build 
-APP ?= tetris
+# ================== App ==================
+APP = tetris
 
-CC         = gcc
-SOURCEDIR  = sources
-HEADERSDIR = headers
+CC = gcc
 
-# ================== Sources communes ==================
-COMMON_SOURCES := $(wildcard $(SOURCEDIR)/**/*.c) $(wildcard $(SOURCEDIR)/*.c)
+SRC_DIR = src
+INC_DIR = includes
 
-# ================== Sources par app ==================
-APP_SOURCE := $(APP).c
-SOURCES    := $(APP_SOURCE) $(COMMON_SOURCES)
-
+# ================== Sources ==================
+SOURCES := $(shell find $(SRC_DIR) -name "*.c")
 OBJECTS := $(SOURCES:.c=.o)
 .INTERMEDIATE: $(OBJECTS)
 
-CFLAGS  = -Wall -g -std=c11 -I$(HEADERSDIR)
+# ================== Flags ==================
+CFLAGS = -Wall -Wextra -g -std=c11 -I$(INC_DIR)
 
-# Maybe uncomment if there is an raylib implementation
-# ================== Raylib uniquement pour l'UI ==================
-#RAYLIB_CFLAGS :=
-#RAYLIB_LIBS   :=
-
-#ifeq ($(APP),blackjackUI)
-#  RAYLIB_CFLAGS := $(shell pkg-config --cflags raylib 2>/dev/null)
-#  RAYLIB_LIBS   := $(shell pkg-config --libs raylib 2>/dev/null)
-  # Fallback si pkg-config n'est pas dispo/renvoie vide
-#  ifeq ($(strip $(RAYLIB_LIBS)),)
-#    RAYLIB_LIBS = -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
-#  endif
-#endif
-
-#CFLAGS += $(RAYLIB_CFLAGS)
-#LDLIBS  = $(RAYLIB_LIBS)
-
-#RM := rm -f
-
-# ================== Règles ==================
+# ================== Rules ==================
 .PHONY: all clean run
 
 all: $(APP)
-	@echo "Binary ready ! -> $(APP)"
+	@echo "Binary ready -> $(APP)"
 
 $(APP): $(OBJECTS)
-	@echo "Compiling and linking $(APP)..."
-	$(CC) $(CFLAGS) -o $@ $^ $(LDLIBS)
+	@echo "Linking $(APP)..."
+	$(CC) $(CFLAGS) -o $@ $^
 
-%.o: %.c $(HEADERSDIR)/*.h
+%.o: %.c
 	@echo "Compiling $<..."
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	@echo "Cleaning object files..."
-	-$(RM) $(OBJECTS) blackjackCLI blackjackUI
+	@echo "Cleaning..."
+	rm -f $(OBJECTS) $(APP)
 
 run: all
 	./$(APP)
