@@ -7,6 +7,7 @@
 #include "core/tick.h"
 #include "core/game_settings.h"
 #include "info.h"
+#include "utils/debug.h"
 
 typedef enum {
     RUNNING,
@@ -28,8 +29,8 @@ typedef struct {
 
 void game_init(Game *g);
 void game_spawn_tetromino(Game *g);
-int game_update(Game *g);
-void pause(Game *g);
-void quit(Game *g);
+int  game_update(Game *g);
+void game_pause(Game *g);
+void game_quit(Game *g);
 
 #endif // GAME_H

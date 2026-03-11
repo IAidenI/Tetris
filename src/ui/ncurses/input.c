@@ -1,15 +1,21 @@
-#include "ui/input.h"
+#include "ui/ncurses/input.h"
 
-int handle_input(Game *g) {
+void handle_input(Game *g) {
     int ch = getch();
+
     switch (ch) {
-        case KEY_LEFT:  tetromino_move_left(&g->current);  return 1;
-        case KEY_RIGHT: tetromino_move_right(&g->current); return 1;
-        case KEY_UP:    tetromino_rotate(&g->current);     return 1;
-        case KEY_DOWN:  tetromino_move_down(&g->current);  return 1;
-        case 'q':       quit(g);                           return 1;
-        case 'p':       pause(g);                          return 1;
+        case 'q': game_quit(g);  break;
+        case 'p': game_pause(g); break;
+    }
+
+    if (g->status == PAUSED) return;
+
+    switch (ch) {
+        case KEY_LEFT:  if (g->status != PAUSED) tetromino_move_left(&g->current); break;
+        case KEY_RIGHT: if (g->status != PAUSED)tetromino_move_right(&g->current); break;
+        case KEY_UP:    if (g->status != PAUSED)tetromino_rotate(&g->current);     break;
+        case KEY_DOWN:  if (g->status != PAUSED)tetromino_move_down(&g->current);  break;
         case ERR:
-        default:  return 0;
+        default:  break;
     }
 }

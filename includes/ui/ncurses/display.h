@@ -3,11 +3,12 @@
 
 #include <ncursesw/curses.h>
 #include "core/game.h"
+#include "ui/ncurses/colors.h"
 
 void display_init();
 void display_grid(const Grid *g);
 void display_tetromino(const Tetromino *t);
-#define display_next_tetromino(Tetromino) display_tetromino(Tetromino)
+void display_next_tetromino(const Tetromino *t);
 void render(Game *g);
 
 #endif // DISPLAY_H

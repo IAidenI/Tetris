@@ -12,61 +12,79 @@ void grid_set_cell(Grid *g, Position p, int value) {
     g->cell[p.x][p.y] = value;
 }
 
+GridCheck grid_check_position(Grid *g, Tetromino *t) {
+    for (int h = 0; h < t->size; h++) {
+        for (int w = 0; w < t->size; w++) {
+            if (t->shape[h][w]) {
+                int gx = t->next_pos.x + w;
+                int gy = t->next_pos.y + h;
+
+                log_write("Position X=%d;Y=%d\n", gx, gy);
+
+                // Check bounds
+                if (gx < 0 || gx >= GRID_WIDTH || gy < 0 || gy >= GRID_HEIGHT) return GRID_OUT_OF_BOUNDS;
+
+                // Check collisons
+                if (g->cell[gx][gy] != 0) return GRID_COLLISION;
+            }
+        }
+    }
+    return GRID_OK;
+}
+
+GridCheck grid_check_shape(const Grid *g, const Tetromino *t) {
+    for (int h = 0; h < t->size; h++) {
+        for (int w = 0; w < t->size; w++) {
+            if (t->next_shape[h][w] == 0)
+                continue;
+
+            int gx = t->pos.x + w;
+            int gy = t->pos.y + h;
+
+            // Check bounds
+            if (gx < 0 || gx >= GRID_WIDTH || gy < 0 || gy >= GRID_HEIGHT) return GRID_OUT_OF_BOUNDS;
+
+            // Check collisions
+            if (g->cell[gx][gy] != 0) return GRID_COLLISION;
+        }
+    }
+    return GRID_OK;
+}
+
 int grid_apply_move(Grid *g, Tetromino *t) {
-    if (t->next_pos.x == -1 || t->next_pos.y == -1) return 0;
+    if (t->next_pos.x == -99 || t->next_pos.y == -99) return GRID_IDLE;
 
-    // Clear 
-    for (int w = t->pos.x; w < t->pos.x + t->size; w++) {
-        for (int h = t->pos.y; h < t->pos.y + t->size; h++) {
-            if (t->shape[h - t->pos.y][w - t->pos.x]) {
-                grid_set_cell(g, (Position){w, h}, __);
-            }
-        }
-    }
+    GridCheck result = grid_check_position(g, t);
 
-    // Place new position
-    for (int w = t->next_pos.x; w < t->next_pos.x + t->size; w++) {
-        for (int h = t->next_pos.y; h < t->next_pos.y + t->size; h++) {
-            if (t->shape[h - t->next_pos.y][w - t->next_pos.x]) {
-                grid_set_cell(g, (Position){w, h}, t->shape[h - t->next_pos.y][w - t->next_pos.x]);
-            }
-        }
-    }
+    if (result == GRID_OK) t->pos = t->next_pos;
 
-    // Reset
-    t->pos = t->next_pos;
-    t->next_pos.x = -1;
-    t->next_pos.y = -1;
-    return 1;
+    t->next_pos = (Position){-99, -99};
+    return result;
 }
 
 int grid_apply_rotation(Grid *g, Tetromino *t) {
-    // Check if present
     int has_next_shape = 0;
+
     for (int h = 0; h < t->size && !has_next_shape; h++) {
         for (int w = 0; w < t->size && !has_next_shape; w++) {
-            if (t->next_shape[h][w]) has_next_shape = 1;
+            if (t->next_shape[h][w] != 0)
+                has_next_shape = 1;
         }
     }
 
-    if (!has_next_shape) return 0;
+    if (!has_next_shape) return GRID_IDLE;
 
-    // Clear
-    for (int w = t->pos.x; w < t->pos.x + t->size; w++) {
-        for (int h = t->pos.y; h < t->pos.y + t->size; h++) {
-            if (t->shape[h - t->pos.y][w - t->pos.x]) grid_set_cell(g, (Position){w, h}, __);
-        }
-    }
+    GridCheck result = grid_check_shape(g, t);
 
-    // Change shape
-    memcpy(t->shape, t->next_shape, sizeof(t->next_shape));
+    if (result == GRID_OK) memcpy(t->shape, t->next_shape, sizeof(t->shape));
     memset(t->next_shape, 0, sizeof(t->next_shape));
+    return result;
+}
 
-    // Redraw
-    for (int w = t->pos.x; w < t->pos.x + t->size; w++) {
-        for (int h = t->pos.y; h < t->pos.y + t->size; h++) {
-            if (t->shape[h - t->pos.y][w - t->pos.x]) grid_set_cell(g, (Position){w, h}, t->shape[h - t->pos.y][w - t->pos.x]);
+void grid_lock_tetromino(Grid *g, Tetromino *t) {
+    for (int h = 0; h < t->size; h++) {
+        for (int w = 0; w < t->size; w++) {
+            if (t->shape[h][w]) g->cell[t->pos.x + w][t->pos.y + h] = t->shape[h][w];
         }
     }
-    return 1;
 }

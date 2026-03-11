@@ -1,6 +1,6 @@
 #include "core/game.h"
-#include "ui/display.h"
-#include "ui/input.h"
+#include "ui/ncurses/display.h"
+#include "ui/ncurses/input.h"
 #include <signal.h>
 
 int main(int argc, char **argv) {
@@ -29,6 +29,8 @@ int main(int argc, char **argv) {
     Game game;
     game_init(&game);
     display_init();
+    color_init();
+    log_init("./input.log");
 
     game_spawn_tetromino(&game);
     while (game.status != QUIT) {

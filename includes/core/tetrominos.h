@@ -28,14 +28,16 @@ typedef enum {
 #define _Z TETROMINO_TYPE_Z
 
 typedef struct {
-    int size;
+    TetrominoType type;
     TetrominoType shape[TETROMINO_SIZE][TETROMINO_SIZE];
     TetrominoType next_shape[TETROMINO_SIZE][TETROMINO_SIZE];
+    
+    int size;
     Position pos;
     Position next_pos;
 } Tetromino;
 
-#define MAKE_TETROMINO(s, ...) { .size = (s), .shape = __VA_ARGS__, .next_shape = {{0}}, .pos = {0, 0}, .next_pos = {-1, -1} }
+#define MAKE_TETROMINO(t, s, ...) { .type = (t), .shape = __VA_ARGS__, .next_shape = {{0}}, .size = (s), .pos = {0, 0}, .next_pos = {-1, -1} }
 
 extern const Tetromino TETROMINO_E;
 extern const Tetromino TETROMINO_I;
