@@ -4,6 +4,8 @@ void game_init(Game *g) {
     srand(time(NULL)); // Initialise 7-bag
     
     grid_init(&g->grid);
+    g->current = tetromino_get(__);
+    g->next    = tetromino_get(__);
     
     g->level = 1;
     g->score = 0;
@@ -12,7 +14,8 @@ void game_init(Game *g) {
 }
 
 void game_spawn_tetromino(Game *g) {
-    g->current = seven_bag_get_tetromino();
+    g->current = g->next.type == __ ? seven_bag_get_tetromino() : g->next;
+    log_write("next_type : %d\n", g->next.type);
     g->next = seven_bag_get_tetromino();
     g->current.pos = START_SPAWN;
 }

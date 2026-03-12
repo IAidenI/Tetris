@@ -7,15 +7,15 @@
 #define TETROMINO_SIZE 4
 
 typedef enum {
-    TETROMINO_TYPE_NONE,
-    TETROMINO_TYPE_I,
-    TETROMINO_TYPE_J,
-    TETROMINO_TYPE_L,
-    TETROMINO_TYPE_O,
-    TETROMINO_TYPE_S,
-    TETROMINO_TYPE_T,
-    TETROMINO_TYPE_Z,
-    TETROMINO_TYPE_COUNT
+    TETROMINO_TYPE_NONE, // 0 
+    TETROMINO_TYPE_I,    // 1 
+    TETROMINO_TYPE_J,    // 2 
+    TETROMINO_TYPE_L,    // 3 
+    TETROMINO_TYPE_O,    // 4 
+    TETROMINO_TYPE_S,    // 5 
+    TETROMINO_TYPE_T,    // 6 
+    TETROMINO_TYPE_Z,    // 7 
+    TETROMINO_TYPE_COUNT // 8 
 } TetrominoType;
 
 #define __ TETROMINO_TYPE_NONE
@@ -48,12 +48,12 @@ extern const Tetromino TETROMINO_S;
 extern const Tetromino TETROMINO_T;
 extern const Tetromino TETROMINO_Z;
 
-extern TetrominoType seven_bag[TETROMINO_TYPE_COUNT];
+//extern TetrominoType seven_bag[TETROMINO_TYPE_COUNT];
 
 void tetromino_rotate(Tetromino *t);
 void tetromino_move_left(Tetromino *t);
 void tetromino_move_right(Tetromino *t);
 void tetromino_move_down(Tetromino *t);
-Tetromino get_tetromino(TetrominoType t);
+Tetromino tetromino_get(TetrominoType t);
 
 #endif // TETROMINOS_H

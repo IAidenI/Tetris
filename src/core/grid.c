@@ -82,9 +82,40 @@ int grid_apply_rotation(Grid *g, Tetromino *t) {
 }
 
 void grid_lock_tetromino(Grid *g, Tetromino *t) {
+    // Lock tetromino in the grid when no move possible
     for (int h = 0; h < t->size; h++) {
         for (int w = 0; w < t->size; w++) {
             if (t->shape[h][w]) g->cell[t->pos.x + w][t->pos.y + h] = t->shape[h][w];
+        }
+    }
+
+    grid_clear_full_lines(g);
+}
+
+void grid_clear_full_lines(Grid *g) {
+    int write_h = GRID_HEIGHT - 1;
+
+    for (int read_h = GRID_HEIGHT - 1; read_h >= 0; read_h--) {
+        int line_full = 1;
+
+        for (int w = 0; w < GRID_WIDTH; w++) {
+            if (g->cell[w][read_h] == 0) {
+                line_full = 0;
+                break;
+            }
+        }
+
+        if (!line_full) {
+            for (int w = 0; w < GRID_WIDTH; w++) {
+                g->cell[w][write_h] = g->cell[w][read_h];
+            }
+            write_h--;
+        }
+    }
+
+    for (int h = write_h; h >= 0; h--) {
+        for (int w = 0; w < GRID_WIDTH; w++) {
+            g->cell[w][h] = __;
         }
     }
 }

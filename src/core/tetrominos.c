@@ -80,7 +80,7 @@ void tetromino_move_down(Tetromino *t) {
     t->next_pos.y++;
 }
 
-Tetromino get_tetromino(TetrominoType t) {
+Tetromino tetromino_get(TetrominoType t) {
     switch (t) {
         case _I: return TETROMINO_I;
         case _J: return TETROMINO_J;

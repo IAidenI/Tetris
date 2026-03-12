@@ -24,5 +24,6 @@ GridCheck grid_check_shape(const Grid *g, const Tetromino *t);
 int grid_apply_move(Grid *g, Tetromino *t);
 int grid_apply_rotation(Grid *g, Tetromino *t);
 void grid_lock_tetromino(Grid *g, Tetromino *t);
+void grid_clear_full_lines(Grid *g);
 
 #endif // GRID_H

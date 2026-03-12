@@ -9,9 +9,9 @@ void display_init() {
 
 void display_grid(const Grid *g) {
     printw("Grid :\n");
+    ColorList color_list = color_get_list();
     for (int h = 0; h < GRID_HEIGHT; h++) {
         for (int w = 0; w < GRID_WIDTH; w++) {
-            ColorList color_list = color_get_list();
             int tetromino = g->cell[w][h];
 
             if (tetromino) attron(COLOR_PAIR(color_list.colors[tetromino]));
@@ -26,6 +26,7 @@ void display_tetromino(const Tetromino *t) {
     int saved_y, saved_x;
     getyx(stdscr, saved_y, saved_x);
 
+    ColorList color_list = color_get_list();
     for (int h = 0; h < t->size; h++) {
         for (int w = 0; w < t->size; w++) {
 
@@ -35,7 +36,6 @@ void display_tetromino(const Tetromino *t) {
             int x = t->pos.x + w;
             int y = 1 + t->pos.y + h;
 
-            ColorList color_list = color_get_list();
             attron(COLOR_PAIR(color_list.colors[t->type]));
             mvprintw(y, x * 2, "%d", t->shape[h][w]);
             attroff(COLOR_PAIR(color_list.colors[t->type]));
@@ -50,10 +50,15 @@ void display_next_tetromino(const Tetromino *t) {
     printw("Position : X=%d;Y=%d\n", t->pos.x, t->pos.y);
     printw("Shape    :\n");
     
+    ColorList color_list = color_get_list();
     for (int h = 0; h < t->size; h++) {
         printw("           ");
         for (int w = 0; w < t->size; w++) {
-            printw("%d ", t->shape[h][w]);
+            int cell = t->shape[w][h];
+
+            if (cell) attron(COLOR_PAIR(color_list.colors[cell]));
+            printw("%d ", cell);
+            if (cell) attroff(COLOR_PAIR(color_list.colors[cell]));
         }
         printw("\n");
     }
@@ -65,7 +70,7 @@ void render(Game *g) {
     display_grid(&g->grid);
     display_tetromino(&g->current);
 
-    display_next_tetromino(&g->current);
+    //display_next_tetromino(&g->current);
     display_next_tetromino(&g->next);
     refresh();
 }
