@@ -24,6 +24,33 @@ int snapshot_search_key_word(FILE *fp, const char *key_word) {
     return ERROR;
 }
 
+int snapshot_extract_position(FILE *fp, char *buffer, int *x, int *y) {
+    if (snapshot_search_key_word(fp, key_current_position)) {
+        print_error("Format du fichier invalide, %s introuvable.\n", key_current_position);
+        return ERROR;
+    }
+
+    if (!fgets(buffer, BUFFER_SNAPSHOT, fp)) {
+        print_error("Format du fichier invalide, x introuvable.\n");
+        return ERROR;
+    }
+    if (sscanf(buffer, " %*[^:]: %d", x) != 1) {
+        print_error("Valeur x invalide.\n");
+        return ERROR;
+    }
+
+    if (!fgets(buffer, BUFFER_SNAPSHOT, fp)) {
+        print_error("Format du fichier invalide, y introuvable.\n");
+        return ERROR;
+    }
+    if (sscanf(buffer, " %*[^:]: %d", y) != 1) {
+        print_error("Valeur y invalide.\n");
+        return ERROR;
+    }
+
+    return SUCCESS;
+}
+
 int snapshot_extract_int(FILE *fp, char *buffer, const char *keyword, int *out) {
     if (snapshot_search_key_word(fp, keyword)) {
         print_error("Format du fichier invalide, %s introuvable.\n", keyword);
@@ -65,7 +92,7 @@ int snapshot_extract_array(FILE *fp, char *buffer, const char *keyword, int *out
                 print_error("Valeur invalide à la ligne %d, colonne %d.\n", y + 1, x + 1);
                 return 1;
             }
-            out[x * height + y] = value;
+            out[y * width + x] = value;
             ptr = end;
         }
     }
@@ -81,16 +108,21 @@ int snapshot_read(Game *g) {
     char buffer[BUFFER_SNAPSHOT];
     int x = -1, y = -1, current_type = -1, next_type = -1;
     int shape[TETROMINO_SIZE][TETROMINO_SIZE];
-    int grid[GRID_WIDTH][GRID_HEIGHT];
+    int grid[GRID_HEIGHT][GRID_WIDTH];
 
     FILE *fp = fopen(snapshot_path, "r");
+	if (fp == NULL) {
+		log_write("[!] can't read %s.\n", snapshot_path);
+		return 1;
+	}
 
     if (snapshot_extract_int(fp, buffer, key_current_type, &current_type) == ERROR) return ERROR;
-    if (snapshot_extract_int(fp, buffer, key_current_position, &x) == ERROR) return ERROR;
-    if (snapshot_extract_int(fp, buffer, key_current_position, &y) == ERROR) return ERROR;
+	if (snapshot_extract_position(fp, buffer, &x, &y)) return ERROR;
     if (snapshot_extract_array(fp, buffer, key_current_shape, (int *)shape, TETROMINO_SIZE, TETROMINO_SIZE) == ERROR) return ERROR;
     if (snapshot_extract_int(fp, buffer, key_next_type, &next_type) == ERROR) return ERROR;
     if (snapshot_extract_array(fp, buffer, key_grid, (int *)grid, GRID_WIDTH, GRID_HEIGHT) == ERROR) return ERROR;
+
+	log_write("position x : %d - y : %d\n", x, y);
 
     // Update the game
     g->current = tetromino_get(current_type);                   // Current type
@@ -125,7 +157,7 @@ void snapshot_create(Game *g) {
     for (int h = 0; h < TETROMINO_SIZE; h++) {
         fprintf(fp, "    ");
         for (int w = 0; w < TETROMINO_SIZE; w++) {
-            fprintf(fp, "%d ", g->current.shape[w][h]);
+            fprintf(fp, "%d ", g->current.shape[h][w]);
         }
         fprintf(fp, "\n");
     }
@@ -140,7 +172,7 @@ void snapshot_create(Game *g) {
     for (int h = 0; h < GRID_HEIGHT; h++) {
         fprintf(fp, "    ");
         for (int w = 0; w < GRID_WIDTH; w++) {
-            fprintf(fp, "%d ", g->grid.cell[w][h]);
+            fprintf(fp, "%d ", g->grid.cell[h][w]);
         }
         fprintf(fp, "\n");
     }

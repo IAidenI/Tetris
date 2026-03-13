@@ -1,17 +1,18 @@
 [position]
     x : 4
-    y : 8
+    y : 6
 
 [current_type]
-    type : 7
+    type : 6
 
 [current_shape]
-    0 0 7 
-    0 7 7 
-    0 7 0 
+    0 6 0 0 
+    0 6 6 0 
+    0 6 0 0 
+    0 0 0 0 
 
 [next_type]
-    type : 6
+    type : 5
 
 [grid]
     0 0 0 0 0 0 0 0 0 0 

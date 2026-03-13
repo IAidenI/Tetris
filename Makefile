@@ -23,15 +23,15 @@ all: $(APP)
 
 $(APP): $(OBJECTS)
 	@echo "Linking $(APP)..."
-	$(CC) $(CFLAGS) $(LDLIBS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^ $(LDLIBS)
 
 %.o: %.c
 	@echo "Compiling $<..."
-	$(CC) $(CFLAGS) $(LDLIBS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
 	@echo "Cleaning..."
 	rm -f $(OBJECTS) $(APP)
 
 run: all
-	./$(APP) -d ./snapshot
+	./$(APP) -d snapshot

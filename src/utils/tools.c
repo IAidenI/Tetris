@@ -32,3 +32,8 @@ void help(const char* buffer) {
 	printf("  -h, --help      Affiche ce message\n");
 	printf("      --version   Affiche la version du script\n");
 }
+
+int file_exists(const char *filename) {
+    struct stat buffer;
+    return stat(filename, &buffer) == 0;
+}

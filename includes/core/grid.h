@@ -14,7 +14,7 @@ typedef enum {
 } GridCheck;
 
 typedef struct {
-    int cell[GRID_WIDTH][GRID_HEIGHT];
+    int cell[GRID_HEIGHT][GRID_WIDTH];
     int lines_cleared;
     int total_lines_cleared;
 } Grid;

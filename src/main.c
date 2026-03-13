@@ -9,7 +9,7 @@ int main(int argc, char **argv) {
     Game game;
     game_init(&game);
     log_init("./input.log");
-    snapshot_init("./snapshot");
+	snapshot_init("./snapshot");
 
     if (argc > 1) {
         if (strcmp(argv[1], "-d") == 0) {
@@ -18,6 +18,13 @@ int main(int argc, char **argv) {
                 return 1;
             }
 
+			char *filename = argv[2];
+			if (!file_exists(filename)) {
+				print_error("Le fichier %s est introuvable.\n", filename);
+				return 1;
+			}
+
+			snapshot_init(filename);
             if (snapshot_read(&game)) return 1;
         } else if (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0) {
             help(argv[0]);
@@ -31,7 +38,7 @@ int main(int argc, char **argv) {
             return 0;
         }
     }
-    
+
     display_init();
     color_init();
     game_spawn_tetromino(&game);

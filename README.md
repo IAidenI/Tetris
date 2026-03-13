@@ -2,7 +2,7 @@
 
 ![Platform](https://img.shields.io/badge/platform-Linux-blue)
 ![Top Language](https://img.shields.io/github/languages/top/IAidenI/Tetris)
-![Version](https://img.shields.io/badge/version-1.2.2-yellow)
+![Version](https://img.shields.io/badge/version-1.2.3-yellow)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 Une implémentation basique du jeu Tetris en C, jouable dans un terminal.
@@ -48,9 +48,6 @@ make
 
 ## A faire
 
-Urgent
-- [ ] Problème avec les [width][height] des tableaux qui casse tout le moteur du jeu
-
 Architecture
 - [ ] Organiser proprement l’arborescence du projet (moteur, interface, utilitaires)
 - [X] Restructure des dossiers/fichiers
@@ -82,8 +79,8 @@ Interface utilisateur
 - [ ] Ajouter un affichage suplémentaire avec raylib
 
 Debug / outils
-- [ ] Implémenter un système de snapshot de la partie
-- [ ] Permettre de charger un état du jeu pour le debug
+- [X] Implémenter un système de snapshot de la partie
+- [x] Permettre de charger un état du jeu pour le debug
 
 Refactor
 - [ ] Faire un système plus propre de code de retour

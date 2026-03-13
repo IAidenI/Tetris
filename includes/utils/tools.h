@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 #include <time.h>
 #include <ncursesw/curses.h>
 
@@ -20,5 +21,6 @@ void shuffle_array(void *arr, int n, size_t size);
 double get_time();
 void handle_sigint(int sig);
 void help(const char* buffer);
+int file_exists(const char *filename);
 
 #endif // TOOLS_H

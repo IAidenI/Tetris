@@ -12,7 +12,7 @@ void display_grid(const Grid *g) {
     ColorList color_list = color_get_list();
     for (int h = 0; h < GRID_HEIGHT; h++) {
         for (int w = 0; w < GRID_WIDTH; w++) {
-            int tetromino = g->cell[w][h];
+            int tetromino = g->cell[h][w];
 
             if (tetromino) attron(COLOR_PAIR(color_list.colors[tetromino]));
             printw("%d ", tetromino);
@@ -27,17 +27,17 @@ void display_grid_(const Grid *g) {
     for (int h = 0; h < GRID_HEIGHT; h++) {
         printf("    ");
         for (int w = 0; w < GRID_WIDTH; w++) {
-            printf("%d ", g->cell[w][h]);
+            printf("%d ", g->cell[h][w]);
         }
         printf("\n");
     }
 }
 
-void display_tetromino_(const Tetromino *t) {    
+void display_tetromino_(const Tetromino *t) {
     for (int h = 0; h < t->size; h++) {
         printf("    ");
         for (int w = 0; w < t->size; w++) {
-            printf("%d ", t->shape[w][h]);
+            printf("%d ", t->shape[h][w]);
         }
         printf("\n");
     }
@@ -69,12 +69,12 @@ void display_next_tetromino(const Tetromino *t) {
     printw("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
     printw("Position : X=%d;Y=%d\n", t->pos.x, t->pos.y);
     printw("Shape    :\n");
-    
+
     ColorList color_list = color_get_list();
     for (int h = 0; h < t->size; h++) {
         printw("           ");
         for (int w = 0; w < t->size; w++) {
-            int cell = t->shape[w][h];
+            int cell = t->shape[h][w];
 
             if (cell) attron(COLOR_PAIR(color_list.colors[cell]));
             printw("%d ", cell);
