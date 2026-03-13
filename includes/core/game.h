@@ -10,9 +10,11 @@
 #include "utils/debug.h"
 
 typedef enum {
+    SNAPSHOT,
     RUNNING,
     PAUSED,
-    QUIT
+    QUIT,
+    OVER
 } Status;
 
 typedef struct {
@@ -30,6 +32,8 @@ typedef struct {
 void game_init(Game *g);
 void game_spawn_tetromino(Game *g);
 int  game_update(Game *g);
+int  game_is_not_over(Game *g);
+int  game_over(Game *g);
 void game_pause(Game *g);
 void game_quit(Game *g);
 

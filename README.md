@@ -48,6 +48,9 @@ make
 
 ## A faire
 
+Urgent
+- [ ] Problème avec les [width][height] des tableaux qui casse tout le moteur du jeu
+
 Architecture
 - [ ] Organiser proprement l’arborescence du projet (moteur, interface, utilitaires)
 - [X] Restructure des dossiers/fichiers
@@ -59,22 +62,28 @@ Moteur du jeu
 - [X] Gestion de la gravité des pièces
 - [X] Détection des collisions
 - [X] Suppression des lignes complètes
-- [ ] Gestion du score
-- [ ] Système de niveaux et accélération du jeu
+- [X] Gestion du score
+- [X] Système de niveaux et accélération du jeu
+- [ ] Système SRS pour la rotation des tetrominos
 
 Gameplay
 - [X] Gestion des inputs joueur
 - [ ] Ajout du hold
 - [ ] Ajout du ghost piece (aperçu de l’endroit où la pièce va tomber)
 - [ ] Sauvegarde et affichage du meilleur score
-- [ ] Ajout d'un SRS pour la rotation des tetrominos
+- [X] Ajout de la fin du jeu (joueur qui a perdu)
+- [ ] Ajout d'un lock delay
 
 Interface utilisateur
 - [X] Implémenter une première interface (terminal ncurses)
 - [ ] Ajouter un système de menus (start / pause / game over)
 - [ ] Améliorer l’affichage de la grille et des pièces
+- [ ] Affichage des commandes
 - [ ] Ajouter un affichage suplémentaire avec raylib
 
 Debug / outils
 - [ ] Implémenter un système de snapshot de la partie
 - [ ] Permettre de charger un état du jeu pour le debug
+
+Refactor
+- [ ] Faire un système plus propre de code de retour

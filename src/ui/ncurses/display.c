@@ -15,10 +15,31 @@ void display_grid(const Grid *g) {
             int tetromino = g->cell[w][h];
 
             if (tetromino) attron(COLOR_PAIR(color_list.colors[tetromino]));
-            printw("%d ", g->cell[w][h]);
+            printw("%d ", tetromino);
             if (tetromino) attroff(COLOR_PAIR(color_list.colors[tetromino]));
         }
         printw("\n");
+    }
+}
+
+void display_grid_(const Grid *g) {
+    printf("Grid :\n");
+    for (int h = 0; h < GRID_HEIGHT; h++) {
+        printf("    ");
+        for (int w = 0; w < GRID_WIDTH; w++) {
+            printf("%d ", g->cell[w][h]);
+        }
+        printf("\n");
+    }
+}
+
+void display_tetromino_(const Tetromino *t) {    
+    for (int h = 0; h < t->size; h++) {
+        printf("    ");
+        for (int w = 0; w < t->size; w++) {
+            printf("%d ", t->shape[w][h]);
+        }
+        printf("\n");
     }
 }
 
@@ -30,8 +51,7 @@ void display_tetromino(const Tetromino *t) {
     for (int h = 0; h < t->size; h++) {
         for (int w = 0; w < t->size; w++) {
 
-            if (t->shape[h][w] == 0)
-                continue;
+            if (t->shape[h][w] == 0) continue;
 
             int x = t->pos.x + w;
             int y = 1 + t->pos.y + h;
@@ -65,6 +85,13 @@ void display_next_tetromino(const Tetromino *t) {
     printw("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n");
 }
 
+void display_player_infos(int score, int level) {
+    printw("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+    printw("Score : %d\n", score);
+    printw("Level : %d\n", level);
+    printw("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n");
+}
+
 void render(Game *g) {
     clear();
     display_grid(&g->grid);
@@ -72,5 +99,6 @@ void render(Game *g) {
 
     //display_next_tetromino(&g->current);
     display_next_tetromino(&g->next);
+    display_player_infos(g->score, g->level);
     refresh();
 }

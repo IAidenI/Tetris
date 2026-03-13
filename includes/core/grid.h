@@ -15,12 +15,14 @@ typedef enum {
 
 typedef struct {
     int cell[GRID_WIDTH][GRID_HEIGHT];
+    int lines_cleared;
+    int total_lines_cleared;
 } Grid;
 
 void grid_init(Grid *g);
 void grid_set_cell(Grid *g, Position p, int value);
-GridCheck grid_check_position(Grid *g, Tetromino *t);
-GridCheck grid_check_shape(const Grid *g, const Tetromino *t);
+GridCheck grid_check_next_position(Grid *g, Tetromino *t);
+GridCheck grid_check_next_shape(const Grid *g, const Tetromino *t);
 int grid_apply_move(Grid *g, Tetromino *t);
 int grid_apply_rotation(Grid *g, Tetromino *t);
 void grid_lock_tetromino(Grid *g, Tetromino *t);

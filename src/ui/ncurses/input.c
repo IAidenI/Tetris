@@ -4,8 +4,10 @@ void handle_input(Game *g) {
     int ch = getch();
 
     switch (ch) {
-        case 'q': game_quit(g);  break;
-        case 'p': game_pause(g); break;
+        case 's': snapshot_create(g); break;
+        case 'q': game_quit(g);       break;
+        case 27 : // Escape
+        case 'p': game_pause(g);      break;
     }
 
     if (g->status == PAUSED) return;

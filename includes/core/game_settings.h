@@ -6,4 +6,6 @@
 
 #define START_SPAWN ((Position){ .x = 3, .y = 0 })
 
+extern const int SCORE_TABLE[5];
+
 #endif // GAME_SETTINGS_H
