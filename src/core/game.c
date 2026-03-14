@@ -6,7 +6,7 @@ void game_init(Game *g) {
     grid_init(&g->grid);
     g->current = tetromino_get(__);
     g->next    = tetromino_get(__);
-    g->ghost   = tetromino_get(__);
+    g->preview = tetromino_get(__);
 
     g->level = 1;
     g->score = 0;
@@ -18,16 +18,15 @@ void game_spawn_tetromino(Game *g) {
     if (g->status != SNAPSHOT) {
         g->current = g->next.type == __ ? seven_bag_get_tetromino() : g->next;
         g->next    = seven_bag_get_tetromino();
-        g->ghost   = g->current;
+        g->preview = g->current;
 
         g->current.pos      = START_SPAWN;
         g->current.next_pos = START_SPAWN;
-        game_refresh_ghost(g);
+        game_refresh_preview(g);
     }
 
     // Check GameOver
     GridCheck result = grid_check_position(&g->grid, &g->current, g->current.next_pos);
-    //GridCheck result = grid_check_next_position(&g->grid, &g->current);
 
     if (result == GRID_COLLISION) g->status = OVER;
     else {
@@ -63,18 +62,18 @@ int game_update(Game *g) {
         }
     }
 
-    game_refresh_ghost(g);
+    game_refresh_preview(g);
     return changed;
 }
 
-void game_refresh_ghost(Game *g) {
-    g->ghost = g->current;
+void game_refresh_preview(Game *g) {
+    g->preview = g->current;
     while (1) {
-        Position next = g->ghost.pos;
+        Position next = g->preview.pos;
         next.y++;
         
-        if (grid_check_position(&g->grid, &g->ghost, next) != GRID_OK) break;
-        g->ghost.pos = next;
+        if (grid_check_position(&g->grid, &g->preview, next) != GRID_OK) break;
+        g->preview.pos = next;
     }
 }
 

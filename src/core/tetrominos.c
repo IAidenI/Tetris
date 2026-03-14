@@ -53,7 +53,7 @@ const Tetromino TETROMINO_Z = MAKE_TETROMINO(TETROMINO_TYPE_Z, 3,
 
 void tetromino_rotate(Tetromino *t) {
     // Temporary store value to not overwrite
-    int tmp[TETROMINO_SIZE][TETROMINO_SIZE];
+    TetrominoType tmp[TETROMINO_SIZE][TETROMINO_SIZE] = {{0}};
     for (int h = 0; h < t->size; h++) {
         for (int w = 0; w < t->size; w++) {
             tmp[w][t->size - 1 - h] = t->shape[h][w];

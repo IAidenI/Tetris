@@ -75,7 +75,7 @@ void display_render(Game *g) {
     clear();
     display_grid(&g->grid);
     display_tetromino(&g->current);
-    display_tetromino(&g->ghost);
+    display_tetromino(&g->preview);
 
     //display_next_tetromino(&g->current);
     display_next_tetromino(&g->next);

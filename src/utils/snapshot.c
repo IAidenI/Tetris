@@ -3,11 +3,20 @@
 static const char *snapshot_path = NULL;
 
 // Key words
-static const char *key_current_position = "[position]";
-static const char *key_current_type = "[current_type]";
-static const char *key_current_shape = "[current_shape]";
-static const char *key_next_type = "[next_type]";
-static const char *key_grid = "[grid]";
+static const char *key_current_position = "[current_position]";
+static const char *key_current_type     = "[current_type]";
+static const char *key_current_shape    = "[current_shape]";
+static const char *key_next_type        = "[next_type]";
+static const char *key_grid             = "[grid]";
+static const char *key_game_status      = "[game_status]";
+
+// Labels
+static const char *label_position_x   = "x";
+static const char *label_position_y   = "y";
+static const char *label_current_type = "type";
+static const char *label_next_type    = "type";
+static const char *label_game_score   = "score";
+static const char *label_game_level   = "level";
 
 void snapshot_init(const char *path) {
     snapshot_path = path;
@@ -24,53 +33,40 @@ int snapshot_search_key_word(FILE *fp, const char *key_word) {
     return 1;
 }
 
-int snapshot_extract_position(FILE *fp, char *buffer, int *x, int *y) {
-    if (snapshot_search_key_word(fp, key_current_position)) {
-        print_error("Format du fichier invalide, %s introuvable.\n", key_current_position);
+int snapshot_extract_section_int(FILE *fp, char *buffer, const char *section, const char *field, int *out) {
+    if (snapshot_search_key_word(fp, section)) {
+        print_error("Format du fichier invalide, %s introuvable.\n", section);
         return 1;
     }
 
-    if (!fgets(buffer, BUFFER_SNAPSHOT, fp)) {
-        print_error("Format du fichier invalide, x introuvable.\n");
-        return 1;
-    }
-    if (sscanf(buffer, " %*[^:]: %d", x) != 1) {
-        print_error("Valeur x invalide.\n");
-        return 1;
-    }
-
-    if (!fgets(buffer, BUFFER_SNAPSHOT, fp)) {
-        print_error("Format du fichier invalide, y introuvable.\n");
-        return 1;
-    }
-    if (sscanf(buffer, " %*[^:]: %d", y) != 1) {
-        print_error("Valeur y invalide.\n");
-        return 1;
-    }
-
-    return 0;
-}
-
-int snapshot_extract_int(FILE *fp, char *buffer, const char *keyword, int *out) {
-    if (snapshot_search_key_word(fp, keyword)) {
-        print_error("Format du fichier invalide, %s introuvable.\n", keyword);
-        return 1;
-    }
-
-    *out = -1;
-    while (*out == -1) {
-        if (!fgets(buffer, BUFFER_SNAPSHOT, fp)) {
-            print_error("Format du fichier invalide, %s trouvé, mais aucune donnée.\n", keyword);
-            return 1;
-        }
-
+    while (fgets(buffer, BUFFER_SNAPSHOT, fp)) {
         char *line = buffer;
+
         while (*line == ' ' || *line == '\t')
             line++;
 
-        sscanf(line, "%*s %*s %d", out);
+        if (*line == '[')
+            break;
+
+        char key[BUFFER_SNAPSHOT];
+        int value;
+
+        if (sscanf(line, "%[^:]: %d", key, &value) == 2) {
+            char *end = key + strlen(key) - 1;
+            while (end >= key && (*end == ' ' || *end == '\t')) {
+                *end = '\0';
+                end--;
+            }
+
+            if (strcmp(key, field) == 0) {
+                *out = value;
+                return 0;
+            }
+        }
     }
-    return 0;
+
+    print_error("Champ %s introuvable dans %s.\n", field, section);
+    return 1;
 }
 
 int snapshot_extract_array(FILE *fp, char *buffer, const char *keyword, int *out, int width, int height) {
@@ -106,7 +102,7 @@ int snapshot_read(Game *g) {
     }
 
     char buffer[BUFFER_SNAPSHOT];
-    int x = -1, y = -1, current_type = -1, next_type = -1;
+    int x = -1, y = -1, current_type = -1, next_type = -1, score = -1, level = -1;
     int shape[TETROMINO_SIZE][TETROMINO_SIZE];
     int grid[GRID_HEIGHT][GRID_WIDTH];
 
@@ -116,13 +112,19 @@ int snapshot_read(Game *g) {
 		return 1;
 	}
 
-    if (snapshot_extract_int(fp, buffer, key_current_type, &current_type) == 1) return 1;
-	if (snapshot_extract_position(fp, buffer, &x, &y)) return 1;
+    if (snapshot_extract_section_int(fp, buffer, key_current_type, label_current_type, &current_type) == 1) return 1;
+	
+    if (snapshot_extract_section_int(fp, buffer, key_current_position, label_position_x, &x)) return 1;
+    if (snapshot_extract_section_int(fp, buffer, key_current_position, label_position_y, &y)) return 1;
+    
     if (snapshot_extract_array(fp, buffer, key_current_shape, (int *)shape, TETROMINO_SIZE, TETROMINO_SIZE) == 1) return 1;
-    if (snapshot_extract_int(fp, buffer, key_next_type, &next_type) == 1) return 1;
+    
+    if (snapshot_extract_section_int(fp, buffer, key_next_type, label_next_type, &next_type) == 1) return 1;
+    
     if (snapshot_extract_array(fp, buffer, key_grid, (int *)grid, GRID_WIDTH, GRID_HEIGHT) == 1) return 1;
-
-	log_write("position x : %d - y : %d\n", x, y);
+    
+    if (snapshot_extract_section_int(fp, buffer, key_game_status, label_game_score, &score)) return 1;
+    if (snapshot_extract_section_int(fp, buffer, key_game_status, label_game_level, &level)) return 1;
 
     // Update the game
     g->current = tetromino_get(current_type);                   // Current type
@@ -130,6 +132,9 @@ int snapshot_read(Game *g) {
     memcpy(&g->current.shape, shape, sizeof(g->current.shape)); // Current shape
     g->next = tetromino_get(next_type);                         // Next type
     memcpy(&g->grid, grid, sizeof(g->grid.cell));               // Grid
+    g->grid.total_lines_cleared = level * 10;                   // Grid total
+    g->score = score;                                           // Score
+    g->level = level;                                           // Level
     g->status = SNAPSHOT;
 
     return 0;
@@ -145,12 +150,12 @@ void snapshot_create(Game *g) {
 
     // Current tetromino type
     fprintf(fp, "%s\n", key_current_type);
-    fprintf(fp, "    type : %d\n\n", g->current.type);
+    fprintf(fp, "    %s : %d\n\n", label_current_type, g->current.type);
 
     // Current tetromino position
     fprintf(fp, "%s\n", key_current_position);
-    fprintf(fp, "    x : %d\n", g->current.pos.x);
-    fprintf(fp, "    y : %d\n\n", g->current.pos.y);
+    fprintf(fp, "    %s : %d\n", label_position_x, g->current.pos.x);
+    fprintf(fp, "    %s : %d\n\n", label_position_y, g->current.pos.y);
 
     // Current tetromino shape
     fprintf(fp, "%s\n", key_current_shape);
@@ -165,7 +170,7 @@ void snapshot_create(Game *g) {
 
     // Next tetromino
     fprintf(fp, "%s\n", key_next_type);
-    fprintf(fp, "    type : %d\n\n", g->next.type);
+    fprintf(fp, "    %s : %d\n\n", label_next_type, g->next.type);
 
     // Grid
     fprintf(fp, "%s\n", key_grid);
@@ -177,6 +182,11 @@ void snapshot_create(Game *g) {
         fprintf(fp, "\n");
     }
     fprintf(fp, "\n");
+
+    // Game status
+    fprintf(fp, "%s\n", key_game_status);
+    fprintf(fp, "    %s : %d\n", label_game_score, g->score);
+    fprintf(fp, "    %s : %d\n\n", label_game_level, g->level);
 
     fclose(fp);
 }

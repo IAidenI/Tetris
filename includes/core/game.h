@@ -22,7 +22,7 @@ typedef struct {
     
     Tetromino current;
     Tetromino next;
-    Tetromino ghost;
+    Tetromino preview;
 
     int level;
     int score;
@@ -33,7 +33,7 @@ typedef struct {
 void game_init(Game *g);
 void game_spawn_tetromino(Game *g);
 int  game_update(Game *g);
-void game_refresh_ghost(Game *g);
+void game_refresh_preview(Game *g);
 int  game_is_not_over(Game *g);
 int  game_over(Game *g);
 void game_pause(Game *g);

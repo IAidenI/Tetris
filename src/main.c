@@ -9,7 +9,7 @@ int main(int argc, char **argv) {
     Game game;
     game_init(&game);
     log_init("./input.log");
-	snapshot_init("./snapshot");
+	snapshot_init("./snapshot.ini");
 
     if (argc > 1) {
         if (strcmp(argv[1], "-d") == 0) {
