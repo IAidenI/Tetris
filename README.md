@@ -2,7 +2,7 @@
 
 ![Platform](https://img.shields.io/badge/platform-Linux-blue)
 ![Top Language](https://img.shields.io/github/languages/top/IAidenI/Tetris)
-![Version](https://img.shields.io/badge/version-1.2.3-yellow)
+![Version](https://img.shields.io/badge/version-1.2.4-yellow)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 Une implémentation basique du jeu Tetris en C, jouable dans un terminal.
@@ -66,10 +66,11 @@ Moteur du jeu
 Gameplay
 - [X] Gestion des inputs joueur
 - [ ] Ajout du hold
-- [ ] Ajout du ghost piece (aperçu de l’endroit où la pièce va tomber)
+- [X] Ajout du ghost piece (aperçu de l’endroit où la pièce va tomber)
 - [ ] Sauvegarde et affichage du meilleur score
 - [X] Ajout de la fin du jeu (joueur qui a perdu)
 - [ ] Ajout d'un lock delay
+- [ ] Ajout de la touche espace pour placer directement la pièce
 
 Interface utilisateur
 - [X] Implémenter une première interface (terminal ncurses)
@@ -81,6 +82,3 @@ Interface utilisateur
 Debug / outils
 - [X] Implémenter un système de snapshot de la partie
 - [x] Permettre de charger un état du jeu pour le debug
-
-Refactor
-- [ ] Faire un système plus propre de code de retour

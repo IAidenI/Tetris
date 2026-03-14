@@ -22,27 +22,6 @@ void display_grid(const Grid *g) {
     }
 }
 
-void display_grid_(const Grid *g) {
-    printf("Grid :\n");
-    for (int h = 0; h < GRID_HEIGHT; h++) {
-        printf("    ");
-        for (int w = 0; w < GRID_WIDTH; w++) {
-            printf("%d ", g->cell[h][w]);
-        }
-        printf("\n");
-    }
-}
-
-void display_tetromino_(const Tetromino *t) {
-    for (int h = 0; h < t->size; h++) {
-        printf("    ");
-        for (int w = 0; w < t->size; w++) {
-            printf("%d ", t->shape[h][w]);
-        }
-        printf("\n");
-    }
-}
-
 void display_tetromino(const Tetromino *t) {
     int saved_y, saved_x;
     getyx(stdscr, saved_y, saved_x);
@@ -92,10 +71,11 @@ void display_player_infos(int score, int level) {
     printw("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n");
 }
 
-void render(Game *g) {
+void display_render(Game *g) {
     clear();
     display_grid(&g->grid);
     display_tetromino(&g->current);
+    display_tetromino(&g->ghost);
 
     //display_next_tetromino(&g->current);
     display_next_tetromino(&g->next);

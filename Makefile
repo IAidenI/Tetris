@@ -34,4 +34,4 @@ clean:
 	rm -f $(OBJECTS) $(APP)
 
 run: all
-	./$(APP) -d snapshot
+	./$(APP)

@@ -19,49 +19,49 @@ int snapshot_search_key_word(FILE *fp, const char *key_word) {
 
     while (fgets(buffer, BUFFER_SNAPSHOT, fp)) {
         buffer[strcspn(buffer, "\r\n")] = 0;
-        if (strcmp(buffer, key_word) == 0) return SUCCESS;
+        if (strcmp(buffer, key_word) == 0) return 0;
     }
-    return ERROR;
+    return 1;
 }
 
 int snapshot_extract_position(FILE *fp, char *buffer, int *x, int *y) {
     if (snapshot_search_key_word(fp, key_current_position)) {
         print_error("Format du fichier invalide, %s introuvable.\n", key_current_position);
-        return ERROR;
+        return 1;
     }
 
     if (!fgets(buffer, BUFFER_SNAPSHOT, fp)) {
         print_error("Format du fichier invalide, x introuvable.\n");
-        return ERROR;
+        return 1;
     }
     if (sscanf(buffer, " %*[^:]: %d", x) != 1) {
         print_error("Valeur x invalide.\n");
-        return ERROR;
+        return 1;
     }
 
     if (!fgets(buffer, BUFFER_SNAPSHOT, fp)) {
         print_error("Format du fichier invalide, y introuvable.\n");
-        return ERROR;
+        return 1;
     }
     if (sscanf(buffer, " %*[^:]: %d", y) != 1) {
         print_error("Valeur y invalide.\n");
-        return ERROR;
+        return 1;
     }
 
-    return SUCCESS;
+    return 0;
 }
 
 int snapshot_extract_int(FILE *fp, char *buffer, const char *keyword, int *out) {
     if (snapshot_search_key_word(fp, keyword)) {
         print_error("Format du fichier invalide, %s introuvable.\n", keyword);
-        return ERROR;
+        return 1;
     }
 
     *out = -1;
     while (*out == -1) {
         if (!fgets(buffer, BUFFER_SNAPSHOT, fp)) {
             print_error("Format du fichier invalide, %s trouvé, mais aucune donnée.\n", keyword);
-            return ERROR;
+            return 1;
         }
 
         char *line = buffer;
@@ -70,7 +70,7 @@ int snapshot_extract_int(FILE *fp, char *buffer, const char *keyword, int *out) 
 
         sscanf(line, "%*s %*s %d", out);
     }
-    return SUCCESS;
+    return 0;
 }
 
 int snapshot_extract_array(FILE *fp, char *buffer, const char *keyword, int *out, int width, int height) {
@@ -116,11 +116,11 @@ int snapshot_read(Game *g) {
 		return 1;
 	}
 
-    if (snapshot_extract_int(fp, buffer, key_current_type, &current_type) == ERROR) return ERROR;
-	if (snapshot_extract_position(fp, buffer, &x, &y)) return ERROR;
-    if (snapshot_extract_array(fp, buffer, key_current_shape, (int *)shape, TETROMINO_SIZE, TETROMINO_SIZE) == ERROR) return ERROR;
-    if (snapshot_extract_int(fp, buffer, key_next_type, &next_type) == ERROR) return ERROR;
-    if (snapshot_extract_array(fp, buffer, key_grid, (int *)grid, GRID_WIDTH, GRID_HEIGHT) == ERROR) return ERROR;
+    if (snapshot_extract_int(fp, buffer, key_current_type, &current_type) == 1) return 1;
+	if (snapshot_extract_position(fp, buffer, &x, &y)) return 1;
+    if (snapshot_extract_array(fp, buffer, key_current_shape, (int *)shape, TETROMINO_SIZE, TETROMINO_SIZE) == 1) return 1;
+    if (snapshot_extract_int(fp, buffer, key_next_type, &next_type) == 1) return 1;
+    if (snapshot_extract_array(fp, buffer, key_grid, (int *)grid, GRID_WIDTH, GRID_HEIGHT) == 1) return 1;
 
 	log_write("position x : %d - y : %d\n", x, y);
 
@@ -132,7 +132,7 @@ int snapshot_read(Game *g) {
     memcpy(&g->grid, grid, sizeof(g->grid.cell));               // Grid
     g->status = SNAPSHOT;
 
-    return SUCCESS;
+    return 0;
 }
 
 void snapshot_create(Game *g) {

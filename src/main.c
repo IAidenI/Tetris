@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
     game_spawn_tetromino(&game);
     while (game_is_not_over(&game)) {
         handle_input(&game);
-        if (game_update(&game)) render(&game);
+        if (game_update(&game)) display_render(&game);
     }
     endwin();
 

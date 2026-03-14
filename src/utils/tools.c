@@ -1,5 +1,11 @@
 #include "utils/tools.h"
 
+double get_time() {
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    return ts.tv_sec + ts.tv_nsec / 1e9;
+}
+
 void shuffle_array(void *arr, int n, size_t size) {
     char tmp[size];
     char *a = arr;
@@ -9,12 +15,6 @@ void shuffle_array(void *arr, int n, size_t size) {
         memcpy(a + i * size, a + j * size, size);
         memcpy(a + j * size, tmp,          size);
     }
-}
-
-double get_time() {
-    struct timespec ts;
-    clock_gettime(CLOCK_MONOTONIC, &ts);
-    return ts.tv_sec + ts.tv_nsec / 1e9;
 }
 
 void handle_sigint(int sig) {

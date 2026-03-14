@@ -17,10 +17,10 @@ typedef struct {
 
 #define print_error(text, ...) fprintf(stderr, "Erreur: " text, ##__VA_ARGS__); fflush(stderr);
 
-void shuffle_array(void *arr, int n, size_t size);
 double get_time();
+void shuffle_array(void *arr, int n, size_t size);
 void handle_sigint(int sig);
 void help(const char* buffer);
-int file_exists(const char *filename);
+int  file_exists(const char *filename);
 
 #endif // TOOLS_H

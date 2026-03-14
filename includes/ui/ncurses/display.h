@@ -7,12 +7,10 @@
 
 void display_init();
 void display_grid(const Grid *g);
-void display_grid_(const Grid *g);
-void display_tetromino_(const Tetromino *t);
 void display_tetromino(const Tetromino *t);
 void display_seven_bag();
 void display_next_tetromino(const Tetromino *t);
 void display_player_infos(int score, int level);
-void render(Game *g);
+void display_render(Game *g);
 
 #endif // DISPLAY_H

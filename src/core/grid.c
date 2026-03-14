@@ -15,47 +15,11 @@ void grid_set_cell(Grid *g, Position p, int value) {
     g->cell[p.y][p.x] = value;
 }
 
-GridCheck grid_check_next_position(Grid *g, Tetromino *t) {
-    for (int h = 0; h < t->size; h++) {
-        for (int w = 0; w < t->size; w++) {
-            if (t->shape[h][w]) {
-                int gx = t->next_pos.x + w;
-                int gy = t->next_pos.y + h;
-
-                // Check bounds
-                if (gx < 0 || gx >= GRID_WIDTH || gy < 0 || gy >= GRID_HEIGHT) return GRID_OUT_OF_BOUNDS;
-
-                // Check collisons
-                if (g->cell[gy][gx] != 0) return GRID_COLLISION;
-            }
-        }
-    }
-    return GRID_OK;
-}
-
-GridCheck grid_check_next_shape(const Grid *g, const Tetromino *t) {
-    for (int h = 0; h < t->size; h++) {
-        for (int w = 0; w < t->size; w++) {
-            if (t->next_shape[h][w] == 0)
-                continue;
-
-            int gx = t->pos.x + w;
-            int gy = t->pos.y + h;
-
-            // Check bounds
-            if (gx < 0 || gx >= GRID_WIDTH || gy < 0 || gy >= GRID_HEIGHT) return GRID_OUT_OF_BOUNDS;
-
-            // Check collisions
-            if (g->cell[gy][gx] != 0) return GRID_COLLISION;
-        }
-    }
-    return GRID_OK;
-}
-
 int grid_apply_move(Grid *g, Tetromino *t) {
     if (t->next_pos.x == RESET_POSITION.x || t->next_pos.y == RESET_POSITION.y) return GRID_IDLE;
 
-    GridCheck result = grid_check_next_position(g, t);
+    GridCheck result = grid_check_position(g, t, t->next_pos);
+    //GridCheck result = grid_check_next_position(g, t);
 
     if (result == GRID_OK) t->pos = t->next_pos;
 
@@ -107,7 +71,6 @@ void grid_clear_full_lines(Grid *g) {
             }
         }
 
-
         // If unfull line, copy below
         if (!line_full) {
             for (int w = 0; w < GRID_WIDTH; w++) {
@@ -127,4 +90,41 @@ void grid_clear_full_lines(Grid *g) {
     int cleared = write_h + 1;
     g->lines_cleared        = cleared;
     g->total_lines_cleared += cleared;
+}
+
+GridCheck grid_check_position(Grid *g, Tetromino *t, Position p) {
+    for (int h = 0; h < t->size; h++) {
+        for (int w = 0; w < t->size; w++) {
+            if (t->shape[h][w]) {
+                int gx = p.x + w;
+                int gy = p.y + h;
+
+                // Check bounds
+                if (gx < 0 || gx >= GRID_WIDTH || gy < 0 || gy >= GRID_HEIGHT) return GRID_OUT_OF_BOUNDS;
+
+                // Check collisons
+                if (g->cell[gy][gx] != 0) return GRID_COLLISION;
+            }
+        }
+    }
+    return GRID_OK;
+}
+
+GridCheck grid_check_next_shape(const Grid *g, const Tetromino *t) {
+    for (int h = 0; h < t->size; h++) {
+        for (int w = 0; w < t->size; w++) {
+            if (t->next_shape[h][w] == 0)
+                continue;
+
+            int gx = t->pos.x + w;
+            int gy = t->pos.y + h;
+
+            // Check bounds
+            if (gx < 0 || gx >= GRID_WIDTH || gy < 0 || gy >= GRID_HEIGHT) return GRID_OUT_OF_BOUNDS;
+
+            // Check collisions
+            if (g->cell[gy][gx] != 0) return GRID_COLLISION;
+        }
+    }
+    return GRID_OK;
 }
