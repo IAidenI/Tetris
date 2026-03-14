@@ -23,9 +23,17 @@ typedef struct {
     Tetromino current;
     Tetromino next;
     Tetromino preview;
+    Tetromino hold;
+    int hold_request;
+    int has_hold;
 
     int level;
     int score;
+
+    int grounded;
+    double lock_delay_start;
+
+    int hard_drop;
 
     Status status;
 } Game;

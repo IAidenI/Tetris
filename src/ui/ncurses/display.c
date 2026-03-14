@@ -78,6 +78,7 @@ void display_render(Game *g) {
     display_tetromino(&g->preview);
 
     //display_next_tetromino(&g->current);
+    display_next_tetromino(&g->hold);
     display_next_tetromino(&g->next);
     display_player_infos(g->score, g->level);
     refresh();

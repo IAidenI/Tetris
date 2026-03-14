@@ -13,7 +13,8 @@ void handle_input(Game *g) {
     if (g->status == PAUSED) return;
 
     switch (ch) {
-        case ' ':       g->current = g->preview;           break;
+        case ' ':       g->hard_drop    = 1;               break;
+        case 'c':       g->hold_request = 1;               break;
         case KEY_LEFT:  tetromino_move_left(&g->current);  break;
         case KEY_RIGHT: tetromino_move_right(&g->current); break;
         case KEY_UP:    tetromino_rotate(&g->current);     break;

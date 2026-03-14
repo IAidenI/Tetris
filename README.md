@@ -2,7 +2,7 @@
 
 ![Platform](https://img.shields.io/badge/platform-Linux-blue)
 ![Top Language](https://img.shields.io/github/languages/top/IAidenI/Tetris)
-![Version](https://img.shields.io/badge/version-1.2.4-yellow)
+![Version](https://img.shields.io/badge/version-1.2.5-yellow)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 Une implémentation basique du jeu Tetris en C, jouable dans un terminal.
@@ -49,7 +49,7 @@ make
 ## A faire
 
 Architecture
-- [ ] Organiser proprement l’arborescence du projet (moteur, interface, utilitaires)
+- [X] Organiser proprement l’arborescence du projet (moteur, interface, utilitaires)
 - [X] Restructure des dossiers/fichiers
 - [ ] Ajouter des commentaires et documenter le code
 - [X] Ajouter un parser d’arguments pour la ligne de commande
@@ -62,15 +62,16 @@ Moteur du jeu
 - [X] Gestion du score
 - [X] Système de niveaux et accélération du jeu
 - [ ] Système SRS pour la rotation des tetrominos
+- [ ] Problème avec le O qui rotate (SRS devrais le fix)
 
 Gameplay
 - [X] Gestion des inputs joueur
-- [ ] Ajout du hold
+- [X] Ajout du hold
 - [X] Ajout du ghost piece (aperçu de l’endroit où la pièce va tomber)
-- [ ] Sauvegarde et affichage du meilleur score
+- [ ] Sauvegarde et affichage du meilleur score (pas encore sûr de cette ajout)
 - [X] Ajout de la fin du jeu (joueur qui a perdu)
-- [ ] Ajout d'un lock delay
-- [ ] Ajout de la touche espace pour placer directement la pièce
+- [X] Ajout d'un lock delay
+- [X] Ajout de la touche espace pour placer directement la pièce
 
 Interface utilisateur
 - [X] Implémenter une première interface (terminal ncurses)
@@ -82,3 +83,6 @@ Interface utilisateur
 Debug / outils
 - [X] Implémenter un système de snapshot de la partie
 - [x] Permettre de charger un état du jeu pour le debug
+
+Refactor
+- [ ] La partie game_update
