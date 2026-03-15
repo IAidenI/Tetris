@@ -7,7 +7,7 @@
 #include "utils/debug.h"
 
 typedef enum {
-    GRID_IDLE,
+    GRID_FAIL,
     GRID_OK,
     GRID_OUT_OF_BOUNDS,
     GRID_COLLISION
@@ -21,11 +21,11 @@ typedef struct {
 
 void grid_init(Grid *g);
 void grid_set_cell(Grid *g, Position p, int value);
-int  grid_apply_move(Grid *g, Tetromino *t);
-int  grid_apply_rotation(Grid *g, Tetromino *t);
+int  grid_apply_move(Grid *g, Tetromino *t, Position new_pos);
+int  grid_apply_rotation(Grid *g, Tetromino *t, Action a);
 void grid_lock_tetromino(Grid *g, Tetromino *t);
 void grid_clear_full_lines(Grid *g);
 GridCheck grid_check_position(Grid *g, Tetromino *t, Position p);
-GridCheck grid_check_next_shape(const Grid *g, const Tetromino *t);
+int grid_SRS(Grid *g, Tetromino *t, Action a);
 
 #endif // GRID_H

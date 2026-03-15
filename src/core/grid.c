@@ -15,35 +15,21 @@ void grid_set_cell(Grid *g, Position p, int value) {
     g->cell[p.y][p.x] = value;
 }
 
-int grid_apply_move(Grid *g, Tetromino *t) {
-    if (t->next_pos.x == RESET_POSITION.x || t->next_pos.y == RESET_POSITION.y) return GRID_IDLE;
-
-    GridCheck result = grid_check_position(g, t, t->next_pos);
-    //GridCheck result = grid_check_next_position(g, t);
-
-    if (result == GRID_OK) t->pos = t->next_pos;
-
-    t->next_pos = RESET_POSITION;
+int grid_apply_move(Grid *g, Tetromino *t, Position new_pos) {
+    GridCheck result = grid_check_position(g, t, new_pos);
+    if (result == GRID_OK) t->pos = new_pos;
     return result;
 }
 
-int grid_apply_rotation(Grid *g, Tetromino *t) {
-    int has_next_shape = 0;
+int grid_apply_rotation(Grid *g, Tetromino *t, Action a) {
+    Tetromino rotated = *t;
+    tetromino_rotate(&rotated, a);
 
-    for (int h = 0; h < t->size && !has_next_shape; h++) {
-        for (int w = 0; w < t->size && !has_next_shape; w++) {
-            if (t->next_shape[h][w] != 0)
-                has_next_shape = 1;
-        }
+    if (grid_check_position(g, &rotated, rotated.pos)) {
+        *t = rotated;
+        return GRID_OK;
     }
-
-    if (!has_next_shape) return GRID_IDLE;
-
-    GridCheck result = grid_check_next_shape(g, t);
-
-    if (result == GRID_OK) memcpy(t->shape, t->next_shape, sizeof(t->shape));
-    memset(t->next_shape, 0, sizeof(t->next_shape));
-    return result;
+    return GRID_FAIL;
 }
 
 void grid_lock_tetromino(Grid *g, Tetromino *t) {
@@ -110,21 +96,60 @@ GridCheck grid_check_position(Grid *g, Tetromino *t, Position p) {
     return GRID_OK;
 }
 
-GridCheck grid_check_next_shape(const Grid *g, const Tetromino *t) {
-    for (int h = 0; h < t->size; h++) {
-        for (int w = 0; w < t->size; w++) {
-            if (t->next_shape[h][w] == 0)
-                continue;
+static const Kick JLSTZ_KICKS[4][4][5] = {
+    [ROT_0][ROT_R] = {{0,0},{-1,0},{-1,1},{0,-2},{-1,-2}},
+    [ROT_R][ROT_0] = {{0,0},{1,0},{1,-1},{0,2},{1,2}},
 
-            int gx = t->pos.x + w;
-            int gy = t->pos.y + h;
+    [ROT_R][ROT_2] = {{0,0},{1,0},{1,-1},{0,2},{1,2}},
+    [ROT_2][ROT_R] = {{0,0},{-1,0},{-1,1},{0,-2},{-1,-2}},
 
-            // Check bounds
-            if (gx < 0 || gx >= GRID_WIDTH || gy < 0 || gy >= GRID_HEIGHT) return GRID_OUT_OF_BOUNDS;
+    [ROT_2][ROT_L] = {{0,0},{1,0},{1,1},{0,-2},{1,-2}},
+    [ROT_L][ROT_2] = {{0,0},{-1,0},{-1,-1},{0,2},{-1,2}},
 
-            // Check collisions
-            if (g->cell[gy][gx] != 0) return GRID_COLLISION;
+    [ROT_L][ROT_0] = {{0,0},{-1,0},{-1,-1},{0,2},{-1,2}},
+    [ROT_0][ROT_L] = {{0,0},{1,0},{1,1},{0,-2},{1,-2}}
+};
+
+static const Kick I_KICKS[4][4][5] = {
+    [ROT_0][ROT_R] = {{0,0},{-2,0},{1,0},{-2,-1},{1,2}},
+    [ROT_R][ROT_0] = {{0,0},{2,0},{-1,0},{2,1},{-1,-2}},
+
+    [ROT_R][ROT_2] = {{0,0},{-1,0},{2,0},{-1,2},{2,-1}},
+    [ROT_2][ROT_R] = {{0,0},{1,0},{-2,0},{1,-2},{-2,1}},
+
+    [ROT_2][ROT_L] = {{0,0},{2,0},{-1,0},{2,1},{-1,-2}},
+    [ROT_L][ROT_2] = {{0,0},{-2,0},{1,0},{-2,-1},{1,2}},
+
+    [ROT_L][ROT_0] = {{0,0},{1,0},{-2,0},{1,-2},{-2,1}},
+    [ROT_0][ROT_L] = {{0,0},{-1,0},{2,0},{-1,2},{2,-1}}
+};
+
+int grid_SRS(Grid *g, Tetromino *t, Action a) {
+    Tetromino rotated = *t;
+    tetromino_rotate(&rotated, a);
+
+    // Direct position
+    if (grid_check_position(g, &rotated, rotated.pos) == GRID_OK) {
+        *t = rotated;
+        return 1;
+    }
+    
+    // Wall kick
+    int old_rot = t->rot;
+    int new_rot = a == ROTATE_RIGHT ? (old_rot + 1) % 4 : (old_rot + 3) % 4;
+    const Kick *kicks = t->type == _I ? I_KICKS[old_rot][new_rot] : JLSTZ_KICKS[old_rot][new_rot];
+    
+    for (int i = 0; i < 5; i++) {
+        Position new_pos = {
+            t->pos.x + kicks[i].dx,
+            t->pos.y + kicks[i].dy
+        };
+
+        if (grid_check_position(g, &rotated, new_pos) == GRID_OK) {
+            rotated.pos = new_pos;
+            *t = rotated;
+            return 1;
         }
     }
-    return GRID_OK;
+    return 0;
 }

@@ -30,18 +30,12 @@ void game_spawn_tetromino(Game *g) {
         g->preview = g->current;
 
         g->current.pos      = START_SPAWN;
-        g->current.next_pos = START_SPAWN;
         game_refresh_preview(g);
     }
 
     // Check GameOver
-    GridCheck result = grid_check_position(&g->grid, &g->current, g->current.next_pos);
-
-    if (result == GRID_COLLISION) g->status = OVER;
-    else {
-        g->current.next_pos = RESET_POSITION;
-        g->status = RUNNING;
-    }
+    GridCheck result = grid_check_position(&g->grid, &g->current, g->current.pos);
+    g->status = (result == GRID_OK) ? RUNNING : OVER;
 }
 
 int game_update(Game *g) {
@@ -85,37 +79,22 @@ int game_update(Game *g) {
         return 1;
     }
 
-    GridCheck move_result = grid_apply_move(&g->grid, &g->current);
-    if (move_result == GRID_OK) {
-        changed = 1;
-        if (g->lock_delay_start >= 0) g->lock_delay_start = get_time();
-    }
-
-    GridCheck rotation_result = grid_apply_rotation(&g->grid, &g->current);
-    if (rotation_result == GRID_OK) {
-        changed = 1;
-        if (g->lock_delay_start >= 0) g->lock_delay_start = get_time();
-    }
-
     if (tick_should_fall(g->level)) {
-        tetromino_move_down(&g->current);
-
-        GridCheck fall_result = grid_apply_move(&g->grid, &g->current);
-
+        GridCheck fall_result = grid_apply_move(&g->grid, &g->current, tetromino_move_down(&g->current));
+        
         if (fall_result == GRID_OK) {
             changed = 1;
             g->lock_delay_start = -1;
-        }
-        else if (fall_result == GRID_OUT_OF_BOUNDS || fall_result == GRID_COLLISION) {
+        } else if (fall_result == GRID_OUT_OF_BOUNDS || fall_result == GRID_COLLISION) {
             double now = get_time();
-
+            
             if (g->lock_delay_start < 0) g->lock_delay_start = now;
             else if (now - g->lock_delay_start >= LOCK_DELAY) {
                 grid_lock_tetromino(&g->grid, &g->current);
-
-                g->level = g->grid.total_lines_cleared / 10;
+                
+                g->level  = g->grid.total_lines_cleared / 10;
                 g->score += SCORE_TABLE[g->grid.lines_cleared];
-
+                
                 game_spawn_tetromino(g);
                 g->lock_delay_start = -1;
                 g->has_hold = 0;

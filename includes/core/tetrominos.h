@@ -27,17 +27,42 @@ typedef enum {
 #define _T TETROMINO_TYPE_T
 #define _Z TETROMINO_TYPE_Z
 
+/*
+    TO CHANGE
+*/
+
+typedef enum {
+    ROTATE_LEFT,
+    ROTATE_RIGHT
+} Action;
+
+typedef struct {
+    int dx;
+    int dy;
+} Kick;
+
+typedef enum {
+    ROT_0,
+    ROT_R,
+    ROT_2,
+    ROT_L
+} Rotation;
+
+/*
+    TO CHANGE
+*/
+
+
 typedef struct {
     TetrominoType type;
     TetrominoType shape[TETROMINO_SIZE][TETROMINO_SIZE];
-    TetrominoType next_shape[TETROMINO_SIZE][TETROMINO_SIZE];
     
     int size;
     Position pos;
-    Position next_pos;
+    Rotation rot;
 } Tetromino;
 
-#define MAKE_TETROMINO(t, s, ...) { .type = (t), .shape = __VA_ARGS__, .next_shape = {{0}}, .size = (s), .pos = {0, 0}, .next_pos = {-1, -1} }
+#define MAKE_TETROMINO(t, s, ...) { .type = (t), .shape = __VA_ARGS__, .size = (s), .pos = {0, 0}, .rot = ROT_0 }
 
 extern const Tetromino TETROMINO_E;
 extern const Tetromino TETROMINO_I;
@@ -50,10 +75,10 @@ extern const Tetromino TETROMINO_Z;
 
 //extern TetrominoType seven_bag[TETROMINO_TYPE_COUNT];
 
-void tetromino_rotate(Tetromino *t);
-void tetromino_move_left(Tetromino *t);
-void tetromino_move_right(Tetromino *t);
-void tetromino_move_down(Tetromino *t);
+void tetromino_rotate(Tetromino *t, Action a);
+Position tetromino_move_left(Tetromino *t);
+Position tetromino_move_right(Tetromino *t);
+Position tetromino_move_down(Tetromino *t);
 Tetromino tetromino_get(TetrominoType t);
 
 #endif // TETROMINOS_H

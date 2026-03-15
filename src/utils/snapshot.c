@@ -5,7 +5,7 @@ static const char *snapshot_path = NULL;
 // Key words
 static const char *key_current_position = "[current_position]";
 static const char *key_current_type     = "[current_type]";
-static const char *key_current_shape    = "[current_shape]";
+static const char *key_current_rot      = "[current_rot]";
 static const char *key_next_type        = "[next_type]";
 static const char *key_grid             = "[grid]";
 static const char *key_game_status      = "[game_status]";
@@ -14,6 +14,7 @@ static const char *key_game_status      = "[game_status]";
 static const char *label_position_x   = "x";
 static const char *label_position_y   = "y";
 static const char *label_current_type = "type";
+static const char *label_current_rot  = "rotation";
 static const char *label_next_type    = "type";
 static const char *label_game_score   = "score";
 static const char *label_game_level   = "level";
@@ -102,8 +103,7 @@ int snapshot_read(Game *g) {
     }
 
     char buffer[BUFFER_SNAPSHOT];
-    int x = -1, y = -1, current_type = -1, next_type = -1, score = -1, level = -1;
-    int shape[TETROMINO_SIZE][TETROMINO_SIZE];
+    int x = -1, y = -1, current_type = -1, current_rot = -1, next_type = -1, score = -1, level = -1;
     int grid[GRID_HEIGHT][GRID_WIDTH];
 
     FILE *fp = fopen(snapshot_path, "r");
@@ -117,7 +117,7 @@ int snapshot_read(Game *g) {
     if (snapshot_extract_section_int(fp, buffer, key_current_position, label_position_x, &x)) return 1;
     if (snapshot_extract_section_int(fp, buffer, key_current_position, label_position_y, &y)) return 1;
     
-    if (snapshot_extract_array(fp, buffer, key_current_shape, (int *)shape, TETROMINO_SIZE, TETROMINO_SIZE) == 1) return 1;
+    if (snapshot_extract_section_int(fp, buffer, key_current_rot, label_current_rot, &current_rot) == 1) return 1;
     
     if (snapshot_extract_section_int(fp, buffer, key_next_type, label_next_type, &next_type) == 1) return 1;
     
@@ -129,7 +129,8 @@ int snapshot_read(Game *g) {
     // Update the game
     g->current = tetromino_get(current_type);                   // Current type
     g->current.pos.x = x; g->current.pos.y = y;                 // Current position
-    memcpy(&g->current.shape, shape, sizeof(g->current.shape)); // Current shape
+    for (int i = 0; i < current_rot; i++)                       // Current
+        tetromino_rotate(&g->current, ROTATE_RIGHT);            //    rotation
     g->next = tetromino_get(next_type);                         // Next type
     memcpy(&g->grid, grid, sizeof(g->grid.cell));               // Grid
     g->grid.total_lines_cleared = level * 10;                   // Grid total
@@ -157,16 +158,9 @@ void snapshot_create(Game *g) {
     fprintf(fp, "    %s : %d\n", label_position_x, g->current.pos.x);
     fprintf(fp, "    %s : %d\n\n", label_position_y, g->current.pos.y);
 
-    // Current tetromino shape
-    fprintf(fp, "%s\n", key_current_shape);
-    for (int h = 0; h < TETROMINO_SIZE; h++) {
-        fprintf(fp, "    ");
-        for (int w = 0; w < TETROMINO_SIZE; w++) {
-            fprintf(fp, "%d ", g->current.shape[h][w]);
-        }
-        fprintf(fp, "\n");
-    }
-    fprintf(fp, "\n");
+    // Current tetromino rotation
+    fprintf(fp, "%s\n", key_current_rot);
+    fprintf(fp, "    %s : %d\n\n", label_current_rot, g->current.rot);
 
     // Next tetromino
     fprintf(fp, "%s\n", key_next_type);

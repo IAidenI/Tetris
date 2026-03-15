@@ -5,6 +5,6 @@
 #include "core/game.h"
 #include "utils/snapshot.h"
 
-void handle_input(Game *g);
+int handle_input(Game *g);
 
 #endif // INPUT_H

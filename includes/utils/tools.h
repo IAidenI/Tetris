@@ -13,8 +13,6 @@ typedef struct {
     int y;
 } Position;
 
-#define RESET_POSITION (Position){ -99, -99 }
-
 #define print_error(text, ...) fprintf(stderr, "Erreur: " text, ##__VA_ARGS__); fflush(stderr);
 
 double get_time();

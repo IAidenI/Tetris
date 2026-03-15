@@ -51,33 +51,31 @@ const Tetromino TETROMINO_Z = MAKE_TETROMINO(TETROMINO_TYPE_Z, 3,
     {__,__,__}}
 );
 
-void tetromino_rotate(Tetromino *t) {
+void tetromino_rotate(Tetromino *t, Action a) {
     // Temporary store value to not overwrite
     TetrominoType tmp[TETROMINO_SIZE][TETROMINO_SIZE] = {{0}};
     for (int h = 0; h < t->size; h++) {
         for (int w = 0; w < t->size; w++) {
-            tmp[w][t->size - 1 - h] = t->shape[h][w];
+            if (a == ROTATE_RIGHT) tmp[w][t->size - 1 - h] = t->shape[h][w];
+            else tmp[t->size - 1 - w][h] = t->shape[h][w];
         }
     }
 
     // Place new values
-    memcpy(t->next_shape, tmp, sizeof(tmp));
-    t->next_pos = t->pos;
+    memcpy(t->shape, tmp, sizeof(tmp));
+    t->rot = a == ROTATE_RIGHT ? (t->rot + 1) % 4 : (t->rot + 3) % 4;
 }
 
-void tetromino_move_left(Tetromino *t) {
-    t->next_pos = t->pos;
-    t->next_pos.x--;
+Position tetromino_move_left(Tetromino *t) {
+    return (Position){ t->pos.x - 1, t->pos.y };
 }
 
-void tetromino_move_right(Tetromino *t) {
-    t->next_pos = t->pos;
-    t->next_pos.x++;
+Position tetromino_move_right(Tetromino *t) {
+    return (Position){ t->pos.x + 1, t->pos.y };
 }
 
-void tetromino_move_down(Tetromino *t) {
-    t->next_pos = t->pos;
-    t->next_pos.y++;
+Position tetromino_move_down(Tetromino *t) {
+    return (Position){ t->pos.x, t->pos.y + 1 };
 }
 
 Tetromino tetromino_get(TetrominoType t) {

@@ -43,8 +43,9 @@ int main(int argc, char **argv) {
     color_init();
     game_spawn_tetromino(&game);
     while (game_is_not_over(&game)) {
-        handle_input(&game);
-        if (game_update(&game)) display_render(&game);
+        int input_changed = handle_input(&game);
+        int update_changed = game_update(&game);
+        if (input_changed || update_changed) display_render(&game);
     }
     endwin();
 
