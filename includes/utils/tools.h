@@ -13,6 +13,11 @@ typedef struct {
     int y;
 } Position;
 
+typedef struct {
+    int w;
+    int h;
+} Size;
+
 #define print_error(text, ...) fprintf(stderr, "Erreur: " text, ##__VA_ARGS__); fflush(stderr);
 
 double get_time();

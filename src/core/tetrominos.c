@@ -52,6 +52,8 @@ const Tetromino TETROMINO_Z = MAKE_TETROMINO(TETROMINO_TYPE_Z, 3,
 );
 
 void tetromino_rotate(Tetromino *t, Action a) {
+    if (t->type == _O) return;
+
     // Temporary store value to not overwrite
     TetrominoType tmp[TETROMINO_SIZE][TETROMINO_SIZE] = {{0}};
     for (int h = 0; h < t->size; h++) {

@@ -13,7 +13,7 @@ OBJECTS := $(SOURCES:.c=.o)
 
 # ================== Flags ==================
 CFLAGS = -Wall -Wextra -g -std=c11 -D_POSIX_C_SOURCE=199309L -I$(INC_DIR)
-LDLIBS = -lncurses -lm
+LDLIBS = -lncursesw -lm
 
 # ================== Rules ==================
 .PHONY: all clean run

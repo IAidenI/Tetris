@@ -42,6 +42,7 @@ void game_init(Game *g);
 void game_spawn_tetromino(Game *g);
 int  game_update(Game *g);
 void game_refresh_preview(Game *g);
+const char *game_get_difficulty(int level);
 int  game_is_not_over(Game *g);
 int  game_over(Game *g);
 void game_pause(Game *g);

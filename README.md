@@ -2,7 +2,7 @@
 
 ![Platform](https://img.shields.io/badge/platform-Linux-blue)
 ![Top Language](https://img.shields.io/github/languages/top/IAidenI/Tetris)
-![Version](https://img.shields.io/badge/version-1.2.6-yellow)
+![Version](https://img.shields.io/badge/version-1.2.7-yellow)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 Une implémentation basique du jeu Tetris en C, jouable dans un terminal.
@@ -51,7 +51,6 @@ make
 Architecture
 - [X] Organiser proprement l’arborescence du projet (moteur, interface, utilitaires)
 - [X] Restructure des dossiers/fichiers
-- [ ] Ajouter des commentaires et documenter le code
 - [X] Ajouter un parser d’arguments pour la ligne de commande
 
 Moteur du jeu
@@ -62,7 +61,7 @@ Moteur du jeu
 - [X] Gestion du score
 - [X] Système de niveaux et accélération du jeu
 - [X] Système SRS pour la rotation des tetrominos
-- [ ] Problème avec le O qui rotate
+- [X] Problème avec le O qui rotate
 
 Gameplay
 - [X] Gestion des inputs joueur
@@ -76,7 +75,7 @@ Gameplay
 Interface utilisateur
 - [X] Implémenter une première interface (terminal ncurses)
 - [ ] Ajouter un système de menus (start / pause / game over)
-- [ ] Améliorer l’affichage de la grille et des pièces
+- [X] Améliorer l’affichage de la grille et des pièces
 - [ ] Affichage des commandes
 - [ ] Ajouter un affichage suplémentaire avec raylib
 
@@ -86,3 +85,4 @@ Debug / outils
 
 Refactor
 - [ ] La partie game_update
+- [ ] Ajouter des commentaires et documenter le code

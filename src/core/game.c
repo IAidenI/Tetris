@@ -118,6 +118,22 @@ void game_refresh_preview(Game *g) {
     }
 }
 
+const char *game_get_difficulty(int level) {
+    if (level >= 0 && level <= 4) {
+        return "Easy";
+    } else if (level >= 5 && level <= 9) {
+        return "Medium";
+    } else if (level >= 10 && level <= 15) {
+        return "Hard";
+    } else if (level >= 16 && level <= 28) {
+        return "Expert";
+    } else if (level >= 29) {
+        return "Insane";
+    }
+
+    return "Inconnu";
+}
+
 int game_is_not_over(Game *g) {
     return g->status != QUIT && g->status != OVER;
 }
