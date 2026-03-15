@@ -67,7 +67,7 @@ void display_tetromino(const Tetromino *t, Position pos, const char *symbol) {
             int y = pos.y + t->pos.y + h;
 
             attron(COLOR_PAIR(color_list.colors[t->type]));
-            mvprintw(y, x, t->shape[h][w] ? symbol : NO_TETROMINO);
+            mvprintw(y, x, "%s", t->shape[h][w] ? symbol : NO_TETROMINO);
             attroff(COLOR_PAIR(color_list.colors[t->type]));
         }
     }
@@ -84,7 +84,7 @@ void display_tetromino_panel_frame(const char *label, Position pos, Size size) {
     mvprintw(y, x + size.w + 1, "%s", CORNER_TOP_RIGHT);
 
     mvprintw(y + 1, x, "%s", WALL);
-    mvprintw(y + 1, x + 2, label);
+    mvprintw(y + 1, x + 2, "%s", label);
     mvprintw(y + 1, x + size.w + 1, "%s", WALL);
 
     mvprintw(y + 2, x, "%s", WALL);
@@ -190,8 +190,8 @@ void display_render(Game *g) {
 
     Position grid_origin = {frame_pos.x + 1, frame_pos.y + 1};
     display_grid(&g->grid, grid_origin);
-    display_tetromino(&g->current, grid_origin, TETROMINO);
     display_tetromino(&g->preview, grid_origin, TETROMINO_PREVIEW);
+    display_tetromino(&g->current, grid_origin, TETROMINO);
 
     Position next_pos = {frame_pos.x + grid_size.w + 3, frame_pos.y};
     Size next_size = {12, 2};
