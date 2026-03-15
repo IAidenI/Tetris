@@ -61,8 +61,8 @@ Moteur du jeu
 - [X] Suppression des lignes complètes
 - [X] Gestion du score
 - [X] Système de niveaux et accélération du jeu
-- [ ] Système SRS pour la rotation des tetrominos
-- [ ] Problème avec le O qui rotate (SRS devrais le fix)
+- [X] Système SRS pour la rotation des tetrominos
+- [ ] Problème avec le O qui rotate
 
 Gameplay
 - [X] Gestion des inputs joueur
