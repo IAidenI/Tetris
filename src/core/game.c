@@ -20,26 +20,25 @@ void game_init(Game *g) {
 
     g->hard_drop = 0;
 
-    g->status = RUNNING;
+    g->status = START;
 }
 
 void game_spawn_tetromino(Game *g) {
     if (g->status != SNAPSHOT) {
-        g->current = g->next.type == __ ? seven_bag_get_tetromino() : g->next;
-        g->next    = seven_bag_get_tetromino();
-        g->preview = g->current;
-
-        g->current.pos      = START_SPAWN;
+        g->current     = g->next.type == __ ? seven_bag_get_tetromino() : g->next;
+        g->next        = seven_bag_get_tetromino();
+        g->preview     = g->current;
+        g->current.pos = START_SPAWN;
         game_refresh_preview(g);
     }
 
     // Check GameOver
     GridCheck result = grid_check_position(&g->grid, &g->current, g->current.pos);
-    g->status = (result == GRID_OK) ? RUNNING : OVER;
+    g->status = (result == GRID_OK) ? g->status : LOOSE;
 }
 
 int game_update(Game *g) {
-    if (g->status == PAUSED) return 0;
+    if (g->status == PAUSED || g->status == LOOSE) return 0;
 
     int changed = 0;
 
@@ -134,12 +133,13 @@ const char *game_get_difficulty(int level) {
     return "Inconnu";
 }
 
-int game_is_not_over(Game *g) {
-    return g->status != QUIT && g->status != OVER;
+void game_reset(Game *g) {
+    game_init(g);
+    game_spawn_tetromino(g);
 }
 
-int game_over(Game *g) {
-    return g->status == OVER;
+int game_is_not_over(Game *g) {
+    return g->status != QUIT;
 }
 
 void game_pause(Game *g) {

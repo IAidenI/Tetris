@@ -24,7 +24,9 @@ Le jeu fonctionne dans un terminal Linux.
 Voici un aperçu de l'application.
 
 <p align=center>
+  <img src="./docs/HomePage.png" alt="Page d'accueil" height="330">
   <img src="./docs/GameExemple.png" alt="Exemple de jeu" height="330">
+  <img src="./docs/Pause.png" alt="Exemple de jeu" height="330">
 </p>
 
 ## Fonctionnalités
@@ -74,9 +76,9 @@ Gameplay
 
 Interface utilisateur
 - [X] Implémenter une première interface (terminal ncurses)
-- [ ] Ajouter un système de menus (start / pause / game over)
+- [X] Ajouter un système de menus (start / pause / game over)
 - [X] Améliorer l’affichage de la grille et des pièces
-- [ ] Affichage des commandes
+- [X] Affichage des commandes
 - [ ] Ajouter un affichage suplémentaire avec raylib
 
 Debug / outils
@@ -86,3 +88,4 @@ Debug / outils
 Refactor
 - [ ] La partie game_update
 - [ ] Ajouter des commentaires et documenter le code
+- [ ] Mettre en static les fonctions qui en ont besoin

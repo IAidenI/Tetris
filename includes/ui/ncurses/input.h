@@ -5,6 +5,7 @@
 #include "core/game.h"
 #include "utils/snapshot.h"
 
-int handle_input(Game *g);
+int input_handle(Game *g);
+int input_get_selected_menu();
 
 #endif // INPUT_H

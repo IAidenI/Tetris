@@ -11,11 +11,12 @@
 
 typedef enum {
     SNAPSHOT,
+    START,
     RUNNING,
     PAUSED,
     QUIT,
-    OVER
-} Status;
+    LOOSE
+} GameStatus;
 
 typedef struct {
     Grid grid;
@@ -35,7 +36,7 @@ typedef struct {
 
     int hard_drop;
 
-    Status status;
+    GameStatus status;
 } Game;
 
 void game_init(Game *g);
@@ -43,8 +44,8 @@ void game_spawn_tetromino(Game *g);
 int  game_update(Game *g);
 void game_refresh_preview(Game *g);
 const char *game_get_difficulty(int level);
+void game_reset(Game *g);
 int  game_is_not_over(Game *g);
-int  game_over(Game *g);
 void game_pause(Game *g);
 void game_quit(Game *g);
 

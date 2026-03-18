@@ -43,13 +43,11 @@ int main(int argc, char **argv) {
     color_init();
     game_spawn_tetromino(&game);
     while (game_is_not_over(&game)) {
-        int input_changed = handle_input(&game);
+        int input_changed = input_handle(&game);
         int update_changed = game_update(&game);
         if (input_changed || update_changed) display_render(&game);
     }
     endwin();
-
-    if (game_over(&game)) printf("Game Over !\n");
-    
+        
     return 0;
 }

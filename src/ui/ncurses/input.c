@@ -1,6 +1,32 @@
 #include "ui/ncurses/input.h"
 
-int handle_input(Game *g) {
+static int selected_menu = 0;
+static int input_menu_items_count(GameStatus status) {
+    switch (status) {
+        case START:  return MENU_ITEMS_START;
+        case PAUSED: return MENU_ITEMS_PAUSE;
+        case LOOSE:  return MENU_ITEMS_LOOSE;
+        default:     return 0;
+    }
+}
+
+static void input_menu_up(GameStatus status) {
+    int count = input_menu_items_count(status);
+    if (count <= 0) return;
+    selected_menu = (selected_menu == 0) ? count - 1 : selected_menu - 1;
+}
+
+static void input_menu_down(GameStatus status) {
+    int count = input_menu_items_count(status);
+    if (count <= 0) return;
+    selected_menu = (selected_menu + 1) % count;
+}
+
+int input_get_selected_menu() {
+    return selected_menu;
+}
+
+int input_handle(Game *g) {
     int ch = getch();
     if (ch == ERR) return 0;
 
@@ -11,7 +37,56 @@ int handle_input(Game *g) {
         case KEY_F(1): game_pause(g); return 1;
     }
 
-    if (g->status == PAUSED) return 0;
+
+    if (g->status == PAUSED || g->status == LOOSE) {
+        switch (ch) {
+            case KEY_UP:   input_menu_up(g->status);   return 1;
+            case KEY_DOWN: input_menu_down(g->status); return 1;
+            case '\n':
+            case '\r':
+            case ' ':
+                switch (g->status) {
+                    case START: {
+                        switch (selected_menu) {
+                            case 0:
+                                g->status = RUNNING;
+                                selected_menu = 0;
+                                return 1;
+                            case 1:
+                                g->status = QUIT;
+                                selected_menu = 0;
+                                return 1;
+                        }
+                        return 1;
+                    }
+                    case PAUSED: {
+                        switch (selected_menu) {
+                            case 0:
+                                g->status = RUNNING;
+                                selected_menu = 0;
+                                return 1;
+                            case 1:
+                                game_reset(g);
+                                g->status = START;
+                                selected_menu = 0;
+                                return 1;
+                        }
+                        return 1;
+                    }
+                    case LOOSE:
+                        switch (selected_menu) {
+                            case 0:
+                                game_reset(g);
+                                g->status = START;
+                                selected_menu = 0;
+                                return 1;
+                        }
+                        return 1;
+                    default: return 0;
+                }
+            default: return 0;
+        }
+    }
 
     switch (ch) {
         // Hard drop

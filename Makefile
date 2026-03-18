@@ -12,7 +12,7 @@ OBJECTS := $(SOURCES:.c=.o)
 .INTERMEDIATE: $(OBJECTS)
 
 # ================== Flags ==================
-CFLAGS = -Wall -Wextra -g -std=c11 -D_POSIX_C_SOURCE=199309L -I$(INC_DIR)
+CFLAGS = -Wall -Wextra -g -std=c11 -D_POSIX_C_SOURCE=199309L -D_XOPEN_SOURCE=700 -I$(INC_DIR)
 LDLIBS = -lncursesw -lm
 
 # ================== Rules ==================

@@ -3,6 +3,10 @@
 
 #define GRID_WIDTH  10
 #define GRID_HEIGHT 20
+#define PAUSE_MENU_WIDTH  11
+#define PAUSE_MENU_HEIGHT 5
+#define GAME_OVER_MENU_WIDTH  13
+#define GAME_OVER_MENU_HEIGHT 4
 
 #define START_SPAWN ((Position){ .x = 3, .y = 0 })
 
