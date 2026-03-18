@@ -26,7 +26,6 @@ const Tetromino TETROMINO_L = MAKE_TETROMINO(TETROMINO_TYPE_L, 3,
     {__,__,__}}
 );
 
-// WARNING ISSUE WITH HIM WHEN ROTATE
 const Tetromino TETROMINO_O = MAKE_TETROMINO(TETROMINO_TYPE_O, 3,
    {{__,_O,_O},
     {__,_O,_O},
@@ -52,18 +51,18 @@ const Tetromino TETROMINO_Z = MAKE_TETROMINO(TETROMINO_TYPE_Z, 3,
 );
 
 void tetromino_rotate(Tetromino *t, Action a) {
-    if (t->type == _O) return;
+    if (t->type == _O) return; // Without it the O tetromino will rotate
 
-    // Temporary store value to not overwrite
+    // Temporary store value to not overwrite it
     TetrominoType tmp[TETROMINO_SIZE][TETROMINO_SIZE] = {{0}};
     for (int h = 0; h < t->size; h++) {
         for (int w = 0; w < t->size; w++) {
-            if (a == ROTATE_RIGHT) tmp[w][t->size - 1 - h] = t->shape[h][w];
-            else tmp[t->size - 1 - w][h] = t->shape[h][w];
+            if (a == ROTATE_RIGHT) tmp[w][t->size - 1 - h] = t->shape[h][w]; // Right rotate
+            else tmp[t->size - 1 - w][h] = t->shape[h][w];                   // Left rotate
         }
     }
 
-    // Place new values
+    // Apply new values
     memcpy(t->shape, tmp, sizeof(tmp));
     t->rot = a == ROTATE_RIGHT ? (t->rot + 1) % 4 : (t->rot + 3) % 4;
 }

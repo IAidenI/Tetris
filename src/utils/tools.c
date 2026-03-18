@@ -3,7 +3,7 @@
 double get_time() {
     struct timespec ts;
     clock_gettime(CLOCK_MONOTONIC, &ts);
-    return ts.tv_sec + ts.tv_nsec / 1e9;
+    return ts.tv_sec + ts.tv_nsec / 1e9; // Get the current time
 }
 
 void shuffle_array(void *arr, int n, size_t size) {

@@ -2,26 +2,26 @@
 
 static TetrominoType seven_bag[TETROMINO_TYPE_COUNT - 1];
 
-void seven_bag_fill() {
-    for (int i = 0; i < TETROMINO_TYPE_COUNT - 1; i++) seven_bag[i] = i + 1;
-    shuffle_array(seven_bag, TETROMINO_TYPE_COUNT - 1, sizeof(seven_bag[0]));
+static void seven_bag_fill() {
+    for (int i = 0; i < TETROMINO_TYPE_COUNT - 1; i++) seven_bag[i] = i + 1;  // Store ordered values
+    shuffle_array(seven_bag, TETROMINO_TYPE_COUNT - 1, sizeof(seven_bag[0])); // Shuffle them
 }
 
-int seven_bag_is_empty() {
+static int seven_bag_is_empty() {
     for (int i = 0; i < TETROMINO_TYPE_COUNT - 1; i++) {
-        if (seven_bag[i]) return 0;
+        if (seven_bag[i]) return 0; // If a non-empty value is found
     }
     return 1;
 }
 
 Tetromino seven_bag_get_tetromino() {
-    if (seven_bag_is_empty()) seven_bag_fill();
+    if (seven_bag_is_empty()) seven_bag_fill(); // Fill the 7-bag if needed
 
     for (int i = 0; i < TETROMINO_TYPE_COUNT - 1; i++) {
         TetrominoType t = seven_bag[i];
         if (t) {
-            seven_bag[i] = __; // Remove tetromino
-            return tetromino_get(t);
+            seven_bag[i] = __;       // Remove tetromino
+            return tetromino_get(t); // and give it the the caller
         }
     }
     return tetromino_get(__);

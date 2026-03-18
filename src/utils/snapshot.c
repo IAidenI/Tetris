@@ -23,10 +23,11 @@ void snapshot_init(const char *path) {
     snapshot_path = path;
 }
 
-int snapshot_search_key_word(FILE *fp, const char *key_word) {
+static int snapshot_search_key_word(FILE *fp, const char *key_word) {
     char buffer[BUFFER_SNAPSHOT];
     rewind(fp);
 
+    // Search any occurence for the given key word
     while (fgets(buffer, BUFFER_SNAPSHOT, fp)) {
         buffer[strcspn(buffer, "\r\n")] = 0;
         if (strcmp(buffer, key_word) == 0) return 0;
@@ -34,31 +35,32 @@ int snapshot_search_key_word(FILE *fp, const char *key_word) {
     return 1;
 }
 
-int snapshot_extract_section_int(FILE *fp, char *buffer, const char *section, const char *field, int *out) {
+static int snapshot_extract_section_int(FILE *fp, char *buffer, const char *section, const char *field, int *out) {
     if (snapshot_search_key_word(fp, section)) {
         print_error("Format du fichier invalide, %s introuvable.\n", section);
         return 1;
     }
 
+    // Read the file line by line
     while (fgets(buffer, BUFFER_SNAPSHOT, fp)) {
         char *line = buffer;
 
-        while (*line == ' ' || *line == '\t')
-            line++;
-
-        if (*line == '[')
-            break;
+        while (*line == ' ' || *line == '\t') line++; // Avoid spaces/tabs
+        if (*line == '[') break;                      // Stop if new section detected
 
         char key[BUFFER_SNAPSHOT];
         int value;
 
+        // Parse "key: value"
         if (sscanf(line, "%[^:]: %d", key, &value) == 2) {
             char *end = key + strlen(key) - 1;
+            // Avoid spaces/tabs at the end of the key
             while (end >= key && (*end == ' ' || *end == '\t')) {
                 *end = '\0';
                 end--;
             }
 
+            // If the key is the requested
             if (strcmp(key, field) == 0) {
                 *out = value;
                 return 0;
@@ -70,13 +72,14 @@ int snapshot_extract_section_int(FILE *fp, char *buffer, const char *section, co
     return 1;
 }
 
-int snapshot_extract_array(FILE *fp, char *buffer, const char *keyword, int *out, int width, int height) {
+static int snapshot_extract_array(FILE *fp, char *buffer, const char *keyword, int *out, int width, int height) {
     if (snapshot_search_key_word(fp, keyword)) {
         print_error("Format du fichier invalide, %s introuvable.\n", keyword);
         return 1;
     }
 
     for (int y = 0; y < height; y++) {
+        // Read one line per row
         if (!fgets(buffer, BUFFER_SNAPSHOT, fp)) {
             print_error("Format du fichier invalide, %s trouvé, mais aucune donnée ligne %d.\n", keyword, y);
             return 1;
@@ -84,13 +87,15 @@ int snapshot_extract_array(FILE *fp, char *buffer, const char *keyword, int *out
 
         char *ptr = buffer, *end;
         for (int x = 0; x < width; x++) {
-            int value = (int)strtol(ptr, &end, 10);
+            int value = (int)strtol(ptr, &end, 10); // Convert next integer from string
+
+            // Check conversion failure
             if (ptr == end) {
                 print_error("Valeur invalide à la ligne %d, colonne %d.\n", y + 1, x + 1);
                 return 1;
             }
-            out[y * width + x] = value;
-            ptr = end;
+            out[y * width + x] = value; // Store the value
+            ptr = end;                  // Move to the next one
         }
     }
     return 0;
@@ -112,19 +117,15 @@ int snapshot_read(Game *g) {
 		return 1;
 	}
 
-    if (snapshot_extract_section_int(fp, buffer, key_current_type, label_current_type, &current_type) == 1) return 1;
-	
-    if (snapshot_extract_section_int(fp, buffer, key_current_position, label_position_x, &x)) return 1;
-    if (snapshot_extract_section_int(fp, buffer, key_current_position, label_position_y, &y)) return 1;
-    
-    if (snapshot_extract_section_int(fp, buffer, key_current_rot, label_current_rot, &current_rot) == 1) return 1;
-    
-    if (snapshot_extract_section_int(fp, buffer, key_next_type, label_next_type, &next_type) == 1) return 1;
-    
-    if (snapshot_extract_array(fp, buffer, key_grid, (int *)grid, GRID_WIDTH, GRID_HEIGHT) == 1) return 1;
-    
-    if (snapshot_extract_section_int(fp, buffer, key_game_status, label_game_score, &score)) return 1;
-    if (snapshot_extract_section_int(fp, buffer, key_game_status, label_game_level, &level)) return 1;
+    // Read from the file
+    if (snapshot_extract_section_int(fp, buffer, key_current_type, label_current_type, &current_type) == 1) return 1; // Current type
+    if (snapshot_extract_section_int(fp, buffer, key_current_position, label_position_x, &x)) return 1;               // Current position x
+    if (snapshot_extract_section_int(fp, buffer, key_current_position, label_position_y, &y)) return 1;               // Current position y
+    if (snapshot_extract_section_int(fp, buffer, key_current_rot, label_current_rot, &current_rot) == 1) return 1;    // Current rotation
+    if (snapshot_extract_section_int(fp, buffer, key_next_type, label_next_type, &next_type) == 1) return 1;          // Next type
+    if (snapshot_extract_array(fp, buffer, key_grid, (int *)grid, GRID_WIDTH, GRID_HEIGHT) == 1) return 1;            // Grid
+    if (snapshot_extract_section_int(fp, buffer, key_game_status, label_game_score, &score)) return 1;                // Score
+    if (snapshot_extract_section_int(fp, buffer, key_game_status, label_game_level, &level)) return 1;                // Level
 
     // Update the game
     g->current = tetromino_get(current_type);                   // Current type

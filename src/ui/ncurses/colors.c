@@ -41,8 +41,6 @@ void color_init() {
         init_color(LEVEL_EXPERT, RGB_NCURSES(255, 69, 0));
         init_color(LEVEL_INSANE, RGB_NCURSES(128, 0, 128));
 
-        // Pause Menu
-
 
         // Tetromino
         init_pair(RED, RED, -1);
@@ -60,9 +58,6 @@ void color_init() {
         init_pair(LEVEL_HARD, LEVEL_HARD, - 1);
         init_pair(LEVEL_EXPERT, LEVEL_EXPERT, - 1);
         init_pair(LEVEL_INSANE, LEVEL_INSANE, - 1);
-
-        // Pause Menu
-
     
-    } // Else à faire
+    }
 }

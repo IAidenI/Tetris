@@ -1,3 +1,8 @@
+/*
+    No matter what is inside this document, only keywords matter (like [current_position])
+    The order doesn't matter
+*/
+
 [current_position]
     x : 4
     y : 6
