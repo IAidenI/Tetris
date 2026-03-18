@@ -38,7 +38,7 @@ int input_handle(Game *g) {
     }
 
 
-    if (g->status == PAUSED || g->status == LOOSE) {
+    if (g->status != RUNNING && g->status != SNAPSHOT) {
         switch (ch) {
             case KEY_UP:   input_menu_up(g->status);   return 1;
             case KEY_DOWN: input_menu_down(g->status); return 1;
