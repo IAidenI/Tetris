@@ -5,7 +5,7 @@
 ![Version](https://img.shields.io/badge/version-1.2.8-yellow)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-Une implémentation basique du jeu Tetris en C, jouable dans un terminal.
+Une implémentation basique du jeu Tetris en C, jouable dans un terminal Linux.
 
 ## Informations
 
@@ -15,7 +15,7 @@ en langage C.
 Le code a ensuite été **entièrement refactorisé** pour repartir sur une base plus propre.
 L'objectif est d'obtenir une architecture claire où la **logique du jeu est indépendante de l'interface**, afin de pouvoir brancher différentes interfaces facilement (terminal, graphique, etc.).
 
-Actuellement il n'y a pas de réel interface (juste un simple affichage dans le terminal), mais le moteur du jeu est conçu pour pouvoir être utilisé avec des  bibliothèques comme **ncurses** ou encore **raylib**.
+Actuellement seule une interface **ncurese** est incluse, mais le moteur du jeu est conçu pour pouvoir faire son propre affichage. Dans le future, un ajout d'un affichage graphique sera effectué avec **raylib**.
 
 ## Présentation
 
@@ -31,7 +31,7 @@ Voici un aperçu de l'application.
 
 ## Fonctionnalités
 
--  moteur de jeu en cours de reconstruction avec une architecture propre
+-  moteur de jeu avec une architecture propre et séparé de l'affichage
 -  gestion des tetrominos (création, rotation et informations associées)
 -  implémentation du 7-bag randomizer pour la génération des pièces
 -  gestion de l’état du jeu (initialisation, spawn et placement des pièces)
@@ -45,7 +45,9 @@ Sous Linux :
 git clone https://github.com/IAidenI/Tetris
 cd Tetris
 make
-./Tetris
+./tetris
+# Ou
+./tetris -d example_snapshot.txt
 ```
 
 ## A faire
