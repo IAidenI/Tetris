@@ -2,7 +2,8 @@
 #define TETROMINOS_H
 
 #include <stdio.h>
-#include "utils/tools.h"
+#include <string.h>
+#include "utils/types.h"
 
 #define TETROMINO_SIZE 4
 

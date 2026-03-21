@@ -17,12 +17,6 @@ void shuffle_array(void *arr, int n, size_t size) {
     }
 }
 
-void handle_sigint(int sig) {
-    (void)sig;
-    endwin();
-    exit(0);
-}
-
 void help(const char* buffer) {
 	printf("Usage: %s [OPTION]\n", buffer);
 	printf("Une implémentation basique du jeu Tetris en C, jouable dans un terminal.\n\n");

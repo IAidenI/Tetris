@@ -3,7 +3,6 @@
 
 #include "core/game_settings.h"
 #include "core/tetrominos.h"
-#include "utils/tools.h"
 #include "utils/debug.h"
 
 typedef enum {

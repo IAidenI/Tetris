@@ -3,12 +3,18 @@
 #include "ui/ncurses/input.h"
 #include <signal.h>
 
+static void handle_sigint(int sig) {
+    (void)sig;
+    endwin();
+    exit(0);
+}
+
 int main(int argc, char **argv) {
     signal(SIGINT, handle_sigint);
 
     Game game;
     game_init(&game);
-    log_init("./input.log");
+    log_init("./debug.log");
 	snapshot_init("./snapshot.ini");
 
     // Parse arguments
