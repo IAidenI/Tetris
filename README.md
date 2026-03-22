@@ -17,16 +17,34 @@ L'objectif est d'obtenir une architecture claire où la **logique du jeu est ind
 
 Actuellement seule une interface **ncurses** est incluse, mais le moteur du jeu est conçu pour pouvoir faire son propre affichage. Dans le futur, un affichage graphique sera ajouté avec **raylib**.
 
+## Installation
+
+Sous Linux :
+
+```bash
+git clone https://github.com/IAidenI/Tetris
+cd Tetris
+make # Version CLI
+make MODE=gui # Version GUI
+./tetris
+# Ou
+./tetris -d example_snapshot.txt
+```
+
 ## Présentation
 
-Le jeu fonctionne dans un terminal Linux.
-
-Voici un aperçu de l'application.
+Voici un aperçu de l'application en version CLI.
 
 <p align=center>
-  <img src="./docs/HomePage.png" alt="Page d'accueil" height="330">
-  <img src="./docs/GameExemple.png" alt="Exemple de jeu" height="330">
-  <img src="./docs/Pause.png" alt="Exemple de jeu" height="330">
+  <img src="./docs/CLI_HomePage.png" alt="Page d'accueil" height="330">
+  <img src="./docs/CLI_GameExemple.png" alt="Exemple de jeu" height="330">
+  <img src="./docs/CLI_Pause.png" alt="Exemple de jeu" height="330">
+</p>
+
+Voici un aperçu de l'application en version GUI.
+
+<p align=center>
+  <img src="./docs/GUI_GameExemple.png" alt="Page d'accueil" height="330">
 </p>
 
 ## Fonctionnalités
@@ -152,19 +170,6 @@ Cela évite de modifier la grille à chaque frame.
 ├── Makefile
 ├── example_snapshot.txt
 └── README.md
-```
-
-## Installation
-
-Sous Linux :
-
-```bash
-git clone https://github.com/IAidenI/Tetris
-cd Tetris
-make
-./tetris
-# Ou
-./tetris -d example_snapshot.txt
 ```
 
 ## A faire
