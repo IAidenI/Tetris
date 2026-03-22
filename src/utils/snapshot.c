@@ -103,7 +103,7 @@ static int snapshot_extract_array(FILE *fp, char *buffer, const char *keyword, i
 
 int snapshot_read(Game *g) {
     if (snapshot_path == NULL) {
-        log_write("[!] snapshot_init not called.\n");
+        print_error("[!] snapshot_init not called.\n");
         return 1;
     }
 
@@ -113,7 +113,7 @@ int snapshot_read(Game *g) {
 
     FILE *fp = fopen(snapshot_path, "r");
 	if (fp == NULL) {
-		log_write("[!] can't read %s.\n", snapshot_path);
+		print_error("[!] can't read %s.\n", snapshot_path);
 		return 1;
 	}
 

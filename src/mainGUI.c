@@ -11,7 +11,7 @@ int main() {
     Game game;
     Manager manager;
     game_init(&game);
-    manager_init(&manager);
+    if (manager_init(&manager)) return 1;
     log_init("./debug.log");
 	snapshot_init("./snapshot.ini");
     if (snapshot_read(&game)) return 1;

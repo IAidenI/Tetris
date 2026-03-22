@@ -10,11 +10,17 @@ int manager_init(Manager *m) {
 
     // Check if files exists
     for (int i = 0; i < TEX_MAX; i++) {
-        if (!file_exists(textures[i])) return 1;
+        if (!file_exists(textures[i])) {
+            print_error("Le fichier %s est introuvable.\n", textures[i]);
+            return 1;
+        }
     }
 
     for (int i = 0; i < FONT_MAX; i++) {
-        if (!file_exists(fonts[i])) return 1;
+        if (!file_exists(fonts[i])) {
+            print_error("Le fichier %s est introuvable.\n", fonts[i]);
+            return 1;
+        }
     }
 
     // Initisalize textures

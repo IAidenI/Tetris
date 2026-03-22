@@ -22,7 +22,7 @@ Actuellement seule une interface **ncurses** est incluse, mais le moteur du jeu 
 Sous Linux :
 
 ```bash
-git clone https://github.com/IAidenI/Tetris
+git clone https://github.com/IAidenI/Tetris.git
 cd Tetris
 make # Version CLI
 make MODE=gui # Version GUI
@@ -228,3 +228,4 @@ Cela évite de modifier la grille à chaque frame.
 - [ ] Ajout readme installation ncurses/raylib
 - [ ] Compatibilité windows
 - [ ] Faire des versions linké avec les libs
+- [ ] Pour cli ou gui ajout d'un warning pour le snapshot create
