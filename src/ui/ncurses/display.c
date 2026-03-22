@@ -271,7 +271,7 @@ static void display_menu_pause(Position pos, Size size, int selected) {
     const char *title = "⏸ Pause";
     int title_y = center_y - 2;
     int title_x = center_x - display_get_UTF8_width(title) / 2;
-    mvprintw(title_y, title_x, title);
+    mvprintw(title_y, title_x, "%s", title);
 
     int menu_spacing_from_title = 2;
     for (int i = 0; i < MENU_ITEMS_PAUSE; i++) {
@@ -300,7 +300,7 @@ static void display_menu_game_over(Position pos, Size size, int selected) {
     const char *title = "Game Over";
     int title_y = center_y - 2;
     int title_x = center_x - display_get_UTF8_width(title) / 2;
-    mvprintw(title_y, title_x, title);
+    mvprintw(title_y, title_x, "%s", title);
 
     int menu_spacing_from_title = 2;
     for (int i = 0; i < MENU_ITEMS_LOOSE; i++) {
@@ -315,8 +315,9 @@ static void display_menu_game_over(Position pos, Size size, int selected) {
     }
 }
 
-void display_render(Game *g) {
+void display_render(const Game *g) {
     clear();
+    log_write("Status : %d\n", g->status);
     Position frame_pos = {0,0};
     Size grid_size = {GRID_WIDTH * 2, GRID_HEIGHT};
     display_frame(frame_pos, grid_size);

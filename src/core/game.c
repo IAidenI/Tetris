@@ -40,18 +40,23 @@ static void game_refresh_preview(Game *g) {
 
 void game_spawn_tetromino(Game *g) {
     // Avoid spawning tetromino if a snapshot is detected
-    if (g->status != SNAPSHOT) {
-        g->current     = g->next.type == __ ? seven_bag_get_tetromino() : g->next; // Pick 2 tetromino from the 7-bag
-        g->next        = seven_bag_get_tetromino();                                // one for the current, one for the next
-        g->current.pos = START_SPAWN; // Set the position at the start
-
-        g->preview     = g->current; // Set the preview
-        game_refresh_preview(g);     // 
+    if (g->status == SNAPSHOT) {
+        // Check if game is over
+        GridCheck result = grid_check_position(&g->grid, &g->current, g->current.pos);
+        g->status = (result == GRID_OK) ? RUNNING : LOOSE;
+        return;
     }
+
+    g->current     = g->next.type == __ ? seven_bag_get_tetromino() : g->next; // Pick 2 tetromino from the 7-bag
+    g->next        = seven_bag_get_tetromino();                                // one for the current, one for the next
+    g->current.pos = START_SPAWN; // Set the position at the start
+
+    g->preview     = g->current; // Set the preview
+    game_refresh_preview(g);     // 
 
     // Check if game is over
     GridCheck result = grid_check_position(&g->grid, &g->current, g->current.pos);
-    g->status = (result == GRID_OK) ? g->status : LOOSE;
+    g->status = (result == GRID_OK) ? RUNNING : LOOSE;
 }
 
 int game_update(Game *g) {
@@ -126,6 +131,7 @@ int game_update(Game *g) {
                 g->lock_delay_start = -1; // 
                 g->has_hold = 0;          // Update settings
                 changed = 1;              //
+                g->status = RUNNING;
             }
         }
     }

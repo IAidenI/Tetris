@@ -44,10 +44,6 @@ $(APP): $(OBJECTS)
 	@echo "Compiling $<..."
 	$(CC) $(CFLAGS) -c $< -o $@
 
-clean:
-	@echo "Cleaning..."
-	rm -f $(OBJECTS) $(APP)
-
 run: all
 	./$(APP)
 

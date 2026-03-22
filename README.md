@@ -2,7 +2,7 @@
 
 ![Platform](https://img.shields.io/badge/platform-Linux-blue)
 ![Top Language](https://img.shields.io/github/languages/top/IAidenI/Tetris)
-![Version](https://img.shields.io/badge/version-1.3.1-yellow)
+![Version](https://img.shields.io/badge/version-1.3.2-yellow)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 Une implémentation basique du jeu Tetris en C, jouable dans un terminal Linux.
@@ -194,11 +194,19 @@ make
 - [X] Ajout de la touche espace pour placer directement la pièce
 
 ### Interface utilisateur
+**Ncurses**
 - [X] Implémenter une première interface (terminal ncurses)
 - [X] Ajouter un système de menus (start / pause / game over)
 - [X] Améliorer l’affichage
 - [X] Affichage des commandes
-- [ ] Ajouter un affichage supplémentaire avec raylib
+**Raylib**
+- [X] Ajouter un affichage supplémentaire avec raylib
+- [ ] Ajout de l'affichage de la grille
+- [ ] Affichage du tetromino actuelle
+- [ ] Ajout du hold/ghost
+- [ ] Ajout du score/level
+- [ ] Affichage des commandes
+- [ ] Ajouter un système de menu
 
 ### Debug / outils
 - [X] Implémenter un système de snapshot de la partie
@@ -207,3 +215,4 @@ make
 ### Refactor
 - [X] Ajouter des commentaires et documenter le code
 - [X] Mettre en static les fonctions qui en ont besoin
+- [ ] Bug si on fait ESC sur le menu start (ncurses)

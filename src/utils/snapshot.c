@@ -133,7 +133,7 @@ int snapshot_read(Game *g) {
     for (int i = 0; i < current_rot; i++)                       // Current
         tetromino_rotate(&g->current, ROTATE_RIGHT);            //    rotation
     g->next = tetromino_get(next_type);                         // Next type
-    memcpy(&g->grid, grid, sizeof(g->grid.cell));               // Grid
+    memcpy(g->grid.cell, grid, sizeof(g->grid.cell));           // Grid
     g->grid.total_lines_cleared = level * 10;                   // Grid total
     g->score = score;                                           // Score
     g->level = level;                                           // Level

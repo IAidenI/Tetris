@@ -29,6 +29,6 @@
 #define LEFT_ARROW  "◀"
 
 void display_init();
-void display_render(Game *g);
+void display_render(const Game *g);
 
 #endif // DISPLAY_H

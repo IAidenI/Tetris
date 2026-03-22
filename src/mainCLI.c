@@ -1,6 +1,7 @@
 #include "core/game.h"
 #include "ui/ncurses/display.h"
 #include "ui/ncurses/input.h"
+#include "utils/snapshot.h"
 #include <signal.h>
 
 static void handle_sigint(int sig) {

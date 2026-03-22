@@ -2,7 +2,6 @@
 #define SNAPSHOT_H
 
 #include "core/game.h"
-#include "ui/ncurses/display.h"
 
 #define BUFFER_SNAPSHOT 32
 
