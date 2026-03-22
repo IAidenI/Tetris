@@ -84,10 +84,10 @@ static void display_menu_start(const Manager *m) {
 
 void display_render(const Game *g, const Manager *m) {
     log_write("Status : %d\n", g->status);
-    if (g->status == START) {
+    /*if (g->status == START) {
         display_menu_start(m);
         return;
-    }
+    }*/
     
     Position grid_origin = { 20, 20 };
 

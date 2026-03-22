@@ -17,7 +17,7 @@ int main() {
     manager_init(&manager);
     log_init("./debug.log");
 	snapshot_init("./snapshot.ini");
-    if (snapshot_read(&game)) return 1;
+    //if (snapshot_read(&game)) return 1;
 
     SetExitKey(KEY_NULL);
     game_spawn_tetromino(&game);

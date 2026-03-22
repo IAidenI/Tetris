@@ -7,7 +7,7 @@ int input_handle(Game *g) {
     if (IsKeyPressed(KEY_ESCAPE) || IsKeyPressed(KEY_F1)) { game_pause(g); return 1; }
 
     log_write("Status : %d\n", g->status);
-    if (g->status != RUNNING && g->status != SNAPSHOT) return 1;
+    if (g->status == PAUSED || g->status == LOOSE || g->status == QUIT) return 1;
 
     // Hard drop
     if (IsKeyPressed(KEY_SPACE)) { g->hard_drop = 1; return 1; }
