@@ -5,10 +5,7 @@
 #include "ui/raylib/manager.h"
 
 int main() {
-    const int screenWidth = 1300;
-    const int screenHeight = 900;
-
-    InitWindow(screenWidth, screenHeight, "Tetris");
+    InitWindow(RAYLIB_WINDOW_WIDTH, RAYLIB_WINDOW_HEIGHT, "Tetris");
     SetTargetFPS(60);
 
     Game game;
@@ -33,6 +30,7 @@ int main() {
         EndDrawing();
     }
     manager_cleanup(&manager);
+    game_cleanup(&game);
     CloseWindow();
     return 0;
 }

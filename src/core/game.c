@@ -3,11 +3,11 @@
 void game_init(Game *g) {
     srand(time(NULL)); // Initialise 7-bag
 
-    grid_init(&g->grid);            // 
-    g->current = tetromino_get(__); // Initialize grid
-    g->next    = tetromino_get(__); // and needed
-    g->preview = tetromino_get(__); // tetromino
-    g->hold    = tetromino_get(__); // 
+    grid_init(&g->grid, (Size){GRID_WIDTH, GRID_HEIGHT}); // 
+    g->current = tetromino_get(__);                       // Initialize grid
+    g->next    = tetromino_get(__);                       // and needed
+    g->preview = tetromino_get(__);                       // tetromino
+    g->hold    = tetromino_get(__);                       // 
 
     g->hold_request = 0; // Initialize
     g->has_hold     = 0; // hold settings
@@ -161,4 +161,8 @@ void game_pause(Game *g) {
 
 void game_quit(Game *g) {
     g->status = QUIT;
+}
+
+void game_cleanup(Game *g) {
+    grid_cleanup(&g->grid);
 }

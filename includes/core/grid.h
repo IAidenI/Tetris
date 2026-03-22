@@ -18,15 +18,18 @@ typedef struct {
 } Kick;
 
 typedef struct {
-    int cell[GRID_HEIGHT][GRID_WIDTH];
+    int *cell;
+    int width;
+    int height;
     int lines_cleared;
     int total_lines_cleared;
 } Grid;
 
-void grid_init(Grid *g);
+void grid_init(Grid *g, Size grid_size);
 int  grid_try_apply_move(Grid *g, Tetromino *t, Position new_pos);
 void grid_lock_tetromino(Grid *g, Tetromino *t);
 GridCheck grid_check_position(Grid *g, Tetromino *t, Position p);
 int grid_SRS(Grid *g, Tetromino *t, Action a);
+void grid_cleanup(Grid *g);
 
 #endif // GRID_H

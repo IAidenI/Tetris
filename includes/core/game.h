@@ -47,5 +47,6 @@ void game_reset(Game *g);
 int  game_is_not_over(Game *g);
 void game_pause(Game *g);
 void game_quit(Game *g);
+void game_cleanup(Game *g);
 
 #endif // GAME_H

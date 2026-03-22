@@ -109,7 +109,7 @@ int snapshot_read(Game *g) {
 
     char buffer[BUFFER_SNAPSHOT];
     int x = -1, y = -1, current_type = -1, current_rot = -1, next_type = -1, score = -1, level = -1;
-    int grid[GRID_HEIGHT][GRID_WIDTH];
+    int *grid = malloc(g->grid.width * g->grid.height * sizeof(int));
 
     FILE *fp = fopen(snapshot_path, "r");
 	if (fp == NULL) {
@@ -118,28 +118,35 @@ int snapshot_read(Game *g) {
 	}
 
     // Read from the file
-    if (snapshot_extract_section_int(fp, buffer, key_current_type, label_current_type, &current_type) == 1) return 1; // Current type
-    if (snapshot_extract_section_int(fp, buffer, key_current_position, label_position_x, &x)) return 1;               // Current position x
-    if (snapshot_extract_section_int(fp, buffer, key_current_position, label_position_y, &y)) return 1;               // Current position y
-    if (snapshot_extract_section_int(fp, buffer, key_current_rot, label_current_rot, &current_rot) == 1) return 1;    // Current rotation
-    if (snapshot_extract_section_int(fp, buffer, key_next_type, label_next_type, &next_type) == 1) return 1;          // Next type
-    if (snapshot_extract_array(fp, buffer, key_grid, (int *)grid, GRID_WIDTH, GRID_HEIGHT) == 1) return 1;            // Grid
-    if (snapshot_extract_section_int(fp, buffer, key_game_status, label_game_score, &score)) return 1;                // Score
-    if (snapshot_extract_section_int(fp, buffer, key_game_status, label_game_level, &level)) return 1;                // Level
+    if (snapshot_extract_section_int(fp, buffer, key_current_type, label_current_type, &current_type) == 1) goto error; // Current type
+    if (snapshot_extract_section_int(fp, buffer, key_current_position, label_position_x, &x)) goto error;               // Current position x
+    if (snapshot_extract_section_int(fp, buffer, key_current_position, label_position_y, &y)) goto error;               // Current position y
+    if (snapshot_extract_section_int(fp, buffer, key_current_rot, label_current_rot, &current_rot) == 1) goto error;    // Current rotation
+    if (snapshot_extract_section_int(fp, buffer, key_next_type, label_next_type, &next_type) == 1) goto error;          // Next type
+    if (snapshot_extract_array(fp, buffer, key_grid, grid, g->grid.width, g->grid.height) == 1) goto error;             // Grid
+    if (snapshot_extract_section_int(fp, buffer, key_game_status, label_game_score, &score)) goto error;                // Score
+    if (snapshot_extract_section_int(fp, buffer, key_game_status, label_game_level, &level)) goto error;                // Level
 
     // Update the game
-    g->current = tetromino_get(current_type);                   // Current type
-    g->current.pos.x = x; g->current.pos.y = y;                 // Current position
-    for (int i = 0; i < current_rot; i++)                       // Current
-        tetromino_rotate(&g->current, ROTATE_RIGHT);            //    rotation
-    g->next = tetromino_get(next_type);                         // Next type
-    memcpy(g->grid.cell, grid, sizeof(g->grid.cell));           // Grid
-    g->grid.total_lines_cleared = level * 10;                   // Grid total
-    g->score = score;                                           // Score
-    g->level = level;                                           // Level
+    g->current = tetromino_get(current_type);                                 // Current type
+    g->current.pos.x = x; g->current.pos.y = y;                               // Current position
+    for (int i = 0; i < current_rot; i++)                                     // Current
+        tetromino_rotate(&g->current, ROTATE_RIGHT);                          //    rotation
+    g->next = tetromino_get(next_type);                                       // Next type
+    memcpy(g->grid.cell, grid, g->grid.width * g->grid.height * sizeof(int)); // Grid
+    g->grid.total_lines_cleared = level * 10;                                 // Grid total
+    g->score = score;                                                         // Score
+    g->level = level;                                                         // Level
     g->status = SNAPSHOT;
 
+    fclose(fp);
+    free(grid);
     return 0;
+
+error:
+    fclose(fp);
+    free(grid);
+    return 1;
 }
 
 void snapshot_create(Game *g) {
@@ -169,10 +176,10 @@ void snapshot_create(Game *g) {
 
     // Grid
     fprintf(fp, "%s\n", key_grid);
-    for (int h = 0; h < GRID_HEIGHT; h++) {
+    for (int h = 0; h < g->grid.height; h++) {
         fprintf(fp, "    ");
-        for (int w = 0; w < GRID_WIDTH; w++) {
-            fprintf(fp, "%d ", g->grid.cell[h][w]);
+        for (int w = 0; w < g->grid.width; w++) {
+            fprintf(fp, "%d ", g->grid.cell[h * g->grid.width + w]);
         }
         fprintf(fp, "\n");
     }

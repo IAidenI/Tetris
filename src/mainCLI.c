@@ -70,6 +70,7 @@ int main(int argc, char **argv) {
         int update_changed = game_update(&game);
         if (input_changed || update_changed) display_render(&game);
     }
+    game_cleanup(&game);
     endwin();
 
     return 0;

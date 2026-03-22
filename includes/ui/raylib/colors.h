@@ -36,6 +36,7 @@ static inline Color lighten(Color c, float lighten_percent, float alpha_percent)
     return c;
 }
 
-Color color_get(const TetrominoType t);
+Color color_from_tetromino(const TetrominoType t);
+Color color_from_difficulty(const char *difficulty);
 
 #endif // COLORS_H

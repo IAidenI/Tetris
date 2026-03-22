@@ -44,9 +44,9 @@ static void display_frame(Position pos, Size size) {
 static void display_grid(const Grid *g, Position pos) {
     ColorList color_list = color_get_list();
 
-    for (int h = 0; h < GRID_HEIGHT; h++) {
-        for (int w = 0; w < GRID_WIDTH; w++) {
-            int tetromino = g->cell[h][w];
+    for (int h = 0; h < g->height; h++) {
+        for (int w = 0; w < g->width; w++) {
+            int tetromino = g->cell[h * g->width + w];
 
             if (tetromino) attron(COLOR_PAIR(color_list.colors[tetromino]));
             mvprintw(pos.y + h, pos.x + (w * 2), tetromino ? TETROMINO : NO_TETROMINO);
@@ -319,7 +319,7 @@ void display_render(const Game *g) {
     clear();
     log_write("Status : %d\n", g->status);
     Position frame_pos = {0,0};
-    Size grid_size = {GRID_WIDTH * 2, GRID_HEIGHT};
+    Size grid_size = { GRID_WIDTH * 2, GRID_HEIGHT };
     display_frame(frame_pos, grid_size);
 
     if (g->status == START) {
