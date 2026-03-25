@@ -317,7 +317,6 @@ static void display_menu_game_over(Position pos, Size size, int selected) {
 
 void display_render(const Game *g) {
     clear();
-    log_write("Status : %d\n", g->status);
     Position frame_pos = {0,0};
     Size grid_size = { GRID_WIDTH * 2, GRID_HEIGHT };
     display_frame(frame_pos, grid_size);

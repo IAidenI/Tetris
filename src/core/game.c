@@ -56,8 +56,8 @@ void game_spawn_tetromino(Game *g) {
 }
 
 int game_update(Game *g) {
-    // Don't update if pause or loose is detected
-    if (g->status == PAUSED || g->status == LOOSE) return 0;
+    // Don't update if not running or in snapshot is detected
+    if (g->status != RUNNING && g->status != SNAPSHOT) return 0;
 
     int changed = 0; // Check for any changes in the update
 
@@ -127,7 +127,6 @@ int game_update(Game *g) {
                 g->lock_delay_start = -1; // 
                 g->has_hold = 0;          // Update settings
                 changed = 1;              //
-                g->status = RUNNING;
             }
         }
     }

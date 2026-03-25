@@ -9,15 +9,6 @@
 #include "info.h"
 #include "utils/debug.h"
 
-typedef enum {
-    SNAPSHOT,
-    START,
-    RUNNING,
-    PAUSED,
-    QUIT,
-    LOOSE
-} GameStatus;
-
 typedef struct {
     Grid grid;
     

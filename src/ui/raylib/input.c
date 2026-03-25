@@ -4,10 +4,15 @@ int input_handle(Game *g) {
     // General commands
     if (IsKeyPressed(KEY_S)) { snapshot_create(g); return 1; }
     if (IsKeyPressed(KEY_A)) { game_quit(g);       return 1; } // A --> Q in AZERTY
-    if (IsKeyPressed(KEY_ESCAPE) || IsKeyPressed(KEY_F1)) { game_pause(g); return 1; }
 
-    log_write("Status : %d\n", g->status);
-    if (g->status == PAUSED || g->status == LOOSE || g->status == QUIT) return 1;
+    // Pause / resume if running or paused
+    if ((g->status == RUNNING || g->status == PAUSED) &&
+        (IsKeyPressed(KEY_ESCAPE) || IsKeyPressed(KEY_F1))) {
+        game_pause(g);
+        return 1;
+    }
+
+    if (g->status != RUNNING && g->status != SNAPSHOT) return 0;
 
     // Hard drop
     if (IsKeyPressed(KEY_SPACE)) { g->hard_drop = 1; return 1; }

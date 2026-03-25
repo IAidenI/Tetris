@@ -6,6 +6,8 @@
 #include "ui/raylib/colors.h"
 #include "ui/raylib/component.h"
 #include "ui/raylib/manager.h"
+#include "ui/raylib/actions.h"
+#include "ui/raylib/menus.h"
 #include "core/game.h"
 
 #define CELL_WIDTH  40
@@ -35,6 +37,6 @@ static inline Size display_tetromino_widget_get_size(const TextStyle label, cons
     };
 }
 
-void display_render(const Game *g, const Manager *m);
+void display_render(Game *g, const Manager *m);
 
 #endif // DISPLAY_H

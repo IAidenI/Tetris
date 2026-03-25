@@ -2,7 +2,7 @@
 
 ![Platform](https://img.shields.io/badge/platform-Linux-blue)
 ![Top Language](https://img.shields.io/github/languages/top/IAidenI/Tetris)
-![Version](https://img.shields.io/badge/version-1.3.3-yellow)
+![Version](https://img.shields.io/badge/version-1.3.4-yellow)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 Une implémentation basique du jeu Tetris en C, jouable dans un terminal Linux.
@@ -212,7 +212,10 @@ Cela évite de modifier la grille à chaque frame.
 - [X] Ajout du score/level
 - [ ] Meilleure affichage des textes (fonts, size, color...)
 - [ ] Affichage des commandes
-- [ ] Ajouter un système de menu
+- [X] Ajouter un système de menu
+- [ ] Ajouter l'import d'un snapshot
+- [ ] Menu de confirmation lorsque l'on quitte
+- [ ] Ajouter un about/info pour montrer le fichier info.h
 
 ### Debug / outils
 - [X] Implémenter un système de snapshot de la partie
@@ -221,8 +224,14 @@ Cela évite de modifier la grille à chaque frame.
 ### Refactor
 - [X] Ajouter des commentaires et documenter le code
 - [X] Mettre en static les fonctions qui en ont besoin
-- [ ] Bug si on fait ESC sur le menu start (ncurses)
 - [ ] Duplication dans display_tetromino_widget_get_size et display_tetromino_widget
+- [ ] Les fonctions menus peuvent être refacto
+
+### Bug
+- [ ] Si on fait ESC sur le menu start (ncurses)
+- [ ] Si on presse sur 'q' dans le menu start (raylib)
+- [ ] Au game over des fois les tetrominos ont un bug d'affichage
+- [ ] Au game over un vois une fraction de second le jeu avant de revenir a l'état voulu
 
 ### Autre
 - [ ] Ajout readme installation ncurses/raylib

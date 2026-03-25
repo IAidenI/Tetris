@@ -1,6 +1,15 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+typedef enum {
+    SNAPSHOT,
+    START,
+    RUNNING,
+    PAUSED,
+    QUIT,
+    LOOSE
+} GameStatus;
+
 typedef struct {
     int x;
     int y;

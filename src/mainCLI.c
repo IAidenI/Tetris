@@ -62,6 +62,7 @@ int main(int argc, char **argv) {
         Only input_handle and display_render si affect by a different UI
     */
     game_spawn_tetromino(&game);
+    display_render(&game);
     while (game_is_not_over(&game)) {
         int input_changed = input_handle(&game); // When input is handle it is important to
                                                  // return 1 if an input is detected to update

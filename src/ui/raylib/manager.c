@@ -1,22 +1,22 @@
 #include "ui/raylib/manager.h"
 
 int manager_init(Manager *m) {
-    const char *textures[TEX_MAX];
-    const char *fonts[FONT_MAX] = {
-        ENTITY_FONT,
-        DIALOGUE_FONT,
-        INFO_FONT
+    const char *textures[TEX_COUNT];
+    const char *fonts[FONT_COUNT] = {
+        FONT_TITLE_PATH,
+        FONT_MENU_PATH,
+        FONT_TEXT_PATH
     };
 
     // Check if files exists
-    for (int i = 0; i < TEX_MAX; i++) {
+    for (int i = 0; i < TEX_COUNT; i++) {
         if (!file_exists(textures[i])) {
             print_error("Le fichier %s est introuvable.\n", textures[i]);
             return 1;
         }
     }
 
-    for (int i = 0; i < FONT_MAX; i++) {
+    for (int i = 0; i < FONT_COUNT; i++) {
         if (!file_exists(fonts[i])) {
             print_error("Le fichier %s est introuvable.\n", fonts[i]);
             return 1;
@@ -24,13 +24,13 @@ int manager_init(Manager *m) {
     }
 
     // Initisalize textures
-    for (int i = 0; i < TEX_MAX; i++) m->tmgr[i] = LoadTexture(textures[i]);
+    for (int i = 0; i < TEX_COUNT; i++) m->tmgr[i] = LoadTexture(textures[i]);
 
     // Initisalize fonts
     int cps[FR_CHARS_COUNT];
     for (int i = 0; i < FR_CHARS_COUNT; i++) cps[i] = (int)FR_CHARS[i];
     
-    for (int i = 0; i < FONT_MAX; i++) {
+    for (int i = 0; i < FONT_COUNT; i++) {
         m->fmgr[i][0] = LoadFontEx(fonts[i], SMALL_SIZE, cps, FR_CHARS_COUNT);
         SetTextureFilter(m->fmgr[i][0].texture, TEXTURE_FILTER_BILINEAR);
 
@@ -51,12 +51,12 @@ const Font *manager_get_font(const Manager *m, FontID id, int size) {
 
 void manager_cleanup(Manager *m) {
     // Unload textures
-    for (int i = 0; i < TEX_MAX; i++) {
+    for (int i = 0; i < TEX_COUNT; i++) {
         UnloadTexture(m->tmgr[i]);
     }
 
     // Unload fonts
-    for (int i = 0; i < FONT_MAX; i++) {
+    for (int i = 0; i < FONT_COUNT; i++) {
         for (int j = 0; j < FONT_SIZE_COUNT; j++) {
             UnloadFont(m->fmgr[i][j]);
         }

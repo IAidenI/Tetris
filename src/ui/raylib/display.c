@@ -34,7 +34,7 @@ static void display_tetromino(const Tetromino *t, Position grid_origin) {
 }
 
 static void display_tetromino_preview(const Tetromino *t, Position grid_origin) {
-    display_tetromino_with_color(t, grid_origin, lighten(color_from_tetromino(t->type), 30.0f, 20.0f));
+    display_tetromino_with_color(t, grid_origin, lighten_with_alpha(color_from_tetromino(t->type), 30.0f, 20.0f));
 }
 
 static void display_grid(const Grid *g, Position p) {
@@ -111,32 +111,11 @@ static void display_level(TextStyle label, int level, Position p) {
     DrawTextStyled(label, p);
 }
 
-/*static void display_menu_start(const Manager *m) {
-    DrawText("Tetris", 190, 200, 20, RED);
-    const TextStyle label_new_game = {
-        .font = manager_get_font(m, ENTITY_LABEL, 20),
-        .text = "New Game",
-        .fontSize = 20.0f,
-        .spacing = 2.0f,
-        .color = BLACK
-    };
-    button_basic(label_new_game, (Position){190, 250});
-
-    const TextStyle label_exit = {
-        .font = manager_get_font(m, ENTITY_LABEL, 20),
-        .text = "Exit",
-        .fontSize = 20.0f,
-        .spacing = 2.0f,
-        .color = BLACK
-    };
-    button_basic(label_exit, (Position){190, 300});
-}*/
-
-void display_render(const Game *g, const Manager *m) {
-    /*if (g->status == START) {
-        display_menu_start(m);
+void display_render(Game *g, const Manager *m) {
+    if (g->status == START) {
+        menu_start(m, &g->status);
         return;
-    }*/
+    }
 
     // Display grid
     Position grid_origin = { 20, 20 };
@@ -154,11 +133,11 @@ void display_render(const Game *g, const Manager *m) {
     };
 
     const TextStyle label_next = {
-        .font = manager_get_font(m, ENTITY_LABEL, 20),
+        .font = manager_get_font(m, FONT_TEXT, 20),
         .text = "Next",
-        .fontSize = 20.0f,
+        .font_size = 20.0f,
         .spacing = 2.0f,
-        .color = BLACK
+        .color = COLOR_GAME_TEXT
     };
     display_tetromino_widget(label_next, &g->next, next_pos);
 
@@ -171,21 +150,21 @@ void display_render(const Game *g, const Manager *m) {
     };
 
     const TextStyle label_hold = {
-        .font = manager_get_font(m, ENTITY_LABEL, 20),
+        .font = manager_get_font(m, FONT_TEXT, 20),
         .text = "Hold",
-        .fontSize = 20.0f,
+        .font_size = 20.0f,
         .spacing = 2.0f,
-        .color = BLACK
+        .color = COLOR_GAME_TEXT
     };
     display_tetromino_widget(label_hold, &g->hold, hold_pos);
 
     // Display score
     const TextStyle label_score = {
-        .font = manager_get_font(m, ENTITY_LABEL, 20),
+        .font = manager_get_font(m, FONT_TEXT, 20),
         .text = "XXX",
-        .fontSize = 20.0f,
+        .font_size = 20.0f,
         .spacing = 2.0f,
-        .color = BLACK
+        .color = COLOR_GAME_TEXT
     };
 
     int score_gap_X = 80;
@@ -204,11 +183,17 @@ void display_render(const Game *g, const Manager *m) {
     };
 
     const TextStyle label_level = {
-        .font = manager_get_font(m, ENTITY_LABEL, 20),
+        .font = manager_get_font(m, FONT_TEXT, 20),
         .text = "XXX",
-        .fontSize = 20.0f,
+        .font_size = 20.0f,
         .spacing = 2.0f,
-        .color = BLACK
+        .color = COLOR_GAME_TEXT
     };
     display_level(label_level, g->level, level_pos);
+
+    if (g->status == LOOSE) {
+        menu_game_over(m, g);
+    } else if (g->status == PAUSED) {
+        menu_pause(m, g);
+    }
 }

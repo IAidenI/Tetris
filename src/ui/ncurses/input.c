@@ -34,8 +34,6 @@ int input_handle(Game *g) {
     switch (ch) {
         case 's': snapshot_create(g); return 1;
         case 'q': game_quit(g);       return 1;
-        case 27 : // Escape
-        case KEY_F(1): game_pause(g); return 1;
     }
 
     // Paused/GameOver commands
@@ -94,6 +92,8 @@ int input_handle(Game *g) {
 
     // Playing commands
     switch (ch) {
+        case 27 : // Escape
+        case KEY_F(1): game_pause(g); return 1;
         // Hard drop
         case ' ': g->hard_drop    = 1; return 1;
         // Hold

@@ -8,18 +8,32 @@
 #define COLOR_GRID_VOID  CLITERAL(Color){  48,  48,  48, 255 }
 #define COLOR_BACKGROUND CLITERAL(Color){  68,  68,  68, 255 }
 
-static inline Color lighten2(Color c, float amount) {
-    float t = amount / 100.0f;
+#define COLOR_MENU             CLITERAL(Color){  68,  68,  68, 255 }
+#define COLOR_MENU_TITLE       CLITERAL(Color){ 255, 255,  255,  255 }
+#define COLOR_MENU_BUTTON      CLITERAL(Color){  61,  61,  61,  255 }
+#define COLOR_MENU_BUTTON_TEXT CLITERAL(Color){ 255, 255,  255,  255 }
 
+#define COLOR_GAME_TEXT CLITERAL(Color){ 255, 255,  255,  255 }
+
+static inline Color lighten(Color c, float amount) {
     Color out;
-    out.r = (unsigned char)(c.r + (255 - c.r) * t);
-    out.g = (unsigned char)(c.g + (255 - c.g) * t);
-    out.b = (unsigned char)(c.b + (255 - c.b) * t);
-    out.a = (unsigned char)(c.a + (255 - c.b) * t);
+    out.r = c.r + (255 - c.r) * amount;
+    out.g = c.g + (255 - c.g) * amount;
+    out.b = c.b + (255 - c.b) * amount;
+    out.a = c.a;
     return out;
 }
 
-static inline Color lighten(Color c, float lighten_percent, float alpha_percent) {
+static inline Color darken(Color c, float amount) {
+    Color out;
+    out.r = c.r * (1.0f - amount);
+    out.g = c.g * (1.0f - amount);
+    out.b = c.b * (1.0f - amount);
+    out.a = c.a;
+    return out;
+}
+
+static inline Color lighten_with_alpha(Color c, float lighten_percent, float alpha_percent) {
     if (lighten_percent < 0.0f) lighten_percent = 0.0f;
     if (lighten_percent > 100.0f) lighten_percent = 100.0f;
 
