@@ -44,7 +44,10 @@ Voici un aperçu de l'application en version CLI.
 Voici un aperçu de l'application en version GUI.
 
 <p align=center>
+  <img src="./docs/GUI_HomePage.png" alt="Page d'accueil" height="330">
   <img src="./docs/GUI_GameExemple.png" alt="Page d'accueil" height="330">
+  <img src="./docs/GUI_Pause.png" alt="Page d'accueil" height="330">
+  <img src="./docs/GUI_GameOver.png" alt="Page d'accueil" height="330">
 </p>
 
 ## Fonctionnalités
