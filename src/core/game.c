@@ -22,6 +22,10 @@ void game_init(Game *g) {
     g->status = START; // Set status game to START, not RUNNING
                        // START   : Indicates that the game is ready to by started
                        // RUNNING : Indicates that the game si running (so started)
+    
+    g->message[0]    = '\0';             // 
+    g->message_level = INFO;             // Initialize message to display
+    g->message_until = MESSAGE_DURATION; // 
 }
 
 static void game_refresh_preview(Game *g) {
@@ -39,25 +43,25 @@ static void game_refresh_preview(Game *g) {
 }
 
 void game_spawn_tetromino(Game *g) {
-    // Avoid spawning tetromino if a snapshot is detected
-    if (g->status != SNAPSHOT) {
-        g->current     = g->next.type == __ ? seven_bag_get_tetromino() : g->next; // Pick 2 tetromino from the 7-bag
-        g->next        = seven_bag_get_tetromino();                                // one for the current, one for the next
-        g->current.pos = START_SPAWN; // Set the position at the start
+    g->current     = g->next.type == __ ? seven_bag_get_tetromino() : g->next; // Pick 2 tetromino from the 7-bag
+    g->next        = seven_bag_get_tetromino();                                // one for the current, one for the next
+    g->current.pos = START_SPAWN; // Set the position at the start
 
-        g->preview     = g->current; // Set the preview
-        game_refresh_preview(g);     // 
-    }
+    g->preview     = g->current; // Set the preview
+    game_refresh_preview(g);     // 
 
     // Check if game is over
     GridCheck result = grid_check_position(&g->grid, &g->current, g->current.pos);
     if (result != GRID_OK) g->status = LOOSE;
-    else if (g->status == SNAPSHOT) g->status = RUNNING;
 }
 
 int game_update(Game *g) {
-    // Don't update if not running or in snapshot is detected
-    if (g->status != RUNNING && g->status != SNAPSHOT) return 0;
+    if (g->message[0] != '\0' && get_time() >= g->message_until) {
+        g->message[0] = '\0';
+    }
+
+    // Don't update if not running is detected
+    if (g->status != RUNNING) return 0;
 
     int changed = 0; // Check for any changes in the update
 
@@ -164,4 +168,15 @@ void game_quit(Game *g) {
 
 void game_cleanup(Game *g) {
     grid_cleanup(&g->grid);
+}
+
+void game_set_message(Game *g, const char *text, MessageLevel level, double duration) {
+    snprintf(g->message, sizeof(g->message), "%s", text);
+    g->message_level = level;
+    g->message_until = get_time() + duration;
+}
+
+void game_clear_message(Game *g) {
+    g->message[0] = '\0';
+    g->message_until = 0.0;
 }

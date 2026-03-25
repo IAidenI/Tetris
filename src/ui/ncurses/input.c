@@ -37,7 +37,7 @@ int input_handle(Game *g) {
     }
 
     // Paused/GameOver commands
-    if (g->status != RUNNING && g->status != SNAPSHOT) {
+    if (g->status != RUNNING) {
         switch (ch) {
             case KEY_UP:   input_menu_up(g->status);   return 1;
             case KEY_DOWN: input_menu_down(g->status); return 1;

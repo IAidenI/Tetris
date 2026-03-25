@@ -6,6 +6,8 @@
 #include <raylib.h>
 #include "utils/types.h"
 #include "core/game.h"
+#include "utils/snapshot.h"
+#include "utils/tinyfiledialogs.h"
 
 void on_start(void *data);
 void on_import(void *data);

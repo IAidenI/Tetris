@@ -15,6 +15,13 @@
 
 #define COLOR_GAME_TEXT CLITERAL(Color){ 255, 255,  255,  255 }
 
+#define COLOR_MESSAGE_BG       CLITERAL(Color){  20,  20,  20, 150 }
+#define COLOR_MESSAGE_INFO     CLITERAL(Color){ 220, 220, 220, 220 }
+#define COLOR_MESSAGE_WARNING  CLITERAL(Color){ 255, 220, 120, 220 }
+#define COLOR_MESSAGE_ERROR    CLITERAL(Color){ 255, 120, 120, 220 }
+#define COLOR_MESSAGE_SUCCESS  CLITERAL(Color){ 120, 220, 140, 220 }
+#define COLOR_MESSAGE_DEBUG    CLITERAL(Color){ 190, 160, 255, 220 }
+
 static inline Color lighten(Color c, float amount) {
     Color out;
     out.r = c.r + (255 - c.r) * amount;

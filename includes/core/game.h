@@ -9,6 +9,8 @@
 #include "info.h"
 #include "utils/debug.h"
 
+#define MESSAGE_SIZE 256
+
 typedef struct {
     Grid grid;
     
@@ -28,6 +30,10 @@ typedef struct {
     int hard_drop;
 
     GameStatus status;
+
+    char message[MESSAGE_SIZE];
+    MessageLevel message_level;
+    double message_until;
 } Game;
 
 void game_init(Game *g);
@@ -39,5 +45,7 @@ int  game_is_not_over(Game *g);
 void game_pause(Game *g);
 void game_quit(Game *g);
 void game_cleanup(Game *g);
+void game_set_message(Game *g, const char *text, MessageLevel level, double duration);
+void game_clear_message(Game *g);
 
 #endif // GAME_H

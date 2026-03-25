@@ -17,7 +17,21 @@ void on_start(void *data) {
 }
 
 void on_import(void *data) {
-    printf("[DEBUG] Not implemented\n");
+    Game *game = data;
+
+    const char *filters[] = { "*.ini" };
+    const char *path = tinyfd_openFileDialog("Choisir un fichier", "./", 1, filters, NULL, 0);
+    if (!path) return;
+
+    snapshot_init(path);
+    if (snapshot_read(game)) {
+        game_set_message(game, snapshot_get_message(), snapshot_get_message_level(), MESSAGE_DURATION);
+        return;
+    }
+
+    game->status = RUNNING;
+    game_clear_message(game);
+    resize_window((Position){RAYLIB_GAME_WINDOW_WIDTH, RAYLIB_GAME_WINDOW_HEIGHT});
 }
 
 void on_main_menu(void *data) {

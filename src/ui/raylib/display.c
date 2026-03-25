@@ -111,10 +111,39 @@ static void display_level(TextStyle label, int level, Position p) {
     DrawTextStyled(label, p);
 }
 
+static void display_message(const TextStyle message, Position p, MessageLevel l) {
+    Color border = COLOR_MESSAGE_DEBUG;
+    switch (l) {
+        case INFO:    border = COLOR_MESSAGE_INFO;    break;
+        case WARNING: border = COLOR_MESSAGE_WARNING; break;
+        case ERROR:   border = COLOR_MESSAGE_ERROR;   break;
+        case SUCCESS: border = COLOR_MESSAGE_SUCCESS; break;
+        default:      border = COLOR_MESSAGE_DEBUG;   break;
+    }
+
+    Vector2 text_size = MeasureTextStyled(message);
+    const int pad_x = 12;
+    const int pad_y = 8;
+
+    Rectangle frame = {
+        (float)p.x - pad_x,
+        (float)p.y - pad_y,
+        text_size.x + 2 * pad_x,
+        text_size.y + 2 * pad_y
+    };
+
+    float thick = 2.0f;
+    DrawRectangleRec(frame, COLOR_MESSAGE_BG);
+    DrawRectangleLinesEx(frame, thick, border);
+    DrawTextStyled(message, p);
+
+    DrawTextStyled(message, p);
+}
+
 void display_render(Game *g, const Manager *m) {
     if (g->status == START) {
-        menu_start(m, &g->status);
-        return;
+        menu_start(m, g);
+        goto message;
     }
 
     // Display grid
@@ -195,5 +224,17 @@ void display_render(Game *g, const Manager *m) {
         menu_game_over(m, g);
     } else if (g->status == PAUSED) {
         menu_pause(m, g);
+    }
+
+message:
+    if (g->message[0] != '\0') {
+        const TextStyle message = {
+            .font = manager_get_font(m, FONT_TEXT, 15),
+            .text = g->message,
+            .font_size = 15.0f,
+            .spacing = 2.0f,
+            .color = COLOR_GAME_TEXT
+        };
+        display_message(message, (Position){15, 10}, g->message_level);
     }
 }

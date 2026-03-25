@@ -1,6 +1,6 @@
 #include "ui/raylib/menus.h"
 
-void menu_start(const Manager *m, GameStatus *s) {
+void menu_start(const Manager *m, Game *g) {
     const TextStyle title = {
         .font = manager_get_font(m, FONT_TITLE, 40),
         .text = "TETRIS",
@@ -68,9 +68,9 @@ void menu_start(const Manager *m, GameStatus *s) {
     DrawTextStyled(title, (Position){title_x, title_y});
     
     SetMouseCursor(MOUSE_CURSOR_DEFAULT);
-    button_menu(labels[0], button_pos[0], max_button_size, COLOR_MENU_BUTTON, (ButtonAction){on_start, s});
-    button_menu(labels[1], button_pos[1], max_button_size, COLOR_MENU_BUTTON, (ButtonAction){on_import, s});
-    button_menu(labels[2], button_pos[2], max_button_size, COLOR_MENU_BUTTON, (ButtonAction){on_exit, s});
+    button_menu(labels[0], button_pos[0], max_button_size, COLOR_MENU_BUTTON, (ButtonAction){on_start, &g->status});
+    button_menu(labels[1], button_pos[1], max_button_size, COLOR_MENU_BUTTON, (ButtonAction){on_import, g});
+    button_menu(labels[2], button_pos[2], max_button_size, COLOR_MENU_BUTTON, (ButtonAction){on_exit, &g->status});
 }
 
 void menu_pause(const Manager *m, Game *g) {

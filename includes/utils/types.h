@@ -2,13 +2,19 @@
 #define TYPES_H
 
 typedef enum {
-    SNAPSHOT,
     START,
     RUNNING,
     PAUSED,
     QUIT,
     LOOSE
 } GameStatus;
+
+typedef enum {
+    INFO,
+    WARNING,
+    ERROR,
+    SUCCESS
+} MessageLevel;
 
 typedef struct {
     int x;

@@ -2,7 +2,7 @@
 
 ![Platform](https://img.shields.io/badge/platform-Linux-blue)
 ![Top Language](https://img.shields.io/github/languages/top/IAidenI/Tetris)
-![Version](https://img.shields.io/badge/version-1.3.4-yellow)
+![Version](https://img.shields.io/badge/version-1.3.5-yellow)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 Une implémentation basique du jeu Tetris en C, jouable dans un terminal Linux.
@@ -191,6 +191,7 @@ Cela évite de modifier la grille à chaque frame.
 - [X] Système de niveaux et accélération du jeu
 - [X] Système SRS pour la rotation des tetrominos
 - [X] Problème avec le O qui rotate
+- [ ] Modifier la version ncurses pour qu'elle prenne en compte le message de Game
 
 ### Gameplay
 - [X] Gestion des inputs joueur
@@ -207,6 +208,7 @@ Cela évite de modifier la grille à chaque frame.
 - [X] Ajouter un système de menus (start / pause / game over)
 - [X] Améliorer l’affichage
 - [X] Affichage des commandes
+- [ ] Bandeau pour afficher un message
 **Raylib**
 - [X] Ajouter un affichage supplémentaire avec raylib
 - [X] Ajout de l'affichage de la grille
@@ -216,9 +218,10 @@ Cela évite de modifier la grille à chaque frame.
 - [ ] Meilleure affichage des textes (fonts, size, color...)
 - [ ] Affichage des commandes
 - [X] Ajouter un système de menu
-- [ ] Ajouter l'import d'un snapshot
+- [X] Ajouter l'import d'un snapshot
 - [ ] Menu de confirmation lorsque l'on quitte
 - [ ] Ajouter un about/info pour montrer le fichier info.h
+- [X] Bandeau pour afficher un message
 
 ### Debug / outils
 - [X] Implémenter un système de snapshot de la partie
@@ -234,10 +237,9 @@ Cela évite de modifier la grille à chaque frame.
 - [ ] Si on fait ESC sur le menu start (ncurses)
 - [ ] Si on presse sur 'q' dans le menu start (raylib)
 - [ ] Au game over des fois les tetrominos ont un bug d'affichage
-- [ ] Au game over un vois une fraction de second le jeu avant de revenir a l'état voulu
+- [ ] Au game over on voit une fraction de second le jeu avant de revenir a l'état voulu
 
 ### Autre
 - [ ] Ajout readme installation ncurses/raylib
 - [ ] Compatibilité windows
 - [ ] Faire des versions linké avec les libs
-- [ ] Pour cli ou gui ajout d'un warning pour le snapshot create

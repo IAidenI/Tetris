@@ -1,6 +1,8 @@
 #include "utils/snapshot.h"
 
 static const char *snapshot_path = NULL;
+static char snapshot_error[MESSAGE_SIZE];
+static MessageLevel snapshot_error_level = ERROR;
 
 // Key words
 static const char *key_current_position = "[current_position]";
@@ -23,6 +25,23 @@ void snapshot_init(const char *path) {
     snapshot_path = path;
 }
 
+static void snapshot_set_message(MessageLevel level, const char *fmt, ...) {
+    snapshot_error_level = level;
+
+    va_list args;
+    va_start(args, fmt);
+    vsnprintf(snapshot_error, sizeof(snapshot_error), fmt, args);
+    va_end(args);
+}
+
+const char *snapshot_get_message() {
+    return snapshot_error;
+}
+
+MessageLevel snapshot_get_message_level() {
+    return snapshot_error_level;
+}
+
 static int snapshot_search_key_word(FILE *fp, const char *key_word) {
     char buffer[BUFFER_SNAPSHOT];
     rewind(fp);
@@ -37,7 +56,7 @@ static int snapshot_search_key_word(FILE *fp, const char *key_word) {
 
 static int snapshot_extract_section_int(FILE *fp, char *buffer, const char *section, const char *field, int *out) {
     if (snapshot_search_key_word(fp, section)) {
-        print_error("Format du fichier invalide, %s introuvable.\n", section);
+        snapshot_set_message(ERROR, "Format du fichier invalide.\n   %s introuvable.", section);
         return 1;
     }
 
@@ -68,20 +87,20 @@ static int snapshot_extract_section_int(FILE *fp, char *buffer, const char *sect
         }
     }
 
-    print_error("Champ %s introuvable dans %s.\n", field, section);
+    snapshot_set_message(ERROR, "Champ %s introuvable dans %s.", field, section);
     return 1;
 }
 
 static int snapshot_extract_array(FILE *fp, char *buffer, const char *keyword, int *out, int width, int height) {
     if (snapshot_search_key_word(fp, keyword)) {
-        print_error("Format du fichier invalide, %s introuvable.\n", keyword);
+        snapshot_set_message(ERROR, "Format du fichier invalide.\n   %s introuvable.", keyword);
         return 1;
     }
 
     for (int y = 0; y < height; y++) {
         // Read one line per row
         if (!fgets(buffer, BUFFER_SNAPSHOT, fp)) {
-            print_error("Format du fichier invalide, %s trouvé, mais aucune donnée ligne %d.\n", keyword, y);
+            snapshot_set_message(ERROR, "Format du fichier invalide.\n   %s trouvé, mais aucune donnée ligne %d.", keyword, y);
             return 1;
         }
 
@@ -91,7 +110,7 @@ static int snapshot_extract_array(FILE *fp, char *buffer, const char *keyword, i
 
             // Check conversion failure
             if (ptr == end) {
-                print_error("Valeur invalide à la ligne %d, colonne %d.\n", y + 1, x + 1);
+                snapshot_set_message(ERROR, "Valeur invalide à la ligne %d, colonne %d.", y + 1, x + 1);
                 return 1;
             }
             out[y * width + x] = value; // Store the value
@@ -102,8 +121,9 @@ static int snapshot_extract_array(FILE *fp, char *buffer, const char *keyword, i
 }
 
 int snapshot_read(Game *g) {
+    printf("[DEBUG] %s\n", snapshot_path);
     if (snapshot_path == NULL) {
-        print_error("[!] snapshot_init not called.\n");
+        snapshot_set_message(ERROR, "Le snapshot n'as pas été initialisé.");
         return 1;
     }
 
@@ -113,7 +133,7 @@ int snapshot_read(Game *g) {
 
     FILE *fp = fopen(snapshot_path, "r");
 	if (fp == NULL) {
-		print_error("[!] can't read %s.\n", snapshot_path);
+		snapshot_set_message(ERROR, "Impossible de lire : %s.", snapshot_path);
 		return 1;
 	}
 
@@ -137,7 +157,7 @@ int snapshot_read(Game *g) {
     g->grid.total_lines_cleared = level * 10;                                 // Grid total
     g->score = score;                                                         // Score
     g->level = level;                                                         // Level
-    g->status = SNAPSHOT;
+    g->status = RUNNING;
 
     fclose(fp);
     free(grid);
@@ -150,8 +170,9 @@ error:
 }
 
 void snapshot_create(Game *g) {
+    printf("[DEBUG] %s\n", snapshot_path);
     if (snapshot_path == NULL) {
-        log_write("[!] snapshot_init not called.\n");
+        snapshot_set_message(ERROR, "Le snapshot n'as pas été initialisé.");
         return;
     }
 
@@ -191,4 +212,6 @@ void snapshot_create(Game *g) {
     fprintf(fp, "    %s : %d\n\n", label_game_level, g->level);
 
     fclose(fp);
+
+    snapshot_set_message(SUCCESS, "Le snapshot à été crée avec succès.");
 }

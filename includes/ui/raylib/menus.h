@@ -7,7 +7,7 @@
 #include "ui/raylib/manager.h"
 #include "ui/raylib/actions.h"
 
-void menu_start(const Manager *m, GameStatus *s);
+void menu_start(const Manager *m, Game *g);
 void menu_pause(const Manager *m, Game *g);
 void menu_game_over(const Manager *m, Game *g);
 

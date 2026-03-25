@@ -17,6 +17,7 @@ int main(int argc, char **argv) {
     game_init(&game);
     log_init("./debug.log");
 	snapshot_init("./snapshot.ini");
+    game_spawn_tetromino(&game);
 
     // Parse arguments
     if (argc > 1) {
@@ -61,7 +62,6 @@ int main(int argc, char **argv) {
         There are nothing significative to change here to have another UI
         Only input_handle and display_render si affect by a different UI
     */
-    game_spawn_tetromino(&game);
     display_render(&game);
     while (game_is_not_over(&game)) {
         int input_changed = input_handle(&game); // When input is handle it is important to

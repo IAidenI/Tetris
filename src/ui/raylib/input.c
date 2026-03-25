@@ -2,8 +2,12 @@
 
 int input_handle(Game *g) {
     // General commands
-    if (IsKeyPressed(KEY_S)) { snapshot_create(g); return 1; }
-    if (IsKeyPressed(KEY_A)) { game_quit(g);       return 1; } // A --> Q in AZERTY
+    if (IsKeyPressed(KEY_S)) {
+        snapshot_create(g);
+        game_set_message(g, snapshot_get_message(), snapshot_get_message_level(), MESSAGE_DURATION);
+        return 1;
+    }
+    if (IsKeyPressed(KEY_A)) { game_quit(g); return 1; } // A --> Q in AZERTY
 
     // Pause / resume if running or paused
     if ((g->status == RUNNING || g->status == PAUSED) &&
@@ -12,7 +16,7 @@ int input_handle(Game *g) {
         return 1;
     }
 
-    if (g->status != RUNNING && g->status != SNAPSHOT) return 0;
+    if (g->status != RUNNING) return 0;
 
     // Hard drop
     if (IsKeyPressed(KEY_SPACE)) { g->hard_drop = 1; return 1; }
